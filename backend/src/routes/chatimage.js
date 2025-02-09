@@ -6,42 +6,19 @@ const sharp = require("sharp");
 
 const router = express.Router();
 
-// 기본 업로드 디렉토리 설정
-const uploadDir = path.join(__dirname, "../../uploads/chatUploadImage");
-
-
-const apiUrl = process.env.REACT_APP_API_URL;
+// 파일 저장 경로 설정
+const uploadDir = path.join(__dirname, "../../uploads");
 
 // 업로드 폴더가 존재하지 않으면 새로 생성
 if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
+  fs.mkdirSync(uploadDir);
 }
 
 // Multer 설정: 파일 저장 위치와 파일 이름을 정의
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    // 현재 날짜 가져오기
-    const date = new Date();
-    const datePath = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")}`;
-
-    // 날짜별 폴더 경로 생성
-    const dateDir = path.join(uploadDir, datePath);
-    if (!fs.existsSync(dateDir)) {
-      fs.mkdirSync(dateDir, { recursive: true });
-    }
-
-    // 원본과 썸네일을 각각 저장할 폴더 생성
-    const originalDir = path.join(dateDir, "original");
-    const thumbnailDir = path.join(dateDir, "thumbnail");
-    if (!fs.existsSync(originalDir)) {
-      fs.mkdirSync(originalDir, { recursive: true });
-    }
-    if (!fs.existsSync(thumbnailDir)) {
-      fs.mkdirSync(thumbnailDir, { recursive: true });
-    }
-
-    // 파일을 저장할 폴더 지정
-    cb(null, originalDir); // 원본 파일 저장 폴더
+    // 업로드된 파일을 저장할 경로 지정
+    cb(null, uploadDir);
   },
   filename: function (req, file, cb) {
     // 파일명을 고유하게 만들기 위해 현재 시간과 랜덤 숫자를 추가
@@ -79,29 +56,25 @@ router.post("/upload", upload.array("files", 20), async (req, res) => {
     const files = req.files;
     const urls = []; // 결과를 저장할 배열
 
-    // 현재 날짜 가져오기
-    const date = new Date();
-    const datePath = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")}`;
-    const originalDir = path.join(uploadDir, datePath, "original");
-    const thumbnailDir = path.join(uploadDir, datePath, "thumbnail");
-
     for (const file of files) {
       // 업로드된 파일의 고유 이름 가져오기
       const filename = file.filename;
 
       // 원본 파일 경로와 썸네일 파일 경로 정의
-      const originalFilePath = path.join(originalDir, filename);
-      const thumbnailFilePath = path.join(thumbnailDir, `thumb_${filename}`); // 썸네일에 thumb_ 접두사 추가
+      const originalFilePath = filename;
+      const thumbnailFilePath = "thumb_" + filename;
 
       // Sharp 라이브러리를 사용하여 썸네일 생성
       await sharp(file.path)
         .resize(200, 200) // 썸네일 크기 설정 (200x200)
-        .toFile(thumbnailFilePath); // 썸네일 파일 저장
+        .toFile(path.join(uploadDir, thumbnailFilePath)); // 썸네일 파일 저장
 
+      console.log("오리리리리지지나나날 :: " + originalFilePath);
+      console.log("떰떰네네네이이잉 :: " + thumbnailFilePath);
       // 원본 파일과 썸네일 파일의 URL을 배열에 추가
       urls.push({
-        original: `${apiUrl}/uploads/chatUploadImage/${datePath}/original/${filename}`,
-        thumbnail: `${apiUrl}/uploads/chatUploadImage/${datePath}/thumbnail/thumb_${filename}`,
+        original: `http://localhost:4000/uploads/${originalFilePath}`,
+        thumbnail: `http://localhost:4000/uploads/${thumbnailFilePath}`,
       });
     }
 

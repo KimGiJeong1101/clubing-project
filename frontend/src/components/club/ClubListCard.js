@@ -9,11 +9,12 @@ import ModeNightIcon from "@mui/icons-material/ModeNight";
 import { useNavigate } from "react-router-dom";
 
 const ClubListCard = ({ clubList }) => {
+  
   const navigate = useNavigate();
-  // clubList가 undefined인 경우를 처리
-  if (!clubList || clubList.length === 0) {
-    return <div>No clubs available</div>;
-  }
+    // clubList가 undefined인 경우를 처리
+    if (!clubList || clubList.length === 0) {
+      return <div>No clubs available</div>;
+    }
   return (
     <>
       {clubList.map((club) => (
