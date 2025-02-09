@@ -167,11 +167,9 @@ const MainUpdate = () => {
       try {
         const response = await axiosInstance.post(`/clubs/update2/${clubNumber}`, data);
         navigate(`/clubs/main?clubNumber=${clubNumber}`, { state: { snackbarMessage: "모임 수정을 완료했습니다." } });
-
       } catch (err) {
         console.error(err);
         navigate(`/clubs/main?clubNumber=${clubNumber}`, { state: { snackbarMessage: "모임 수정을 실패했습니다." } });
-
       }
     }
   };

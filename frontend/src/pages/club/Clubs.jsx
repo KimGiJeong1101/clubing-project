@@ -30,7 +30,6 @@ const StyledSnackbarContent = styled(SnackbarContent)(({ theme }) => ({
   backgroundColor: "white", // 배경을 하얀색으로 설정
   color: "#A6836F", // 텍스트 색상 설정
   borderRadius: "4px", // 테두리 둥글게 설정 (선택사항)
-  
 }));
 const Clubs = () => {
   let [category, setCategory] = useState("");

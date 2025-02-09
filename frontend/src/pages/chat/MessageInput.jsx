@@ -2,11 +2,7 @@ import React, { useRef, useState } from "react";
 import { Grid, TextField, Button, Box, IconButton, InputAdornment } from "@mui/material";
 import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
 import Picker from "@emoji-mart/react";
-import SendIcon from "@mui/icons-material/Send";
 import SendRoundedIcon from "@mui/icons-material/SendRounded";
-import FlightTakeoffIcon from "@mui/icons-material/FlightTakeoff";
-import TelegramIcon from "@mui/icons-material/Telegram";
-import NearMeIcon from "@mui/icons-material/NearMe";
 
 const MessageInput = ({ message, setMessage, handleSendMessage, handleKeyPress }) => {
   const [showPicker, setShowPicker] = useState(false);
@@ -47,17 +43,22 @@ const MessageInput = ({ message, setMessage, handleSendMessage, handleKeyPress }
             startAdornment: (
               <InputAdornment position="start">
                 <IconButton color="primary" onClick={handleTogglePicker}>
-                  <EmojiEmotionsIcon sx={{ color: "grey", fontSize: 32 }} />
+                  <EmojiEmotionsIcon sx={{ color: "#dbc7b5", fontSize: 32 }} />
                 </IconButton>
               </InputAdornment>
             ),
           }}
           sx={{
-            backgroundColor: "white",
-
+            backgroundColor: "white", // 항상 바탕색은 흰색 유지
             fontSize: "0.9rem", // 글씨 크기 약간 증가
+            "& .MuiOutlinedInput-root": {
+              "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                borderColor: "#6E3C21", // 포커스 시 테두리 색만 변경
+              },
+            },
           }}
         />
+
         {showPicker && (
           <Box sx={{ position: "absolute", bottom: 60 }}>
             <Picker onEmojiSelect={handleEmojiClick} />
@@ -73,13 +74,13 @@ const MessageInput = ({ message, setMessage, handleSendMessage, handleKeyPress }
           fullWidth
           onClick={handleSendMessage}
           sx={{
-            backgroundColor: "#7c7c7c",
+            backgroundColor: "#dbc7b5",
             width: 57,
             height: 57,
             aspectRatio: "0",
             margin: 0,
             "&:hover": {
-              backgroundColor: "#000000", // 호버 시 버튼 배경 색상
+              backgroundColor: "#a6836f", // 호버 시 버튼 배경 색상
               "& .MuiSvgIcon-root": {
                 color: "#ffffff", // 호버 시 아이콘 색상
               },

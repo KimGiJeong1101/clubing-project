@@ -1,13 +1,13 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import MyUpdate from './sections/MyUpdate/MyUpdate';
-import MyClub from './sections/MyClub/MyClub';
-import MyMessage from './sections/MyMessage/MyMessage';
-import MyChat from './sections/MyChat';
-import MySetting from './sections/MySetting';
-import MyPage from './MyPage';
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import MyUpdate from "./sections/MyUpdate/MyUpdate";
+import MyClub from "./sections/MyClub/MyClub";
+import MyMessage from "./sections/MyMessage/MyMessage";
+import MyChat from "./sections/MyChat/MyChat";
+import MySetting from "./sections/MySetting";
+import MyPage from "./MyPage";
 
 //여기까지 경로 /mypage
-function MyPageRoutes({ }) {
+function MyPageRoutes({}) {
   return (
     <Routes>
       <Route path="/" element={<MyPage />}>

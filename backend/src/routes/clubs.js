@@ -287,12 +287,13 @@ router.post("/cencellMember/:clubNumber", auth, async (req, res, next) => {
     const memberIndex = clubs.members.indexOf(req.user.email);
 
     //유저에서 클럽
-    const user = await User.find({ email: req.user.email });
+    const user = await User.findOne({ email: req.user.email });
     const clubIndex = user.clubs.indexOf(req.params.clubNumber);
     clubs.members.splice(memberIndex, 1);
 
     user.clubs.splice(clubIndex, 1);
     clubs.save();
+    user.save();
     return res.sendStatus(200);
   } catch (error) {
     next(error);

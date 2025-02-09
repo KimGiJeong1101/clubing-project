@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-// ChatRoom 스키마
+// ChattingRoom 스키마
 const chattingRoomSchema = new mongoose.Schema({
   clubId: {
     type: mongoose.Schema.Types.Number,
@@ -29,4 +29,4 @@ const chattingRoomSchema = new mongoose.Schema({
 
 const ChattingRoom = mongoose.model("ChattingRoom", chattingRoomSchema);
 
-module.exports = ChatRoom;
+module.exports = ChattingRoom;

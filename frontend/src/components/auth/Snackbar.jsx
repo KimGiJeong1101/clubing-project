@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
-import { Snackbar, Alert } from '@mui/material';
+import { useState, useEffect } from "react";
+import { Snackbar, Alert } from "@mui/material";
 
-const CustomSnackbarWithTimer = ({ open, message, severity = 'success', onClose, duration = 5000 }) => {
+const CustomSnackbarWithTimer = ({ open, message, severity = "success", onClose, duration = 5000, anchorOrigin = { vertical: "bottom", horizontal: "left" } }) => {
   const [remainingTime, setRemainingTime] = useState(duration / 1000); // 남은 시간을 초로 표시
 
   useEffect(() => {
@@ -27,9 +27,9 @@ const CustomSnackbarWithTimer = ({ open, message, severity = 'success', onClose,
       open={open}
       autoHideDuration={duration}
       onClose={onClose}
-      anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }} // 위치 설정
+      anchorOrigin={anchorOrigin} // 위치 설정
     >
-      <Alert onClose={onClose} severity={severity} sx={{ width: '100%' }}>
+      <Alert onClose={onClose} severity={severity} sx={{ width: "100%" }}>
         {message} (남은 시간: {remainingTime}초)
       </Alert>
     </Snackbar>

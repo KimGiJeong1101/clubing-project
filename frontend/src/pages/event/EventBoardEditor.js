@@ -66,7 +66,7 @@ import {
 } from "ckeditor5";
 import translations from "ckeditor5/translations/ko.js";
 import "ckeditor5/ckeditor5.css";
-import "../../assets/styles/ClubBoard.css";
+// import "../../assets/styles/ClubBoard.css"; 이 부분 지워도 됨. 파일 비어져 있길래 지웠는데, 임포트 찾을 수 없다고 에러나서 일단 주석
 import "./EditorStyle.css";
 import { TextField, Box } from "@mui/material";
 

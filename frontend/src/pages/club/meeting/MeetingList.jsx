@@ -9,7 +9,6 @@ import MeetingListByCategory from "./MeetingListByCategory";
 import MeetingListAsUser from "./MeetingListAsUser";
 
 const MeetingList = () => {
- 
   const [nowTime, setNowTime] = useState([]);
   const [selectedTab, setSelectedTab] = useState(0); // 선택된 탭의 상태
   const [category, setCategory] = useState([...Object.keys(clubCategories)]);
