@@ -90,7 +90,7 @@ router.get("/:postId", async (req, res) => {
   }
 });
 // 댓글 삭제 라우트
-router.delete("/delete/:replyId",auth, async (req, res) => {
+router.delete("/delete/:replyId", auth, async (req, res) => {
   try {
     const { replyId } = req.params;
     const { writer } = req.body; // 요청한 사용자의 닉네임을 req.body에서 가져옴
@@ -121,7 +121,7 @@ router.delete("/delete/:replyId",auth, async (req, res) => {
 });
 
 // 댓글 수정 라우트
-router.put("/edit/:replyId",auth, async (req, res) => {
+router.put("/edit/:replyId", auth, async (req, res) => {
   try {
     const { replyId } = req.params;
     const { writer, comment } = req.body; // 요청한 사용자의 닉네임과 수정할 댓글 내용을 req.body에서 가져옴

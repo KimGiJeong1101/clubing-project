@@ -1,10 +1,12 @@
 const mongoose = require("mongoose");
 
+// 조금 더 공부후에 구현해보자 !
+// 현재에는 아무곳에서 쓰지 않는 스키마임 !
+
 // 배열의 길이를 제한하는 검증 함수
 function arrayLimit(val) {
   return val.length <= 5; // 배열 길이가 3 이하인 경우만 허용
 }
-
 
 // IP 기록을 저장하는 스키마 정의
 const ChatIPSchema = new mongoose.Schema({

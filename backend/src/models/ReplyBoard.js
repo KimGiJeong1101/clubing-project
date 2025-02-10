@@ -41,7 +41,7 @@ const replyBSchema = new Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 // 모델이 이미 존재하는지 확인한 후, 정의합니다.

@@ -18,7 +18,7 @@ const userSchema = mongoose.Schema({
   },
   password: {
     type: String,
-    minLength: 8, // 비밀번호는 최소 8자로 바꿔야됌 
+    minLength: 8, // 비밀번호는 최소 8자로 바꿔야됌
   },
   name: {
     type: String,
@@ -50,10 +50,11 @@ const userSchema = mongoose.Schema({
     thumbnailImage: {
       type: String, // 이미지 URL 저장
     },
-    introduction: { // 프로필 소개글
+    introduction: {
+      // 프로필 소개글
       type: String,
       maxLength: 30, // 최대 500자
-    }
+    },
   },
   homeLocation: {
     type: {
@@ -123,7 +124,8 @@ const userSchema = mongoose.Schema({
     type: Boolean,
     default: false, // 기본값은 false
   },
-  history: {//최근 본 모임
+  history: {
+    //최근 본 모임
     type: Array,
     default: [],
   },
