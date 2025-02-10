@@ -3,11 +3,9 @@ import { Box, Container, Grid } from "@mui/material";
 import { Link, useLocation } from "react-router-dom";
 
 function NavBar() {
-
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const clubNumber = queryParams.get("clubNumber");
-
 
   const [selected, setSelected] = useState("홈");
 
@@ -25,12 +23,11 @@ function NavBar() {
     setSelected(getSelected());
   }, [location.pathname]);
 
-  
   const navItems = [
     { name: "홈", path: `/clubs/main?clubNumber=${clubNumber}` },
     { name: "게시판", path: `/clubs/board?clubNumber=${clubNumber}` },
     { name: "사진첩", path: `/clubs/gallery?clubNumber=${clubNumber}` },
-    { name: "채팅", path: `/clubs/chat?clubNumber=${clubNumber}`}, 
+    { name: "채팅", path: `/clubs/chat?clubNumber=${clubNumber}` },
   ];
 
   return (
