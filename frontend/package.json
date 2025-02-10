@@ -1,0 +1,86 @@
+{
+  "name": "frontend",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@ckeditor/ckeditor5-react": "^9.0.0",
+    "@emoji-mart/react": "^1.1.1",
+    "@emotion/react": "^11.13.0",
+    "@emotion/styled": "^11.13.0",
+    "@mui/base": "^5.0.0-beta.40",
+    "@mui/icons-material": "^5.16.5",
+    "@mui/joy": "^5.0.0-beta.48",
+    "@mui/material": "^5.16.4",
+    "@mui/system": "^5.16.4",
+    "@mui/x-date-pickers": "^7.12.1",
+    "@reduxjs/toolkit": "^2.2.6",
+    "@tanstack/react-query": "^5.51.15",
+    "@tanstack/react-query-devtools": "^5.51.15",
+    "@toast-ui/react-image-editor": "^3.15.2",
+    "axios": "^1.7.2",
+    "ckeditor5": "^43.0.0",
+    "cropperjs": "^1.6.2",
+    "date-fns": "^3.6.0",
+    "dayjs": "^1.11.12",
+    "framer-motion": "^11.5.4",
+    "frontend": "file:",
+    "http-proxy-middleware": "^3.0.0",
+    "js-cookie": "^3.0.5",
+    "jwt-decode": "^4.0.0",
+    "lodash": "^4.17.21",
+    "moment": "^2.29.1",
+    "mui-file-input": "^4.0.6",
+    "notistack": "^3.0.1",
+    "react": "^18.3.1",
+    "react-beautiful-dnd": "^13.1.1",
+    "react-dom": "^18.3.1",
+    "react-draggable": "^4.4.6",
+    "react-hook-form": "^7.52.1",
+    "react-icons": "^5.2.1",
+    "react-image-crop": "^11.0.6",
+    "react-redux": "^9.1.2",
+    "react-responsive-carousel": "^3.2.23",
+    "react-router-dom": "^6.25.1",
+    "react-scripts": "^5.0.1",
+    "react-slick": "^0.30.2",
+    "react-sortable-hoc": "^2.0.0",
+    "react-toastify": "^10.0.5",
+    "redux-persist": "^6.0.0",
+    "slick-carousel": "^1.8.1",
+    "socket.io-client": "^4.7.5",
+    "tui-image-editor": "^3.15.3",
+    "web-vitals": "^2.1.4",
+    "webpack-manifest-plugin": "^5.0.0"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "prettier:check": "prettier --check '**/*.{js,jsx,ts,tsx,json,css,scss,md}'",
+    "prettier:fix": "prettier --write '**/*.{js,jsx,ts,tsx,json,css,scss,md}'"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "prettier": "^3.3.3",
+    "tailwindcss": "^3.4.4"
+  }
+}
