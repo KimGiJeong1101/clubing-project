@@ -102,8 +102,6 @@ const ClubCard3 = ({ clubList }) => {
                         paddingBottom: "1px",
                       }}
                     >
-
-                      
                       <AvatarGroup max={4}>
                         {club.memberInfo.map((member, idx) => (
                           <Avatar
