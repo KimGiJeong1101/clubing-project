@@ -3,10 +3,10 @@ import { Button, styled } from "@mui/material";
 
 // 스타일 정의
 const StyledButton = styled(Button)(({ theme }) => ({
-  backgroundColor: '#DBC7B5',
-  color: 'white',
-  '&:hover': {
-    backgroundColor: '#A67153',
+  backgroundColor: "#DBC7B5",
+  color: "white",
+  "&:hover": {
+    backgroundColor: "#A67153",
   },
 }));
 

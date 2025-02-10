@@ -1,0 +1,39 @@
+name: Prettier Check and Format
+
+# 워크플로우가 언제 실행될지 정의하는 부분
+on:
+  push:
+    branches:
+      - main # main 브랜치에 푸시될 때마다 실행
+      - frontend_Br # frontend_Br 브랜치에 푸시될 때마다 실행
+      - backend_Br # backend_Br 브랜치에 푸시될 때마다 실행
+      - branch01 # branch01 브랜치에 푸시될 때마다 실행
+  pull_request:
+    branches:
+      - main # main 브랜치로 PR이 생성될 때마다 실행
+      - frontend_Br # frontend_Br 브랜치에 푸시될 때마다 실행
+      - backend_Br # backend_Br 브랜치에 푸시될 때마다 실행
+      - branch01 # branch01 브랜치에 푸시될 때마다 실행
+
+# Prettier가 동작할 작업들을 정의
+jobs:
+  prettier:
+    runs-on: ubuntu-latest # GitHub Actions에서 사용할 최신 우분투 환경
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2 # 레포지터리 코드를 체크아웃 (다운로드)
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2 # Node.js 환경을 설정
+        with:
+          node-version: "20" # Node.js 버전 설정
+
+      - name: Install dependencies
+        run: npm install # 프로젝트 의존성 설치
+
+      - name: Check code formatting with Prettier
+        run: npx prettier --check . # 코드가 Prettier 스타일 규칙에 맞는지 확인
+
+      - name: Format code with Prettier
+        run: npx prettier --write . # 코드 포맷을 Prettier 스타일에 맞게 자동으로 수정

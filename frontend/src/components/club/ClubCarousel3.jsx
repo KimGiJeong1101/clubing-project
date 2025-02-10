@@ -14,7 +14,8 @@ const settings = {
   centerPadding: "10px", // 슬라이더 중앙 패딩 설정 (카드 간 여백)
   slidesToScroll: 3, // 한 번에 3개씩 스크롤
   arrows: true, // 화살표 버튼 활성화
-  responsive: [ // 반응형 설정 (화면 크기에 따라 슬라이더 옵션 변경)
+  responsive: [
+    // 반응형 설정 (화면 크기에 따라 슬라이더 옵션 변경)
     {
       breakpoint: 1024, // 화면 너비 1024px 이하일 때
       settings: {
@@ -34,29 +35,29 @@ const settings = {
 
 // ClubCarousel2 컴포넌트: 클럽 리스트를 슬라이더 형태로 표시
 const ClubCarousel2 = ({ clubList }) => {
-   // 3개씩 나누기
-   const chunkSize = 3;
-   const chunks = [];
-   for (let i = 0; i < clubList.length; i += chunkSize) {
-     chunks.push(clubList.slice(i, i + chunkSize));
-   }
- 
-   return (
-     <Box style={{ padding: "20px", backgroundColor: "#f2f2f2", borderRadius: "20px" }}>
-       {/* 청크 배열을 슬라이더로 표시 */}
-       <Slider {...settings}>
-         {chunks.map((chunk, index) => (
-           <Box key={index} display="flex" flexDirection="row">
-             {chunk.map((club) => (
-               <Box key={club._id} style={{ padding: "10px" }}>
-                 <ClubCard3 clubList={[club]} />
-               </Box>
-             ))}
-           </Box>
-         ))}
-       </Slider>
-     </Box>
-   );
- };
+  // 3개씩 나누기
+  const chunkSize = 3;
+  const chunks = [];
+  for (let i = 0; i < clubList.length; i += chunkSize) {
+    chunks.push(clubList.slice(i, i + chunkSize));
+  }
+
+  return (
+    <Box style={{ padding: "20px", backgroundColor: "#f2f2f2", borderRadius: "20px" }}>
+      {/* 청크 배열을 슬라이더로 표시 */}
+      <Slider {...settings}>
+        {chunks.map((chunk, index) => (
+          <Box key={index} display="flex" flexDirection="row">
+            {chunk.map((club) => (
+              <Box key={club._id} style={{ padding: "10px" }}>
+                <ClubCard3 clubList={[club]} />
+              </Box>
+            ))}
+          </Box>
+        ))}
+      </Slider>
+    </Box>
+  );
+};
 
 export default ClubCarousel2; // ClubCarousel2 컴포넌트를 외부에서 사용할 수 있도록 export
