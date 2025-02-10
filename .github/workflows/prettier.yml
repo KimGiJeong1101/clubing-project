@@ -41,7 +41,7 @@ jobs:
 
       # Prettier 설치 (만약 로컬에 설치되지 않았다면)
       - name: Install Prettier
-        run: npm install prettier --save-dev --force
+        run: npm install prettier --save-dev
         working-directory: . # 루트 디렉토리에서 실행
 
       - name: Check code formatting with Prettier
