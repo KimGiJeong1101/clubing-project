@@ -1,0 +1,10 @@
+.tui-image-editor-header-buttons {
+  display: none;
+}
+.tui-image-editor-help-menu {
+  display: none;
+}
+.react-sortable-hoc-placeholder {
+  visibility: hidden;
+}
+
