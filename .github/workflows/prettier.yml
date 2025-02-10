@@ -31,12 +31,12 @@ jobs:
 
       # 프론트엔드 디펜던시 설치
       - name: Install dependencies for Frontend
-        run: npm ci
+        run: npm install --force
         working-directory: ./frontend # 프론트 폴더에서 npm install 실행
 
       # 백엔드 디펜던시 설치
       - name: Install dependencies for Backend
-        run: npm ci
+        run: npm install --force
         working-directory: ./backend # 백 폴더에서 npm install 실행
 
       - name: Check code formatting with Prettier
