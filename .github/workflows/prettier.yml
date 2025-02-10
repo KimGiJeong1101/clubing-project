@@ -36,7 +36,7 @@ jobs:
 
       # 백엔드 디펜던시 설치
       - name: Install dependencies for Backend
-        run: npm install ci
+        run: npm ci
         working-directory: ./backend # 백 폴더에서 npm install 실행
 
       - name: Check code formatting with Prettier
