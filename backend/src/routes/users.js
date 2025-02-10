@@ -515,7 +515,6 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-
 // 특정 이메일을 가진 사용자의 정보를 가져오는 라우트 핸들러
 router.get("/email/:email", async (req, res) => {
   try {
@@ -535,7 +534,6 @@ router.get("/email/:email", async (req, res) => {
     res.status(500).json({ message: "서버 오류" });
   }
 });
-
 
 router.post("/update-location", async (req, res) => {
   try {

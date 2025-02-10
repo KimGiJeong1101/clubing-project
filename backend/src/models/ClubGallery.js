@@ -41,7 +41,7 @@ const gallerySchema = new Schema(
   },
   {
     timestamps: true, // createdAt과 updatedAt 필드를 자동으로 추가 및 관리
-  }
+  },
 );
 
 const Gallery = mongoose.model("Gallery", gallerySchema);

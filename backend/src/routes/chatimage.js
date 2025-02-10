@@ -9,7 +9,6 @@ const router = express.Router();
 // 기본 업로드 디렉토리 설정
 const uploadDir = path.join(__dirname, "../../uploads/chatUploadImage");
 
-
 const apiUrl = process.env.REACT_APP_API_URL;
 
 // 업로드 폴더가 존재하지 않으면 새로 생성

@@ -197,18 +197,18 @@ router.get("/read2/:id", async (req, res, next) => {
     }
     //찜하기 회원 목록
     const wishInfo = [];
-      for (let i = 0; i < clubs.wishHeart.length; i++) {
-          let copymember = { email: "", name: "", nickName: "", thumbnailImage: "", wish: "", invite: "",};
-          // 이메일로 사용자 정보 조회
-          const userinfo = await User.findOne({ email: clubs.wishHeart[i] });
-          copymember.email = userinfo.email;
-          copymember.name = userinfo.name;
-          copymember.nickName = userinfo.nickName;
-          copymember.thumbnailImage = userinfo.profilePic.thumbnailImage;
-          copymember.wish = userinfo.wish;
-          copymember.invite = userinfo.invite;
-          wishInfo.push(copymember);
-      }
+    for (let i = 0; i < clubs.wishHeart.length; i++) {
+      let copymember = { email: "", name: "", nickName: "", thumbnailImage: "", wish: "", invite: "" };
+      // 이메일로 사용자 정보 조회
+      const userinfo = await User.findOne({ email: clubs.wishHeart[i] });
+      copymember.email = userinfo.email;
+      copymember.name = userinfo.name;
+      copymember.nickName = userinfo.nickName;
+      copymember.thumbnailImage = userinfo.profilePic.thumbnailImage;
+      copymember.wish = userinfo.wish;
+      copymember.invite = userinfo.invite;
+      wishInfo.push(copymember);
+    }
 
     let copy = { ...clubs._doc, clubmembers: memberInfo, wishmembers: wishInfo };
     res.status(200).json(copy);
@@ -221,7 +221,7 @@ router.delete("/delete/:id", auth, async (req, res, next) => {
   try {
     const clubs = await Club.findByIdAndDelete({ _id: req.params.id });
 
-    //클럽 삭제 시 유저에 저장된 정보도 지움 
+    //클럽 삭제 시 유저에 저장된 정보도 지움
     const clubId = req.params.id;
     await User.updateMany(
       { clubs: clubId }, // 클럽 목록에 삭제된 클럽 ID가 포함된 유저를 찾음
@@ -426,7 +426,7 @@ router.post("/removeWish/:clubNumber", auth, async (req, res, next) => {
 //초대하기
 router.post("/invite/:clubNumber", auth, async (req, res, next) => {
   console.log("클럽 번호:", req.params.clubNumber);
-  console.log("초대할 이메일:", req.body.email); 
+  console.log("초대할 이메일:", req.body.email);
 
   try {
     const user = req.user;
@@ -440,11 +440,7 @@ router.post("/invite/:clubNumber", auth, async (req, res, next) => {
     }
 
     // 유저의 초대 목록에 클럽 ID 추가
-    await User.findOneAndUpdate(
-      { email: req.body.email }, 
-      { $addToSet: { invite: req.params.clubNumber } }, 
-      { new: true }
-    );
+    await User.findOneAndUpdate({ email: req.body.email }, { $addToSet: { invite: req.params.clubNumber } }, { new: true });
 
     return res.sendStatus(200);
   } catch (error) {
@@ -454,7 +450,7 @@ router.post("/invite/:clubNumber", auth, async (req, res, next) => {
 
 ///////////////////////////추천 모임&검색///////////////////////////
 //추천 모임 (리스트)
-router.get('/recommend/scroll/:pageParam', async (req, res) => {
+router.get("/recommend/scroll/:pageParam", async (req, res) => {
   try {
     const { pageParam } = req.params;
     const page = parseInt(pageParam, 10);
@@ -483,30 +479,19 @@ router.get('/recommend/scroll/:pageParam', async (req, res) => {
       let regionFilters = [];
       for (const region of regions) {
         regionFilters.push({
-          $or: [
-            { 'region.neighborhood': region.neighborhood },
-            { 'region.district': region.district },
-            { 'region.city': region.city }
-          ]
+          $or: [{ "region.neighborhood": region.neighborhood }, { "region.district": region.district }, { "region.city": region.city }],
         });
       }
 
       // 선호 정보 필터링 순서: subCategory -> mainCategory
       let categoryFilters = [];
       if (category) {
-        categoryFilters = category.flatMap(cat => [
-          { 'subCategory': { $in: cat.sub } },
-          { 'mainCategory': cat.main }
-        ]);
+        categoryFilters = category.flatMap((cat) => [{ subCategory: { $in: cat.sub } }, { mainCategory: cat.main }]);
       }
 
       // 필터 조건을 합친다
       const filterConditions = {
-        $and: [
-          { $or: regionFilters },
-          { $or: categoryFilters },
-          { $or: [{ 'job': { $in: job } }, { 'job': { $exists: false } }] }
-        ]
+        $and: [{ $or: regionFilters }, { $or: categoryFilters }, { $or: [{ job: { $in: job } }, { job: { $exists: false } }] }],
       };
 
       // 클럽을 필터링하고 정렬하기 위한 집계 파이프라인
@@ -515,31 +500,16 @@ router.get('/recommend/scroll/:pageParam', async (req, res) => {
         {
           $addFields: {
             regionScore: {
-              $cond: [
-                { $eq: ["$region.neighborhood", homeLocation.neighborhood] }, 0,
-                { $cond: [
-                  { $eq: ["$region.district", homeLocation.district] }, 1,
-                  { $cond: [
-                    { $eq: ["$region.city", homeLocation.city] }, 2,
-                    3
-                  ]}
-                ]}
-              ]
+              $cond: [{ $eq: ["$region.neighborhood", homeLocation.neighborhood] }, 0, { $cond: [{ $eq: ["$region.district", homeLocation.district] }, 1, { $cond: [{ $eq: ["$region.city", homeLocation.city] }, 2, 3] }] }],
             },
             categoryScore: {
-              $cond: [
-                { $in: ["$subCategory", category.flatMap(cat => cat.sub)] }, 0,
-                { $cond: [
-                  { $eq: ["$mainCategory", category.find(cat => cat.sub.includes("$subCategory"))?.main] }, 1,
-                  2
-                ]}
-              ]
-            }
-          }
+              $cond: [{ $in: ["$subCategory", category.flatMap((cat) => cat.sub)] }, 0, { $cond: [{ $eq: ["$mainCategory", category.find((cat) => cat.sub.includes("$subCategory"))?.main] }, 1, 2] }],
+            },
+          },
         },
         { $sort: { categoryScore: 1, regionScore: 1 } },
         { $skip: skip },
-        { $limit: limit }
+        { $limit: limit },
       ]);
     }
 
@@ -578,11 +548,11 @@ router.get("/search/test", async (req, res, next) => {
 
     // 제목으로 검색 (검색어가 포함된 클럽 찾기)
     const clubs = await Club.find(
-      { title: { $regex: title, $options: 'i' } }, // 대소문자 구분 없이 검색
-      { _id: 1, title: 1 } // _id와 title만 가져옴
+      { title: { $regex: title, $options: "i" } }, // 대소문자 구분 없이 검색
+      { _id: 1, title: 1 }, // _id와 title만 가져옴
     )
-    .sort({ _id: -1 }) // _id가 큰 순서로 정렬
-    .limit(10); // 최대 10개 결과 반환
+      .sort({ _id: -1 }) // _id가 큰 순서로 정렬
+      .limit(10); // 최대 10개 결과 반환
 
     res.status(200).json(clubs);
   } catch (error) {
@@ -597,7 +567,7 @@ router.get("/home/card", async (req, res, next) => {
     // console.log("클럽 목록 가져오기 시작");
     const clubs = await Club.find(); // 모든 클럽 가져오기
     // console.log("클럽 목록 가져오기 완료", clubs);
-    
+
     // 배열을 랜덤으로 섞기
     const shuffledClubs = clubs.sort(() => 0.5 - Math.random()).slice(0, 4); // 4개의 클럽만 가져오기
 
@@ -629,15 +599,13 @@ router.get("/home/card", async (req, res, next) => {
   }
 });
 
-
-
 //메인 페이지 (신규모임)
 router.get("/home/card/new", async (req, res, next) => {
   try {
     // console.log("신규 모임 목록 가져오기 시작");
     const clubs = await Club.find().sort({ _id: -1 }).limit(10); // 4개의 클럽만 가져오기
     // console.log("신규 모임 목록 가져오기 완료", clubs);
-    
+
     // 나머지 로직은 동일하게 유지
     const clubsWithImages = await Promise.all(
       clubs.map(async (club) => {
@@ -668,7 +636,7 @@ router.get("/home/card/new", async (req, res, next) => {
 });
 
 //메인 페이지 (추천 모임)
-router.get('/home/recommend', async (req, res) => {
+router.get("/home/recommend", async (req, res) => {
   try {
     let user = null;
 
@@ -686,7 +654,7 @@ router.get('/home/recommend', async (req, res) => {
 
     let clubs;
 
-    if (!user || user === 'null') {
+    if (!user || user === "null") {
       // 유저 정보가 없을 때 모든 클럽을 조회
       clubs = await Club.find().sort({ _id: -1 }).limit(4);
       console.log("Clubs retrieved:", clubs);
@@ -695,28 +663,17 @@ router.get('/home/recommend', async (req, res) => {
       const { homeLocation, interestLocation, workplace, category, job } = user;
 
       const regions = [homeLocation, interestLocation, workplace].filter(Boolean);
-      let regionFilters = regions.map(region => ({
-        $or: [
-          { 'region.neighborhood': region.neighborhood },
-          { 'region.district': region.district },
-          { 'region.city': region.city }
-        ]
+      let regionFilters = regions.map((region) => ({
+        $or: [{ "region.neighborhood": region.neighborhood }, { "region.district": region.district }, { "region.city": region.city }],
       }));
 
       let categoryFilters = [];
       if (category) {
-        categoryFilters = category.flatMap(cat => [
-          { 'subCategory': { $in: cat.sub } },
-          { 'mainCategory': cat.main }
-        ]);
+        categoryFilters = category.flatMap((cat) => [{ subCategory: { $in: cat.sub } }, { mainCategory: cat.main }]);
       }
 
       const filterConditions = {
-        $and: [
-          { $or: regionFilters },
-          { $or: categoryFilters },
-          { $or: [{ 'job': { $in: job } }, { 'job': { $exists: false } }] }
-        ]
+        $and: [{ $or: regionFilters }, { $or: categoryFilters }, { $or: [{ job: { $in: job } }, { job: { $exists: false } }] }],
       };
 
       clubs = await Club.aggregate([
@@ -724,55 +681,40 @@ router.get('/home/recommend', async (req, res) => {
         {
           $addFields: {
             regionScore: {
-              $cond: [
-                { $eq: ["$region.neighborhood", homeLocation.neighborhood] }, 0,
-                { $cond: [
-                  { $eq: ["$region.district", homeLocation.district] }, 1,
-                  { $cond: [
-                    { $eq: ["$region.city", homeLocation.city] }, 2,
-                    3
-                  ]}
-                ]}
-              ]
+              $cond: [{ $eq: ["$region.neighborhood", homeLocation.neighborhood] }, 0, { $cond: [{ $eq: ["$region.district", homeLocation.district] }, 1, { $cond: [{ $eq: ["$region.city", homeLocation.city] }, 2, 3] }] }],
             },
             categoryScore: {
-              $cond: [
-                { $in: ["$subCategory", category.flatMap(cat => cat.sub)] }, 0,
-                { $cond: [
-                  { $eq: ["$mainCategory", category.find(cat => cat.sub.includes("$subCategory"))?.main] }, 1,
-                  2
-                ]}
-              ]
-            }
-          }
+              $cond: [{ $in: ["$subCategory", category.flatMap((cat) => cat.sub)] }, 0, { $cond: [{ $eq: ["$mainCategory", category.find((cat) => cat.sub.includes("$subCategory"))?.main] }, 1, 2] }],
+            },
+          },
         },
         { $sort: { categoryScore: 1, regionScore: 1 } },
-        { $limit: 4 }
+        { $limit: 4 },
       ]);
     }
 
-// 이미지 추가 로직
-const clubsWithImages = await Promise.all(
-  clubs.map(async (club) => {
-    const admin = club.admin;
-    const adminData = await User.findOne({ email: admin });
-    const adminImage = adminData?.profilePic?.thumbnailImage || null;
+    // 이미지 추가 로직
+    const clubsWithImages = await Promise.all(
+      clubs.map(async (club) => {
+        const admin = club.admin;
+        const adminData = await User.findOne({ email: admin });
+        const adminImage = adminData?.profilePic?.thumbnailImage || null;
 
-    const memberImages = await Promise.all(
-      club.members.map(async (memberEmail) => {
-        const memberData = await User.findOne({ email: memberEmail });
-        return memberData?.profilePic?.thumbnailImage || null;
+        const memberImages = await Promise.all(
+          club.members.map(async (memberEmail) => {
+            const memberData = await User.findOne({ email: memberEmail });
+            return memberData?.profilePic?.thumbnailImage || null;
+          }),
+        );
+
+        // Mongoose 문서인지 확인하고 toObject() 호출
+        return {
+          ...(club.toObject ? club.toObject() : club), // Mongoose 문서일 경우에만 toObject() 호출
+          adminImage,
+          memberImages,
+        };
       }),
     );
-
-    // Mongoose 문서인지 확인하고 toObject() 호출
-    return {
-      ...(club.toObject ? club.toObject() : club), // Mongoose 문서일 경우에만 toObject() 호출
-      adminImage,
-      memberImages,
-    };
-  }),
-);
 
     res.json(clubsWithImages);
   } catch (error) {
@@ -785,10 +727,6 @@ const clubsWithImages = await Promise.all(
     res.status(500).json({ error: error.message });
   }
 });
-
-
-
-
 
 const memberInfoInsert = async (clubs) => {
   for (let j = 0; j < clubs.length; j++) {
