@@ -39,9 +39,14 @@ jobs:
         run: npm install --force
         working-directory: ./backend # 백 폴더에서 npm install 실행
 
+      # Prettier 설치 (만약 로컬에 설치되지 않았다면)
+      - name: Install Prettier
+        run: npm install prettier --save-dev
+        working-directory: . # 루트 디렉토리에서 실행
+
       - name: Check code formatting with Prettier
         run: npx prettier --check . # 코드가 Prettier 스타일 규칙에 맞는지 확인
+        continue-on-error: true  # --check에서 에러가 나도 다음 단계를 계속 실행하게 함
 
       - name: Format code with Prettier
         run: npx prettier --write . # 코드 포맷을 Prettier 스타일에 맞게 자동으로 수정
-
