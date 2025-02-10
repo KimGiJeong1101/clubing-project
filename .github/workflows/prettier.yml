@@ -30,7 +30,7 @@ jobs:
           node-version: "20" # Node.js 버전 설정
 
       - name: Install dependencies
-        run: npm install # 프로젝트 의존성 설치
+        run: npm ci # 프로젝트 의존성 설치
 
       - name: Check code formatting with Prettier
         run: npx prettier --check . # 코드가 Prettier 스타일 규칙에 맞는지 확인
