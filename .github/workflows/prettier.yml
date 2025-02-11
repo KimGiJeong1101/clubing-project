@@ -46,7 +46,16 @@ jobs:
 
       - name: Check code formatting with Prettier
         run: npx prettier --check . # 코드가 Prettier 스타일 규칙에 맞는지 확인
-        continue-on-error: true  # --check에서 에러가 나도 다음 단계를 계속 실행하게 함
+        continue-on-error: true # --check에서 에러가 나도 다음 단계를 계속 실행하게 함
 
       - name: Format code with Prettier
         run: npx prettier --write . # 코드 포맷을 Prettier 스타일에 맞게 자동으로 수정
+
+      # 변경사항 커밋 & 푸시 추가
+      - name: Commit changes
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+          git add .
+          git commit -m "Apply Prettier formatting" || echo "No changes to commit"
+          git push
