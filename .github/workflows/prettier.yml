@@ -72,3 +72,14 @@ jobs:
           git add .
           git commit -m "Apply Prettier formatting" || echo "No changes to commit"
           git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/KimGiJeong1101/clubing-project.git HEAD:$BRANCH_NAME
+
+      # PR 머지 후 main 브랜치로 푸시하도록 하기 위한 단계 추가
+      - name: Push to main branch after PR merge
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+          git fetch origin main  # 최신 main 브랜치 정보를 가져옴
+          git checkout main  # main 브랜치로 체크아웃
+          git merge $BRANCH_NAME --no-ff --no-commit  # 현재 브랜치와 main을 병합
+          git push origin main  # 병합된 내용을 main 브랜치에 푸시
+        if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true
