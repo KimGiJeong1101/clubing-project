@@ -4,16 +4,18 @@ name: Prettier Check and Format
 on:
   push:
     branches:
-      - main # main 브랜치에 푸시될 때마다 실행
-      - frontend_Br # frontend_Br 브랜치에 푸시될 때마다 실행
-      - backend_Br # backend_Br 브랜치에 푸시될 때마다 실행
-      - branch01 # branch01 브랜치에 푸시될 때마다 실행
+      # - main # main 브랜치에 푸시될 때마다 실행
+      # - frontend_Br # frontend_Br 브랜치에 푸시될 때마다 실행
+      # - backend_Br # backend_Br 브랜치에 푸시될 때마다 실행
+      # - branch01 # branch01 브랜치에 푸시될 때마다 실행
+      - "**" # 모든 브랜치가 동작할 때마다 실행
   pull_request:
     branches:
-      - main # main 브랜치로 PR이 생성될 때마다 실행
-      - frontend_Br # frontend_Br 브랜치에 푸시될 때마다 실행
-      - backend_Br # backend_Br 브랜치에 푸시될 때마다 실행
-      - branch01 # branch01 브랜치에 푸시될 때마다 실행
+      # - main # main 브랜치로 PR이 생성될 때마다 실행
+      # - frontend_Br # frontend_Br 브랜치에 푸시될 때마다 실행
+      # - backend_Br # backend_Br 브랜치에 푸시될 때마다 실행
+      # - branch01 # branch01 브랜치에 푸시될 때마다 실행
+      - "**" # 모든 브랜치가 동작할 때마다 실행
 
 # Prettier가 동작할 작업들을 정의
 jobs:
@@ -44,12 +46,18 @@ jobs:
         run: npm install prettier --save-dev
         working-directory: . # 루트 디렉토리에서 실행
 
+      # 프리티어 규칙을 검증
       - name: Check code formatting with Prettier
         run: npx prettier --check . # 코드가 Prettier 스타일 규칙에 맞는지 확인
         continue-on-error: true # --check에서 에러가 나도 다음 단계를 계속 실행하게 함
 
+      # 프리티어 규칙을 따라서 코드 수정
       - name: Format code with Prettier
         run: npx prettier --write . # 코드 포맷을 Prettier 스타일에 맞게 자동으로 수정
+
+      # 깃허브 액션에서 브랜치를 감지 후 변수(브랜치) 설정
+      - name: Set branch name dynamically
+        run: echo "BRANCH_NAME=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
 
       # 변경사항 커밋 & 푸시 추가
       - name: Commit changes
@@ -58,4 +66,4 @@ jobs:
           git config --global user.email "github-actions@github.com"
           git add .
           git commit -m "Apply Prettier formatting" || echo "No changes to commit"
-          git push
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/KimGiJeong1101/clubing-project.git HEAD:$BRANCH_NAME
