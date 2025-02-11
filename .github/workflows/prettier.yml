@@ -20,8 +20,13 @@ on:
 # Prettier가 동작할 작업들을 정의
 jobs:
   prettier:
-    runs-on: ubuntu-latest # GitHub Actions에서 사용할 최신 우분투 환경
+    runs-on:
+      ubuntu-latest # GitHub Actions에서 사용할 최신 우분투 환경
 
+
+      # 깃허브 토큰의 디폴트 값이 읽기 권한밖에 없어서, 쓰기 권한을 추가해 줌.
+    permissions:
+      contents: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v2 # 레포지터리 코드를 체크아웃 (다운로드)
