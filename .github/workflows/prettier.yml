@@ -60,7 +60,7 @@ jobs:
       - name: Format code with Prettier
         run: npx prettier --write . # 코드 포맷을 Prettier 스타일에 맞게 자동으로 수정
 
-      # 깃허브 액션에서 브랜치를 감지 후 변수(브랜치) 설정
+      # 깃허브 액션에서 브랜치 감지 후 변수(브랜치) 설정
       - name: Set branch name dynamically
         run: echo "BRANCH_NAME=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
 
