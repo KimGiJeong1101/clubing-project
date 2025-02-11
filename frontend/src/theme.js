@@ -18,7 +18,7 @@ export const GlobalStyle = () => (
         margin: "0px !important",
         padding: "0px !important",
         fontFamily: "KCC-Hanbit",
-        backgroundColor: "white" /* 페이지 배경 색상 설정 */,  //"#F0F0F0"
+        backgroundColor: "white" /* 페이지 배경 색상 설정 */, //"#F0F0F0"
       },
     }}
   />

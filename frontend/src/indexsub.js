@@ -10,15 +10,15 @@ import { Provider } from "react-redux";
 import { store, persistor } from "./store/index.js";
 import { PersistGate } from "redux-persist/integration/react";
 import { setupResponseInterceptors } from "./utils/axios.js";
-import SnackbarComponent from './SnackbarComponent.js'
+import SnackbarComponent from "./SnackbarComponent.js";
 
 const queryClient = new QueryClient();
 
 const Root = () => {
-  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'info' });
+  const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "info" });
 
   // 스낵바 열기 함수
-  const openSnackbar = (message, severity = 'info') => {
+  const openSnackbar = (message, severity = "info") => {
     setSnackbar({ open: true, message, severity });
   };
 
@@ -33,22 +33,17 @@ const Root = () => {
   }, []);
 
   return (
-  <BrowserRouter>
-    <QueryClientProvider client={queryClient}>
-      <Provider store={store}>
-        <PersistGate loading={null} persistor={persistor}>
-          <App />
-        </PersistGate>
-      </Provider>
-      <ReactQueryDevtools initialIsOpen={false} />
-    </QueryClientProvider>
-     {/* 스낵바 컴포넌트 */}
-     <SnackbarComponent
-        open={snackbar.open}
-        message={snackbar.message}
-        severity={snackbar.severity}
-        onClose={closeSnackbar}
-      />
+    <BrowserRouter>
+      <QueryClientProvider client={queryClient}>
+        <Provider store={store}>
+          <PersistGate loading={null} persistor={persistor}>
+            <App />
+          </PersistGate>
+        </Provider>
+        <ReactQueryDevtools initialIsOpen={false} />
+      </QueryClientProvider>
+      {/* 스낵바 컴포넌트 */}
+      <SnackbarComponent open={snackbar.open} message={snackbar.message} severity={snackbar.severity} onClose={closeSnackbar} />
     </BrowserRouter>
   );
 };

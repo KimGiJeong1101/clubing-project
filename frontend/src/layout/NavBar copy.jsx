@@ -44,7 +44,7 @@ function NavBar() {
     { name: "정모일정", path: `/meetingList` },
     { name: "신규모임", path: `/newClubList` },
     { name: "클래스", path: `/class` },
-    { name: "이벤트", path: `/event` }
+    { name: "이벤트", path: `/event` },
   ];
 
   return (

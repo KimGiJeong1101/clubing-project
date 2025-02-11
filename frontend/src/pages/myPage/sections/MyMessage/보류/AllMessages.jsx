@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { Box, Typography, Checkbox, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Grid, Dialog, DialogContent, IconButton } from '@mui/material';
-import axiosInstance from '../../../../../utils/axios.js';
-import CustomButton2 from '../../../../../components/club/CustomButton2.jsx'
-import CustomButton from '../../../../../components/club/CustomButton.jsx'
-import MessageRow from '../../../../../components/auth/MessageRow.jsx'
-import MessageModal from '../../../../../components/auth/MessageModal.jsx'; // MessageModal 컴포넌트 경로
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchMessages, markMessagesAsRead, deleteMessages } from '../../../../../store/actions/myMessageActions.js';
+import React, { useState, useEffect } from "react";
+import { Box, Typography, Checkbox, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Grid, Dialog, DialogContent, IconButton } from "@mui/material";
+import axiosInstance from "../../../../../utils/axios.js";
+import CustomButton2 from "../../../../../components/club/CustomButton2.jsx";
+import CustomButton from "../../../../../components/club/CustomButton.jsx";
+import MessageRow from "../../../../../components/auth/MessageRow.jsx";
+import MessageModal from "../../../../../components/auth/MessageModal.jsx"; // MessageModal 컴포넌트 경로
+import { useDispatch, useSelector } from "react-redux";
+import { fetchMessages, markMessagesAsRead, deleteMessages } from "../../../../../store/actions/myMessageActions.js";
 
 const AllMessages = () => {
   const dispatch = useDispatch();
@@ -19,7 +19,7 @@ const AllMessages = () => {
 
   const user = useSelector((state) => state.user?.userData?.user || {});
 
-    // 안 읽음 메시지 불러오기 (리덕스 디스패치 사용)
+  // 안 읽음 메시지 불러오기 (리덕스 디스패치 사용)
   useEffect(() => {
     if (user.email) {
       dispatch(fetchMessages(user.email)); // 안 읽음 메시지 불러오기
@@ -28,12 +28,12 @@ const AllMessages = () => {
 
   // 읽음 메시지
   useEffect(() => {
-    if (user.email) { // user.email이 있을 경우에만 요청
-      axiosInstance.get(`/users/messages/${user.email}`)
-        .then(response => 
-          setMessages(response.data))
-        .catch(error => 
-          console.error('Error fetching messages:', error));
+    if (user.email) {
+      // user.email이 있을 경우에만 요청
+      axiosInstance
+        .get(`/users/messages/${user.email}`)
+        .then((response) => setMessages(response.data))
+        .catch((error) => console.error("Error fetching messages:", error));
     }
   }, [user.email]);
 
@@ -42,11 +42,7 @@ const AllMessages = () => {
   }, [messagesData]);
 
   const handleCheckboxChange = (messageId) => {
-    setSelectedMessages(prevSelected => 
-      prevSelected.includes(messageId) 
-        ? prevSelected.filter(id => id !== messageId) 
-        : [...prevSelected, messageId]
-    );
+    setSelectedMessages((prevSelected) => (prevSelected.includes(messageId) ? prevSelected.filter((id) => id !== messageId) : [...prevSelected, messageId]));
   };
 
   // const handleMarkAsRead = () => {
@@ -54,9 +50,9 @@ const AllMessages = () => {
   //   axiosInstance.post('/users/messages/mark-read', { ids: selectedMessages })
   //     .then(response => {
   //       // 성공 시 메시지 목록 갱신
-  //       setMessages(prevMessages => prevMessages.map(msg => 
-  //         selectedMessages.includes(msg._id) 
-  //           ? { ...msg, isRead: true } 
+  //       setMessages(prevMessages => prevMessages.map(msg =>
+  //         selectedMessages.includes(msg._id)
+  //           ? { ...msg, isRead: true }
   //           : msg
   //       ));
   //       setSelectedMessages([]);
@@ -88,36 +84,34 @@ const AllMessages = () => {
   // 모달 열엇을 때 안 읽음 읽음으로
   const handleMessageRead = (messageId) => {
     // 상태를 업데이트하거나 메시지를 다시 가져오는 로직
-    console.log('Message read:', messageId);
+    console.log("Message read:", messageId);
   };
 
   return (
     <Box>
-    <TableContainer component={Paper}>
-      <Table>
-        <TableHead>
-          {/* 테이블 헤더 내용 */}
-        </TableHead>
-        <TableBody>
-          {messages.map(message => (
-            <TableRow key={message._id} onClick={() => handleOpenModal(message)} style={{ cursor: 'pointer' }}>
-              <MessageRow
-                message={message}
-                selectedMessages={selectedMessages}
-                handleCheckboxChange={handleCheckboxChange}
-              />
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
-    <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
-      <CustomButton onClick={() => {}} variant="contained" color="primary" sx={{ mr: 1 }}>읽음으로 표시</CustomButton>
-      <CustomButton2 onClick={() => {}} variant="contained" color="error">삭제</CustomButton2>
-    </Box>
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>{/* 테이블 헤더 내용 */}</TableHead>
+          <TableBody>
+            {messages.map((message) => (
+              <TableRow key={message._id} onClick={() => handleOpenModal(message)} style={{ cursor: "pointer" }}>
+                <MessageRow message={message} selectedMessages={selectedMessages} handleCheckboxChange={handleCheckboxChange} />
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <Box sx={{ mt: 2, display: "flex", justifyContent: "center" }}>
+        <CustomButton onClick={() => {}} variant="contained" color="primary" sx={{ mr: 1 }}>
+          읽음으로 표시
+        </CustomButton>
+        <CustomButton2 onClick={() => {}} variant="contained" color="error">
+          삭제
+        </CustomButton2>
+      </Box>
 
-     {/* Message Modal */}
-     <Dialog open={openModal} onClose={handleCloseModal} maxWidth="sm" fullWidth>
+      {/* Message Modal */}
+      <Dialog open={openModal} onClose={handleCloseModal} maxWidth="sm" fullWidth>
         <DialogContent>
           {selectedMessage && (
             <MessageModal
@@ -130,9 +124,8 @@ const AllMessages = () => {
           )}
         </DialogContent>
       </Dialog>
-  </Box>
+    </Box>
   );
 };
-
 
 export default AllMessages;
