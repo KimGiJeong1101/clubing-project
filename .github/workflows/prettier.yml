@@ -62,7 +62,16 @@ jobs:
 
       # 깃허브 액션에서 브랜치 감지 후 변수(브랜치) 설정
       - name: Set branch name dynamically
-        run: echo "BRANCH_NAME=${GITHUB_HEAD_REF}" >> $GITHUB_ENV
+        run: |
+          if [ "$GITHUB_EVENT_NAME" == "pull_request" ]; then
+            echo "BRANCH_NAME=${GITHUB_HEAD_REF}" >> $GITHUB_ENV
+          else
+            echo "BRANCH_NAME=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
+          fi
+
+      # 브랜치 이름 확인
+      - name: Debug BRANCH_NAME
+        run: echo "BRANCH_NAME is $BRANCH_NAME"
 
       # 변경사항 커밋 & 푸시 추가
       - name: Commit changes
