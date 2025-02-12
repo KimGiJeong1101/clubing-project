@@ -63,7 +63,7 @@ const ImageCropper = ({ src, onCropComplete, onClose }) => {
     height: 478.5,
     aspect: 16 / 9,
   });
-  
+
   const [image, setImage] = useState(null);
 
   const onLoad = (e) => {

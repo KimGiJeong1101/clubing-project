@@ -2,18 +2,18 @@ import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { loginUser } from "../../../store/actions/userActions";
-import { Container, TextField, Typography, Box, FormControlLabel, } from "@mui/material";
+import { Container, TextField, Typography, Box, FormControlLabel } from "@mui/material";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined"; // 아이콘
 import Mail from "@mui/icons-material/MailOutline"; // 아이콘
 import { useNavigate } from "react-router-dom"; // useNavigate 임포트
 import FindEmailPage from "./FindEmail";
 import FindPasswordPage from "./FindPassword"; // 수정된 부분
 import { styled } from "@mui/material/styles";
-import '../../../App.css';
-import '../../../assets/styles/LoginCss.css';
-import CustomButton2 from '../../../components/club/CustomButton2.jsx'
-import CustomCheckbox from '../../../components/club/CustomCheckbox.jsx'
-import axios from 'axios';
+import "../../../App.css";
+import "../../../assets/styles/LoginCss.css";
+import CustomButton2 from "../../../components/club/CustomButton2.jsx";
+import CustomCheckbox from "../../../components/club/CustomCheckbox.jsx";
+import axios from "axios";
 
 const LoginPage = () => {
   const {
@@ -58,24 +58,24 @@ const LoginPage = () => {
         navigate("/clublist");
         reset();
       } else {
-          // 여기에서 에러를 처리합니다.
-      if (response.payload.error === '이메일이 확인되지 않습니다.') {
-        setEmailError('이메일이 확인되지 않습니다.');
-        setPasswordError('');
-      } else if (response.payload.error === '비밀번호가 틀렸습니다.') {
-        setPasswordError('비밀번호가 틀렸습니다.');
-        setEmailError('');
-      } else if (response.payload.message === '탈퇴한 회원입니다.') {
-        // 탈퇴한 회원 관련 오류 처리
-        setEmailError('탈퇴한 회원입니다.');
-        setPasswordError('');
-      } else {
-        // 다른 오류 메시지 처리
-        setEmailError('알 수 없는 오류가 발생했습니다.');
-        setPasswordError('');
+        // 여기에서 에러를 처리합니다.
+        if (response.payload.error === "이메일이 확인되지 않습니다.") {
+          setEmailError("이메일이 확인되지 않습니다.");
+          setPasswordError("");
+        } else if (response.payload.error === "비밀번호가 틀렸습니다.") {
+          setPasswordError("비밀번호가 틀렸습니다.");
+          setEmailError("");
+        } else if (response.payload.message === "탈퇴한 회원입니다.") {
+          // 탈퇴한 회원 관련 오류 처리
+          setEmailError("탈퇴한 회원입니다.");
+          setPasswordError("");
+        } else {
+          // 다른 오류 메시지 처리
+          setEmailError("알 수 없는 오류가 발생했습니다.");
+          setPasswordError("");
+        }
       }
-    }
-    
+
       // "Remember Me" 체크박스가 선택되었을 때만 로컬 스토리지에 저장
       if (rememberMe) {
         localStorage.setItem("lastLoginEmail", email);
@@ -138,18 +138,18 @@ const LoginPage = () => {
       boxShadow: "0 0 0 2px rgba(0, 0, 0, 0.2)", // 포커스 시 그림자 효과
     },
   }));
-  
-//카카오 로그인
 
-// 로그인 버튼 클릭 시
-const kakaoLogin = () => {
-  const clientId = process.env.REACT_APP_KAKAO_API_URL;
-  const redirectUri = 'http://localhost:3000/kakao/callback';
-  const authUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code`;
+  //카카오 로그인
 
-  window.location.href = authUrl;
-  //window.open(authUrl, 'kakaoLogin', 'width=600,height=700');
-};
+  // 로그인 버튼 클릭 시
+  const kakaoLogin = () => {
+    const clientId = process.env.REACT_APP_KAKAO_API_URL;
+    const redirectUri = "http://localhost:3000/kakao/callback";
+    const authUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code`;
+
+    window.location.href = authUrl;
+    //window.open(authUrl, 'kakaoLogin', 'width=600,height=700');
+  };
   return (
     <Container
       sx={{
@@ -163,7 +163,7 @@ const kakaoLogin = () => {
           xs: "8 8px", // 모바일 화면: 좌우 패딩 8px
           sm: "8 10px", // 작은 화면: 좌우 패딩 16px
         },
-        fontFamily: 'KCC-Hanbit', // 글씨체 적용
+        fontFamily: "KCC-Hanbit", // 글씨체 적용
       }}
     >
       <Typography
@@ -204,9 +204,7 @@ const kakaoLogin = () => {
             alignSelf: "flex-start", // 부모 요소와 상관없이 해당 요소만 왼쪽 정렬
             fontWeight: "bold",
           }}
-        >
-      
-        </Typography>
+        ></Typography>
         {/* 아이디 */}
         <form onSubmit={handleSubmit(onSubmit)}>
           <Box
@@ -263,7 +261,7 @@ const kakaoLogin = () => {
               {...register("password", userPassword)}
             />
           </Box>
-           {/* 아이디 기억 */}
+          {/* 아이디 기억 */}
           <Box
             display="flex"
             sx={{
@@ -271,21 +269,21 @@ const kakaoLogin = () => {
               marginLeft: "-60px",
             }}
           >
-          <FormControlLabel
-            control={
-              <CustomCheckbox
-                {...register("rememberMe")}
-                checked={watch("rememberMe") ? true : false} // register로 상태 관리
-              />
-            }
-            label="아이디 기억하기"
-            sx={{
-              // 체크박스와 라벨 간의 간격 조정
-              '& .MuiFormControlLabel-label': {
-                marginLeft: '-20px', // 라벨과 체크박스 간의 간격을 조정합니다.
-              },
-            }}
-          />
+            <FormControlLabel
+              control={
+                <CustomCheckbox
+                  {...register("rememberMe")}
+                  checked={watch("rememberMe") ? true : false} // register로 상태 관리
+                />
+              }
+              label="아이디 기억하기"
+              sx={{
+                // 체크박스와 라벨 간의 간격 조정
+                "& .MuiFormControlLabel-label": {
+                  marginLeft: "-20px", // 라벨과 체크박스 간의 간격을 조정합니다.
+                },
+              }}
+            />
           </Box>
           <CustomButton2
             type="submit"
@@ -320,17 +318,17 @@ const kakaoLogin = () => {
             <a href="/register">회원가입</a>
           </Typography>
         </form>
-        <Box 
-         sx={{
-          mt: 2,
-        }}
-        onClick={kakaoLogin}
-        style={{ border: 'none', background: 'transparent', padding: 0, cursor: 'pointer' }}
+        <Box
+          sx={{
+            mt: 2,
+          }}
+          onClick={kakaoLogin}
+          style={{ border: "none", background: "transparent", padding: 0, cursor: "pointer" }}
         >
           <img src="/auth/kakao_login_icon_long.png" alt="버튼 이미지" />
+        </Box>
       </Box>
-      </Box>
-    
+
       <Box
         display="flex"
         justifyContent="center"

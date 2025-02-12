@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
-import Draggable from 'react-draggable';
-import { Box, Button, Typography, Chip, IconButton } from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
-import CustomButton from '../../../../components/club/CustomButton'
-import CustomButton2 from '../../../../components/club/CustomButton2'
+import React, { useState } from "react";
+import Draggable from "react-draggable";
+import { Box, Button, Typography, Chip, IconButton } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
+import CustomButton from "../../../../components/club/CustomButton";
+import CustomButton2 from "../../../../components/club/CustomButton2";
 
 const JobPopup = ({ jobCategories, onSelect, onClose, selectedJobs }) => {
   // 현재 선택된 직무 상태 관리
   const [localSelectedJobs, setLocalSelectedJobs] = useState(selectedJobs);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   // 직무 선택/해제 핸들러
   const handleSelect = (job) => {
@@ -17,14 +17,15 @@ const JobPopup = ({ jobCategories, onSelect, onClose, selectedJobs }) => {
 
     if (isSelected) {
       // 직무가 선택된 상태라면 제거
-      setLocalSelectedJobs(prev => prev.filter(selectedJob => selectedJob !== job));
+      setLocalSelectedJobs((prev) => prev.filter((selectedJob) => selectedJob !== job));
     } else {
       // 직무가 선택되지 않은 상태라면 추가
-      if (localSelectedJobs.length < 3) { // 최대 3개 선택 가능
-        setLocalSelectedJobs(prev => [...prev, job]);
-        setError('');
+      if (localSelectedJobs.length < 3) {
+        // 최대 3개 선택 가능
+        setLocalSelectedJobs((prev) => [...prev, job]);
+        setError("");
       } else {
-        setError('최대 3개의 직무만 선택할 수 있습니다.');
+        setError("최대 3개의 직무만 선택할 수 있습니다.");
       }
     }
   };
@@ -44,12 +45,12 @@ const JobPopup = ({ jobCategories, onSelect, onClose, selectedJobs }) => {
   return (
     <Box
       sx={{
-        position: 'fixed',
+        position: "fixed",
         inset: 0,
-        bgcolor: 'rgba(0, 0, 0, 0.5)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
+        bgcolor: "rgba(0, 0, 0, 0.5)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
         zIndex: 1300, // MUI의 Dialog가 사용하는 zIndex
       }}
       onClick={handleClose}
@@ -57,21 +58,21 @@ const JobPopup = ({ jobCategories, onSelect, onClose, selectedJobs }) => {
       <Draggable>
         <Box
           sx={{
-            bgcolor: 'background.paper',
+            bgcolor: "background.paper",
             p: 4,
             borderRadius: 2,
             boxShadow: 24,
             width: 600,
-            maxHeight: '80vh',
-            overflow: 'auto',
-            position: 'relative',
+            maxHeight: "80vh",
+            overflow: "auto",
+            position: "relative",
           }}
           onClick={(e) => e.stopPropagation()}
         >
           {/* X 버튼 */}
           <IconButton
             sx={{
-              position: 'absolute',
+              position: "absolute",
               top: 16,
               right: 16,
             }}
@@ -92,8 +93,8 @@ const JobPopup = ({ jobCategories, onSelect, onClose, selectedJobs }) => {
           )}
 
           {/* 직무 리스트 */}
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-            {jobCategories.map(job => (
+          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+            {jobCategories.map((job) => (
               <CustomButton
                 key={job}
                 color="primary"
@@ -101,13 +102,13 @@ const JobPopup = ({ jobCategories, onSelect, onClose, selectedJobs }) => {
                   e.stopPropagation();
                   handleSelect(job); // 직무 문자열을 직접 전달
                 }}
-                sx={{ 
-                  textTransform: 'none',
-                  backgroundColor: localSelectedJobs.includes(job) ? '#A67153' : '#DBC7B5', // 배경색 설정
-                  borderColor: 'transparent', // 무색 테두리
-                  '&:hover': {
-                    backgroundColor: localSelectedJobs.includes(job) ? '#A67153' : '#DBC7B5', // 호버 시 배경색 유지
-                    borderColor: 'transparent', // 무색 테두리
+                sx={{
+                  textTransform: "none",
+                  backgroundColor: localSelectedJobs.includes(job) ? "#A67153" : "#DBC7B5", // 배경색 설정
+                  borderColor: "transparent", // 무색 테두리
+                  "&:hover": {
+                    backgroundColor: localSelectedJobs.includes(job) ? "#A67153" : "#DBC7B5", // 호버 시 배경색 유지
+                    borderColor: "transparent", // 무색 테두리
                   },
                 }}
               >
@@ -116,22 +117,18 @@ const JobPopup = ({ jobCategories, onSelect, onClose, selectedJobs }) => {
             ))}
           </Box>
 
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 2 }}>
-            <CustomButton2
-              variant="contained"
-              color="primary"
-              onClick={handleSubmit}
-            >
+          <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2, mt: 2 }}>
+            <CustomButton2 variant="contained" color="primary" onClick={handleSubmit}>
               확인
             </CustomButton2>
             <CustomButton
               variant="outlined"
               color="secondary"
               onClick={handleClose}
-              sx={{ 
-                borderColor: 'transparent', // 무색 테두리
-                '&:hover': {
-                  borderColor: 'transparent', // 무색 테두리
+              sx={{
+                borderColor: "transparent", // 무색 테두리
+                "&:hover": {
+                  borderColor: "transparent", // 무색 테두리
                 },
               }}
             >

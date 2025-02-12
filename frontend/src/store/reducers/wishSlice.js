@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
 // 초기 상태 정의
 const initialState = {
@@ -7,7 +7,7 @@ const initialState = {
 
 // 슬라이스 정의
 const wishSlice = createSlice({
-  name: 'wish',
+  name: "wish",
   initialState,
   reducers: {
     toggleFavorite: (state, action) => {

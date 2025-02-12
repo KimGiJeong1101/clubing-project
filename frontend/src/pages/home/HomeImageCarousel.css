@@ -32,7 +32,8 @@
   border-radius: 10px;
 }
 
-.prev-btn, .next-btn {
+.prev-btn,
+.next-btn {
   background-color: transparent;
   border: none;
   font-size: 2rem;
@@ -54,6 +55,7 @@
 }
 
 /* 버튼 클릭 시 외곽선이 생기지 않도록 설정 */
-.prev-btn:focus, .next-btn:focus {
+.prev-btn:focus,
+.next-btn:focus {
   outline: none;
 }

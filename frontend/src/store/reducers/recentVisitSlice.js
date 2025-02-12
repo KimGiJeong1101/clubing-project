@@ -4,13 +4,13 @@ import { logoutUser } from "../actions/userActions";
 
 // 초기 상태 정의
 const initialState = {
-    recentVisits: [], // 최근 방문 기록 저장 배열을 빈 배열로 초기화
-    status: 'idle', // 로딩 상태 (idle, loading, succeeded, failed)
-    error: null, // 오류 메시지
-  };
+  recentVisits: [], // 최근 방문 기록 저장 배열을 빈 배열로 초기화
+  status: "idle", // 로딩 상태 (idle, loading, succeeded, failed)
+  error: null, // 오류 메시지
+};
 
 const recentVisitSlice = createSlice({
-  name: 'recentVisit',
+  name: "recentVisit",
   initialState,
   reducers: {
     // 필요한 경우 추가적인 동기 액션 정의
@@ -19,35 +19,35 @@ const recentVisitSlice = createSlice({
     builder
       // 방문 클럽 가져오기 요청 시작
       .addCase(readVisitClub.pending, (state) => {
-        state.status = 'loading';
+        state.status = "loading";
       })
       // 방문 클럽 가져오기 성공
       .addCase(readVisitClub.fulfilled, (state, action) => {
-        state.status = 'succeeded';
+        state.status = "succeeded";
         state.recentVisits = action.payload; // 서버에서 받은 데이터로 업데이트
       })
       // 방문 클럽 가져오기 실패
       .addCase(readVisitClub.rejected, (state, action) => {
-        state.status = 'failed';
+        state.status = "failed";
         state.error = action.payload; // 에러 메시지 저장
       })
 
       // 클럽 저장
       .addCase(saveVisitClub.pending, (state) => {
-        state.status = 'loading'; // 요청이 진행 중일 때 상태 설정
+        state.status = "loading"; // 요청이 진행 중일 때 상태 설정
       })
       .addCase(saveVisitClub.fulfilled, (state, action) => {
-        state.status = 'succeeded'; // 요청 성공 시 상태와 데이터 업데이트
+        state.status = "succeeded"; // 요청 성공 시 상태와 데이터 업데이트
         state.recentVisits.push(action.payload); // 서버에서 받은 데이터로 업데이
       })
       .addCase(saveVisitClub.rejected, (state, action) => {
-        state.status = 'failed'; // 요청 실패 시 상태와 오류 메시지 업데이트
+        state.status = "failed"; // 요청 실패 시 상태와 오류 메시지 업데이트
         state.error = action.payload; // 오류 메시지 저장
       })
 
-       // 로그아웃 요청 시작
-       .addCase(logoutUser.pending, (state) => {
-        state.status = 'loading';
+      // 로그아웃 요청 시작
+      .addCase(logoutUser.pending, (state) => {
+        state.status = "loading";
       })
       // 로그아웃 성공
       .addCase(logoutUser.fulfilled, (state) => {
@@ -58,7 +58,7 @@ const recentVisitSlice = createSlice({
       })
       // 로그아웃 실패
       .addCase(logoutUser.rejected, (state, action) => {
-        state.status = 'failed';
+        state.status = "failed";
         state.error = action.payload; // 에러 메시지 저장
       });
   },
