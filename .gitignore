@@ -38,3 +38,7 @@ backend/clubs/
 # prettierrc relation by koo add!!
 prettierrc
 frontend/build.zip
+
+
+# root경로에 node_modules (프리티어 관련)
+node_modules/
