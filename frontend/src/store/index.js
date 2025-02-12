@@ -11,7 +11,7 @@ import chatReducer from "./reducers/chatSlice.js";
 const persistConfig = {
   key: "root",
   storage: storage,
-  whitelist: ["user", "club", "getClub", "meetingList", "categoryClub", "getClubMember", "chat", 'wish', 'myMessage', 'recentVisit'],
+  whitelist: ["user", "club", "getClub", "meetingList", "categoryClub", "getClubMember", "chat", "wish", "myMessage", "recentVisit"],
 };
 
 const rootReducer = combineReducers({
@@ -23,8 +23,8 @@ const rootReducer = combineReducers({
   categoryClub: categoryClubListReducer,
   chat: chatReducer,
   wish: wishSlice,
-  myMessage : myMessageSlice,
-  recentVisit : recentVisitSlice
+  myMessage: myMessageSlice,
+  recentVisit: recentVisitSlice,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

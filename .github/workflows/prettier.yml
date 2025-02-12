@@ -4,22 +4,29 @@ name: Prettier Check and Format
 on:
   push:
     branches:
-      - main # main 브랜치에 푸시될 때마다 실행
-      - frontend_Br # frontend_Br 브랜치에 푸시될 때마다 실행
-      - backend_Br # backend_Br 브랜치에 푸시될 때마다 실행
-      - branch01 # branch01 브랜치에 푸시될 때마다 실행
+      # - main # main 브랜치에 푸시될 때마다 실행
+      # - frontend_Br # frontend_Br 브랜치에 푸시될 때마다 실행
+      # - backend_Br # backend_Br 브랜치에 푸시될 때마다 실행
+      # - branch01 # branch01 브랜치에 푸시될 때마다 실행
+      - "**" # 모든 브랜치가 동작할 때마다 실행
   pull_request:
     branches:
-      - main # main 브랜치로 PR이 생성될 때마다 실행
-      - frontend_Br # frontend_Br 브랜치에 푸시될 때마다 실행
-      - backend_Br # backend_Br 브랜치에 푸시될 때마다 실행
-      - branch01 # branch01 브랜치에 푸시될 때마다 실행
+      # - main # main 브랜치로 PR이 생성될 때마다 실행
+      # - frontend_Br # frontend_Br 브랜치에 푸시될 때마다 실행
+      # - backend_Br # backend_Br 브랜치에 푸시될 때마다 실행
+      # - branch01 # branch01 브랜치에 푸시될 때마다 실행
+      - "**" # 모든 브랜치가 동작할 때마다 실행
 
 # Prettier가 동작할 작업들을 정의
 jobs:
   prettier:
-    runs-on: ubuntu-latest # GitHub Actions에서 사용할 최신 우분투 환경
+    runs-on:
+      ubuntu-latest # GitHub Actions에서 사용할 최신 우분투 환경
 
+
+      # 깃허브 토큰의 디폴트 값이 읽기 권한밖에 없어서, 쓰기 권한을 추가해 줌.
+    permissions:
+      contents: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v2 # 레포지터리 코드를 체크아웃 (다운로드)
@@ -44,9 +51,56 @@ jobs:
         run: npm install prettier --save-dev
         working-directory: . # 루트 디렉토리에서 실행
 
+      # 프리티어 규칙을 검증
       - name: Check code formatting with Prettier
         run: npx prettier --check . # 코드가 Prettier 스타일 규칙에 맞는지 확인
-        continue-on-error: true  # --check에서 에러가 나도 다음 단계를 계속 실행하게 함
+        continue-on-error: true # --check에서 에러가 나도 다음 단계를 계속 실행하게 함
 
+      # 프리티어 규칙을 따라서 코드 수정
       - name: Format code with Prettier
         run: npx prettier --write . # 코드 포맷을 Prettier 스타일에 맞게 자동으로 수정
+
+      # 깃허브 액션에서 브랜치 감지 후 변수(브랜치) 설정
+      - name: Set branch name dynamically
+        run: |
+          if [ "$GITHUB_EVENT_NAME" == "pull_request" ]; then
+            echo "BRANCH_NAME=${GITHUB_HEAD_REF}" >> $GITHUB_ENV
+          else
+            echo "BRANCH_NAME=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
+          fi
+
+      # 브랜치 이름 확인
+      - name: Debug BRANCH_NAME
+        run: echo "BRANCH_NAME is $BRANCH_NAME"
+
+      # 변경사항 커밋 & 푸시 추가
+      - name: Commit changes
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+          git pull --rebase origin $BRANCH_NAME || echo "No changes to pull"  # 최신 상태 반영
+          git add .
+          git commit -m "Apply Prettier formatting" || echo "No changes to commit"
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/KimGiJeong1101/clubing-project.git HEAD:$BRANCH_NAME
+
+      # PR 머지 후 main 브랜치로 푸시하도록 하기 위한 단계 추가 (테스트용 브랜치)
+      - name: Push to main branch after PR merge
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+          git fetch origin mergetest_Br  # 최신 mergetest_Br 브랜치 정보를 가져옴
+          git checkout mergetest_Br  # mergetest_Br 브랜치로 체크아웃
+          git merge $BRANCH_NAME --no-ff --no-commit  # 현재 브랜치와 mergetest_Br 병합
+          git push origin mergetest_Br  # 병합된 내용을 mergetest_Br 브랜치에 푸시
+        if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true
+
+      # # PR 머지 후 main 브랜치로 푸시하도록 하기 위한 단계 추가
+      # - name: Push to main branch after PR merge
+      #   run: |
+      #     git config --global user.name "github-actions"
+      #     git config --global user.email "github-actions@github.com"
+      #     git fetch origin main  # 최신 main 브랜치 정보를 가져옴
+      #     git checkout main  # main 브랜치로 체크아웃
+      #     git merge $BRANCH_NAME --no-ff --no-commit  # 현재 브랜치와 main을 병합
+      #     git push origin main  # 병합된 내용을 main 브랜치에 푸시
+      #   if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true

@@ -19,7 +19,9 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     <QueryClientProvider client={queryClient}>
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
-          <ThemeProvider theme={theme}> {/* 테마 적용 */}
+          <ThemeProvider theme={theme}>
+            {" "}
+            {/* 테마 적용 */}
             <GlobalStyle /> {/* 전역 스타일 적용 */}
             <App />
           </ThemeProvider>
@@ -27,7 +29,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       </Provider>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
-  </BrowserRouter>
+  </BrowserRouter>,
 );
 
 // If you want to start measuring performance in your app, pass a function

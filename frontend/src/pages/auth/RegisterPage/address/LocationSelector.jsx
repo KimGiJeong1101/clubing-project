@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
 const LocationSelector = ({ setWorkplaceSido, setWorkplaceSigoon, setWorkplaceDong }) => {
   const [provinces, setProvinces] = useState([]); // 전국 8도 리스트
@@ -8,23 +8,23 @@ const LocationSelector = ({ setWorkplaceSido, setWorkplaceSigoon, setWorkplaceDo
   const [selectedCity, setSelectedCity] = useState(null); // 선택한 시군구
   const [selectedTown, setSelectedTown] = useState(null); // 선택한 읍면동
 
-  const apiKey= process.env.REACT_APP_KEY_API
+  const apiKey = process.env.REACT_APP_KEY_API;
   const port = process.env.REACT_APP_ADDRESS_API;
 
   // 1. 전국 8도 리스트 요청
   useEffect(() => {
     fetch(`/api/req/data?service=data&request=GetFeature&data=LT_C_ADEMD_INFO&key=${apiKey}&domain=${port}&type=province`)
-      .then(response => response.json())
-      .then(data => {
-        if (data.response && data.response.status === 'OK') {
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.response && data.response.status === "OK") {
           // 도의 정보를 provinces 상태에 저장
-          setProvinces(data.response.result.featureCollection.features.map(item => item.properties));
+          setProvinces(data.response.result.featureCollection.features.map((item) => item.properties));
         } else {
           setProvinces([]); // 오류가 있는 경우 빈 배열로 설정
         }
       })
-      .catch(error => {
-        console.error('Error fetching provinces:', error);
+      .catch((error) => {
+        console.error("Error fetching provinces:", error);
       });
   }, [port]);
   // 2. 도 선택 시, 시군구 리스트 요청
@@ -32,16 +32,16 @@ const LocationSelector = ({ setWorkplaceSido, setWorkplaceSigoon, setWorkplaceDo
     if (selectedProvince) {
       setWorkplaceSido(selectedProvince); // 선택한 도 업데이트
       fetch(`/api/req/data?service=data&request=GetFeature&data=LT_C_ADSIGG_INFO&key=${apiKey}&domain=${port}&type=city&province=${selectedProvince}`)
-        .then(response => response.json())
-        .then(data => {
-          if (data.response && data.response.status === 'OK') {
-            setCities(data.response.result.featureCollection.features.map(item => item.properties));
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.response && data.response.status === "OK") {
+            setCities(data.response.result.featureCollection.features.map((item) => item.properties));
           } else {
             setCities([]);
           }
         })
-        .catch(error => {
-          console.error('Error fetching cities:', error);
+        .catch((error) => {
+          console.error("Error fetching cities:", error);
         });
     }
   }, [selectedProvince]);
@@ -51,16 +51,16 @@ const LocationSelector = ({ setWorkplaceSido, setWorkplaceSigoon, setWorkplaceDo
     if (selectedCity) {
       setWorkplaceSigoon(selectedCity); // 선택한 시군구 업데이트
       fetch(`/api/req/data?service=data&request=GetFeature&data=LT_C_ADSIGG_INFO&key=${apiKey}&domain=${port}&type=town&city=${selectedCity}`)
-        .then(response => response.json())
-        .then(data => {
-          if (data.response && data.response.status === 'OK') {
-            setTowns(data.response.result.featureCollection.features.map(item => item.properties));
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.response && data.response.status === "OK") {
+            setTowns(data.response.result.featureCollection.features.map((item) => item.properties));
           } else {
             setTowns([]);
           }
         })
-        .catch(error => {
-          console.error('Error fetching towns:', error);
+        .catch((error) => {
+          console.error("Error fetching towns:", error);
         });
     }
   }, [selectedCity]);
@@ -70,7 +70,7 @@ const LocationSelector = ({ setWorkplaceSido, setWorkplaceSigoon, setWorkplaceDo
       {/* 1. 도 선택 */}
       <h3>도 선택</h3>
       <ul>
-        {provinces.map(province => (
+        {provinces.map((province) => (
           <li key={province.id} onClick={() => setSelectedProvince(province.name)}>
             {province.name}
           </li>
@@ -82,7 +82,7 @@ const LocationSelector = ({ setWorkplaceSido, setWorkplaceSigoon, setWorkplaceDo
         <>
           <h3>{selectedProvince}의 시군구 선택</h3>
           <ul>
-            {cities.map(city => (
+            {cities.map((city) => (
               <li key={city.id} onClick={() => setSelectedCity(city.name)}>
                 {city.name}
               </li>
@@ -96,11 +96,14 @@ const LocationSelector = ({ setWorkplaceSido, setWorkplaceSigoon, setWorkplaceDo
         <>
           <h3>{selectedCity}의 읍면동 선택</h3>
           <ul>
-            {towns.map(town => (
-              <li key={town.id} onClick={() => {
-                setSelectedTown(town.name); // 선택한 읍면동 업데이트
-                setWorkplaceDong(town.name); // workplaceDong 업데이트
-              }}>
+            {towns.map((town) => (
+              <li
+                key={town.id}
+                onClick={() => {
+                  setSelectedTown(town.name); // 선택한 읍면동 업데이트
+                  setWorkplaceDong(town.name); // workplaceDong 업데이트
+                }}
+              >
                 {town.name}
               </li>
             ))}
@@ -111,7 +114,7 @@ const LocationSelector = ({ setWorkplaceSido, setWorkplaceSigoon, setWorkplaceDo
       {/* 선택한 값 출력 */}
       {selectedProvince && selectedCity && selectedTown && (
         <h4>
-          선택한 위치: {selectedProvince}  {selectedCity}  {selectedTown}
+          선택한 위치: {selectedProvince} {selectedCity} {selectedTown}
         </h4>
       )}
     </div>

@@ -12,7 +12,7 @@ import CastForEducationIcon from "@mui/icons-material/CastForEducation";
 import FavoriteOutlinedIcon from "@mui/icons-material/FavoriteOutlined";
 import React from "react";
 
-const CategoryModal = ({ open, onClose ,onCategorySelect }) => {
+const CategoryModal = ({ open, onClose, onCategorySelect }) => {
   const fadStyle = {
     fontSize: "1.8rem",
     width: "70px",
@@ -22,7 +22,7 @@ const CategoryModal = ({ open, onClose ,onCategorySelect }) => {
 
   const handleCategoryClick = (category) => {
     onCategorySelect(category); // 선택된 카테고리 전달
-  }
+  };
 
   const FadHandleClick = (event) => {
     const ariaLabel = event.currentTarget.getAttribute("aria-label");
@@ -33,12 +33,7 @@ const CategoryModal = ({ open, onClose ,onCategorySelect }) => {
 
   return (
     <Box>
-      <Modal
-        open={open}
-        onClose={onClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
+      <Modal open={open} onClose={onClose} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
         <Box
           sx={{
             position: "absolute",
@@ -53,78 +48,29 @@ const CategoryModal = ({ open, onClose ,onCategorySelect }) => {
             p: 4,
           }}
         >
-          <Typography
-            id="modal-modal-title"
-            variant="h5"
-            component="h2"
-            sx={{ textAlign: "center" }}
-          >
+          <Typography id="modal-modal-title" variant="h5" component="h2" sx={{ textAlign: "center" }}>
             관심사 선택
           </Typography>
           <hr />
           <Grid container spacing={2}>
             {/* ... your existing Fab and Grid layout here ... */}
-            <Grid
-              item
-              xs={3}
-              container
-              justifyContent="center"
-              alignItems="center"
-            >
-              <Fab
-                aria-label="문화·예술"
-                onClick={FadHandleClick}
-                sx={fadStyle}
-                style={{ color: "green" }}
-              >
+            <Grid item xs={3} container justifyContent="center" alignItems="center">
+              <Fab aria-label="문화·예술" onClick={FadHandleClick} sx={fadStyle} style={{ color: "green" }}>
                 <BrushIcon />
               </Fab>
             </Grid>
-            <Grid
-              item
-              xs={3}
-              container
-              justifyContent="center"
-              alignItems="center"
-            >
-              <Fab
-                aria-label="액티비티"
-                onClick={FadHandleClick}
-                sx={fadStyle}
-                style={{ color: "blue" }}
-              >
+            <Grid item xs={3} container justifyContent="center" alignItems="center">
+              <Fab aria-label="액티비티" onClick={FadHandleClick} sx={fadStyle} style={{ color: "blue" }}>
                 <ScubaDivingIcon />
               </Fab>
             </Grid>
-            <Grid
-              item
-              xs={3}
-              container
-              justifyContent="center"
-              alignItems="center"
-            >
-              <Fab
-                aria-label="푸드·드링크"
-                onClick={FadHandleClick}
-                sx={fadStyle}
-                style={{ color: "#B2561A" }}
-              >
+            <Grid item xs={3} container justifyContent="center" alignItems="center">
+              <Fab aria-label="푸드·드링크" onClick={FadHandleClick} sx={fadStyle} style={{ color: "#B2561A" }}>
                 <FastfoodIcon />
               </Fab>
             </Grid>
-            <Grid
-              item
-              xs={3}
-              container
-              justifyContent="center"
-              alignItems="center"
-            >
-              <Fab
-                aria-label="취미"
-                onClick={FadHandleClick}
-                sx={fadStyle}
-                style={{ color: "yellow" }}
-              >
+            <Grid item xs={3} container justifyContent="center" alignItems="center">
+              <Fab aria-label="취미" onClick={FadHandleClick} sx={fadStyle} style={{ color: "yellow" }}>
                 <StarIcon />
               </Fab>
             </Grid>
@@ -144,67 +90,23 @@ const CategoryModal = ({ open, onClose ,onCategorySelect }) => {
             </Grid>
           </Grid>
           <Grid container spacing={2}>
-            <Grid
-              item
-              xs={3}
-              container
-              justifyContent="center"
-              alignItems="center"
-            >
-              <Fab
-                aria-label="여행·동행"
-                onClick={FadHandleClick}
-                sx={fadStyle}
-                style={{ color: "skyblue" }}
-              >
+            <Grid item xs={3} container justifyContent="center" alignItems="center">
+              <Fab aria-label="여행·동행" onClick={FadHandleClick} sx={fadStyle} style={{ color: "skyblue" }}>
                 <FlightIcon />
               </Fab>
             </Grid>
-            <Grid
-              item
-              xs={3}
-              container
-              justifyContent="center"
-              alignItems="center"
-            >
-              <Fab
-                aria-label="자기계발"
-                onClick={FadHandleClick}
-                sx={fadStyle}
-                style={{ color: "brown" }}
-              >
+            <Grid item xs={3} container justifyContent="center" alignItems="center">
+              <Fab aria-label="자기계발" onClick={FadHandleClick} sx={fadStyle} style={{ color: "brown" }}>
                 <MenuBookIcon />
               </Fab>
             </Grid>
-            <Grid
-              item
-              xs={3}
-              container
-              justifyContent="center"
-              alignItems="center"
-            >
-              <Fab
-                aria-label="동네·또래"
-                onClick={FadHandleClick}
-                sx={fadStyle}
-                style={{ color: "#D6B095" }}
-              >
+            <Grid item xs={3} container justifyContent="center" alignItems="center">
+              <Fab aria-label="동네·또래" onClick={FadHandleClick} sx={fadStyle} style={{ color: "#D6B095" }}>
                 <Diversity3Icon />
               </Fab>
             </Grid>
-            <Grid
-              item
-              xs={3}
-              container
-              justifyContent="center"
-              alignItems="center"
-            >
-              <Fab
-                aria-label="파티·게임"
-                onClick={FadHandleClick}
-                sx={fadStyle}
-                style={{ color: "#B855B9" }}
-              >
+            <Grid item xs={3} container justifyContent="center" alignItems="center">
+              <Fab aria-label="파티·게임" onClick={FadHandleClick} sx={fadStyle} style={{ color: "#B855B9" }}>
                 <CelebrationIcon />
               </Fab>
             </Grid>
@@ -224,46 +126,18 @@ const CategoryModal = ({ open, onClose ,onCategorySelect }) => {
             </Grid>
           </Grid>
           <Grid container spacing={2}>
-            <Grid
-              item
-              xs={3}
-              container
-              justifyContent="center"
-              alignItems="center"
-            >
-              <Fab
-                aria-label="재테크"
-                onClick={FadHandleClick}
-                sx={fadStyle}
-                style={{ color: "#F47378" }}
-              >
+            <Grid item xs={3} container justifyContent="center" alignItems="center">
+              <Fab aria-label="재테크" onClick={FadHandleClick} sx={fadStyle} style={{ color: "#F47378" }}>
                 <SavingsIcon />
               </Fab>
             </Grid>
-            <Grid
-              item
-              xs={3}
-              container
-              justifyContent="center"
-              alignItems="center"
-            >
+            <Grid item xs={3} container justifyContent="center" alignItems="center">
               <Fab aria-label="외국어" onClick={FadHandleClick} sx={fadStyle}>
                 <CastForEducationIcon />
               </Fab>
             </Grid>
-            <Grid
-              item
-              xs={3}
-              container
-              justifyContent="center"
-              alignItems="center"
-            >
-              <Fab
-                aria-label="연애·사랑"
-                onClick={FadHandleClick}
-                sx={fadStyle}
-                style={{ color: "red" }}
-              >
+            <Grid item xs={3} container justifyContent="center" alignItems="center">
+              <Fab aria-label="연애·사랑" onClick={FadHandleClick} sx={fadStyle} style={{ color: "red" }}>
                 <FavoriteOutlinedIcon />
               </Fab>
             </Grid>

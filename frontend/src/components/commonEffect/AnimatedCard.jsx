@@ -2,9 +2,7 @@ import React, { useState } from "react";
 import { Box } from "@mui/material";
 
 const AnimatedCard = ({ image }) => {
-  const [transform, setTransform] = useState(
-    "perspective(350px) rotateX(0deg) rotateY(0deg)"
-  );
+  const [transform, setTransform] = useState("perspective(350px) rotateX(0deg) rotateY(0deg)");
 
   const handleMouseMove = (e) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -16,9 +14,7 @@ const AnimatedCard = ({ image }) => {
     const rotateY = ((x - halfWidth) / halfWidth) * 20;
     const rotateX = -((y - halfHeight) / halfHeight) * 20;
 
-    setTransform(
-      `perspective(350px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`
-    );
+    setTransform(`perspective(350px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`);
   };
 
   const handleMouseOut = () => {
