@@ -78,6 +78,7 @@ jobs:
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
+          git pull --rebase origin $BRANCH_NAME || echo "No changes to pull"  # 최신 상태 반영
           git add .
           git commit -m "Apply Prettier formatting" || echo "No changes to commit"
           git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/KimGiJeong1101/clubing-project.git HEAD:$BRANCH_NAME
