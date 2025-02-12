@@ -7,7 +7,7 @@ const TokenDisplay = () => {
     const fetchTokens = async () => {
       try {
         // 요청을 보내는 엔드포인트 (토큰이 포함된 응답을 반환하는 엔드포인트)
-        const response = await fetch('http://localhost:4000/', {
+        const response = await fetch("http://localhost:4000/", {
           method: "GET",
           credentials: "include", // 쿠키를 포함하여 요청하기 위해 추가
         });

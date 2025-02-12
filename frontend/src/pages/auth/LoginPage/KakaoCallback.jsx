@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { useDispatch } from 'react-redux';
-import { kakaoLoginUser } from '../../../store/actions/userActions'; 
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { useDispatch } from "react-redux";
+import { kakaoLoginUser } from "../../../store/actions/userActions";
 
 const KakaoCallback = () => {
-    const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const [authorizationCode, setAuthorizationCode] = useState(null);
 
   useEffect(() => {
@@ -18,7 +18,7 @@ const KakaoCallback = () => {
 
   return (
     <div>
-        <p>로그인 중...</p>
+      <p>로그인 중...</p>
     </div>
   );
 };
