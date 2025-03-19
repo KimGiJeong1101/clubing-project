@@ -73,9 +73,5 @@
 - **해결 방법**: 로컬 환경 및 GitHub에서 파일 이름을 대소문자 구분에 맞게 수정
 - **결과**: 문제 해결 후 GitHub와 로컬 환경에서 정상 작동
 
-
-
-
-
 ![UI 설계](./frontend/guide_images/KakaoTalk_20250319_182037248.png)
 ![UI 설계](./frontend/guide_images/KakaoTalk_20250319_182043726.png)
