@@ -12,22 +12,25 @@
 
 ## 🛠️ 아키텍처 및 기술 스택
 
-### **클라이언트**
+### **FrontEnd**
 
 - **React.js**를 사용한 프론트엔드 개발
 - <b>MUI(Material-UI)</b>로 일관된 UI 제공
 - **React-Query** 및 **Axios**로 API 요청 관리
 - **Redux**로 전역 상태 관리
 
-### **서버**
+### **Backend**
 
 - **Node.js**, **Express**로 백엔드 개발
 - **Socket.io**를 활용한 실시간 채팅 기능 구현
 - **RESTful API**로 클라이언트와 데이터 통신
 
-### **데이터베이스**
+### **DB**
 
 - **MongoDB** 사용 (Mongoose로 ODM 설계)
+
+### **개발 인원**  
+- **총 개발 인원**: 6명  
 
 ### **배포 및 CI/CD**
 
