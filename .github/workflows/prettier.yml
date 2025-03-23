@@ -4,17 +4,11 @@ name: Prettier Check and Format
 on:
   push:
     branches:
-      # - main # main 브랜치에 푸시될 때마다 실행
-      # - frontend_Br # frontend_Br 브랜치에 푸시될 때마다 실행
-      # - backend_Br # backend_Br 브랜치에 푸시될 때마다 실행
       # - branch01 # branch01 브랜치에 푸시될 때마다 실행
       - "**" # 모든 브랜치가 동작할 때마다 실행
   pull_request:
     branches:
       # - main # main 브랜치로 PR이 생성될 때마다 실행
-      # - frontend_Br # frontend_Br 브랜치에 푸시될 때마다 실행
-      # - backend_Br # backend_Br 브랜치에 푸시될 때마다 실행
-      # - branch01 # branch01 브랜치에 푸시될 때마다 실행
       - "**" # 모든 브랜치가 동작할 때마다 실행
 
 # Prettier가 동작할 작업들을 정의
@@ -83,16 +77,6 @@ jobs:
           git commit -m "Apply Prettier formatting" || echo "No changes to commit"
           git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/KimGiJeong1101/clubing-project.git HEAD:$BRANCH_NAME
 
-      # PR 머지 후 main 브랜치로 푸시하도록 하기 위한 단계 추가 (테스트용 브랜치)
-      # - name: Push to main branch after PR merge
-      #   run: |
-      #     git config --global user.name "github-actions"
-      #     git config --global user.email "github-actions@github.com"
-      #     git fetch origin mergetest_Br  # 최신 mergetest_Br 브랜치 정보를 가져옴
-      #     git checkout mergetest_Br  # mergetest_Br 브랜치로 체크아웃
-      #     git merge $BRANCH_NAME --no-ff --no-commit  # 현재 브랜치와 mergetest_Br 병합
-      #     git push origin mergetest_Br  # 병합된 내용을 mergetest_Br 브랜치에 푸시
-      #   if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true
 
       # PR 머지 후 main 브랜치로 푸시하도록 하기 위한 단계 추가
       - name: Push to main branch after PR merge
