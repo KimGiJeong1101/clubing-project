@@ -116,6 +116,7 @@ const startServer = async () => {
     console.error("Failed to connect to MongoDB", err);
   }
 };
+
 startServer();
 /////이 이후 하나씩 추가할 거 작성은 주석달아서 추가해놓고 말해주기!
 
