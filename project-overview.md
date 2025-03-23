@@ -38,8 +38,7 @@
 - **Prettier 룰에 맞는 코드 포맷팅 자동화**:
 
   - GitHub Actions를 활용하여 **git 작업**(예: commit, push 등)을 할 때마다 코드가 Prettier 스타일 규칙에 맞게 자동으로 포맷팅되도록 설정.
-  - `.yml` 워크플로우 파일을 사용하여, 커밋이나 푸시가 발생하면 **Prettier**로 코드 포맷팅을 체크하고, 규칙에 맞지 않으면 자동으로 포맷팅을 수정함.  
-  [코드 파일 보기](https://github.com/KimGiJeong1101/clubing-project/blob/main/.github/workflows/prettier.yml)
+  - `.yml` 워크플로우 파일을 사용하여, 커밋이나 푸시가 발생하면 **Prettier**로 코드 포맷팅을 체크하고, 규칙에 맞지 않으면 자동으로 포맷팅을 수정함. [(코드 파일 보기)](https://github.com/KimGiJeong1101/clubing-project/blob/main/.github/workflows/prettier.yml)
 
 - **CI/CD 과정**:
 

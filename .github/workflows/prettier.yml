@@ -17,7 +17,6 @@ jobs:
     runs-on:
       ubuntu-latest # GitHub Actions에서 사용할 최신 우분투 환경
 
-
       # 깃허브 토큰의 디폴트 값이 읽기 권한밖에 없어서, 쓰기 권한을 추가해 줌.
     permissions:
       contents: write
@@ -76,7 +75,6 @@ jobs:
           git add .
           git commit -m "Apply Prettier formatting" || echo "No changes to commit"
           git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/KimGiJeong1101/clubing-project.git HEAD:$BRANCH_NAME
-
 
       # PR 머지 후 main 브랜치로 푸시하도록 하기 위한 단계 추가
       - name: Push to main branch after PR merge
