@@ -15,7 +15,7 @@ const auth = async (req, res, next) => {
     const user = await User.findOne({ _id: decode.userId });
 
     if (!user) {
-      return res.status(400).send("없는 유저입니다.");
+      return res.status(401).json({ error: "유효하지 않은 토큰입니다." });
     }
 
     req.user = user; // 사용자를 req.user에 추가

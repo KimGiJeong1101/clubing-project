@@ -46,10 +46,6 @@ axiosInstance.interceptors.response.use(
           Cookies.remove("accessToken");
           Cookies.remove("refreshToken");
           localStorage.removeItem("persist:root");
-          // 삭제 확인 로그 추가
-          console.log("AccessToken 쿠키 삭제:", Cookies.get("accessToken")); // null이어야 함
-          console.log("RefreshToken 쿠키 삭제:", Cookies.get("refreshToken")); // null이어야 함
-          console.log("Persist root 삭제:", localStorage.getItem("persist:root")); // null이어야 함
           // 리프레시 토큰도 만료된 경우 로그인 페이지로 리다이렉트
           window.location.href = "/login";
           return Promise.reject(refreshError);

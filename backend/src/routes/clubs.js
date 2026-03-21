@@ -236,7 +236,9 @@ router.delete("/delete/:id", auth, async (req, res, next) => {
 
 router.post("/update/:clubNumber", auth, upload.single("img"), async (req, res, next) => {
   try {
-    req.body.img = req.file.destination + req.file.filename;
+    if (req.file) {
+      req.body.img = req.file.destination + req.file.filename;
+    }
 
     const updatedClub = await Club.findByIdAndUpdate(
       req.params.clubNumber,
@@ -730,7 +732,6 @@ router.get("/home/recommend", async (req, res) => {
 
 const memberInfoInsert = async (clubs) => {
   for (let j = 0; j < clubs.length; j++) {
-    clubs[j].members.length;
     let memberInfo = [];
     for (let i = 0; i < clubs[j].members.length; i++) {
       let copymember = { thumbnailImage: "", name: "", nickName: "" };

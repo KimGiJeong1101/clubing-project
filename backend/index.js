@@ -36,16 +36,13 @@ app.use(express.urlencoded({ extended: true })); // URL-encoded 파싱
 // 쿠키 파서 미들웨어
 app.use(cookieParser());
 
-// 정적 파일 제공을 위해 uploads 폴더를 공개
+// 정적 파일 제공 - 업로드된 이미지들을 URL로 접근 가능하게 설정
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
-
-// 정적파일 제공 (클럽용) - 구 추가 -
+app.use("/upload", express.static(path.join(__dirname, "upload")));
 app.use("/clubs", express.static(path.join(__dirname, "clubs")));
-
-// 정적파일 제공 (미팅용) - 구 추가 -
 app.use("/meetings", express.static(path.join(__dirname, "meetings")));
-// 정적파일 제공 (백그라운드 사진용) - 구 추가 -
 app.use("/backgroundPic", express.static(path.join(__dirname, "backgroundPic")));
+app.use("/profile", express.static(path.join(__dirname, "profile")));
 
 /////////////////////////////////////라우터 구간
 //라우터 미들웨어(보드)
@@ -118,13 +115,3 @@ const startServer = async () => {
 };
 
 startServer();
-/////이 이후 하나씩 추가할 거 작성은 주석달아서 추가해놓고 말해주기!
-
-// 'profile' 폴더를 정적 파일 경로로 설정
-app.use("/profile", express.static(path.join(__dirname, "profile")));
-
-////////////////////////////////////////////////////////////board////////////////////////////////////////////////////
-// 파일 업로드를 위한 디렉토리 설정
-const uploadDir = path.join(__dirname, "upload"); //d 추가
-// 업로드된 파일 제공을 위한 정적 파일 미들웨어
-app.use("/upload", express.static(uploadDir)); //d 추가

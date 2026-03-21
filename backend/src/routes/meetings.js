@@ -185,8 +185,7 @@ router.get("/suggestForUser", auth, async (req, res, next) => {
       { $sample: { size: 6 } }, // 랜덤으로 6개의 문서 선택
     ]);
     let meetings = [...category1Meetings, ...category2Meetings, ...category3Meetings];
-    meetings = shuffleArray(meetings);
-    meetings.slice(0, 6);
+    meetings = shuffleArray(meetings).slice(0, 6);
     await joinMemberInfoInsert(meetings);
     return res.status(200).json(meetings);
   } catch (error) {
@@ -233,7 +232,6 @@ router.get("", async (req, res, next) => {
 });
 const joinMemberInfoInsert = async (meetings) => {
   for (let j = 0; j < meetings.length; j++) {
-    meetings[j].joinMember.length;
     let joinMemberInfo = [];
     for (let i = 0; i < meetings[j].joinMember.length; i++) {
       let copymember = { thumbnailImage: "", name: "", nickName: "" };

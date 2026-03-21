@@ -1,4 +1,3 @@
-const express = require("express");
 const Counter = require("../models/Counter");
 
 const getNextSequenceValue = async (sequenceName) => {
