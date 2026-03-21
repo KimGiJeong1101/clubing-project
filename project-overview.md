@@ -6,12 +6,12 @@
 
 ## 프로젝트 개요
 
-| 항목 | 내용 |
-|------|------|
-| 프로젝트명 | Clubing (클러빙) |
-| 개발 기간 | 2024년 8월 ~ 2024년 9월 |
-| 개발 인원 | 5명 |
-| 목표 | MERN 스택으로 소모임 커뮤니티 플랫폼 구현 |
+| 항목       | 내용                                      |
+| ---------- | ----------------------------------------- |
+| 프로젝트명 | Clubing (클러빙)                          |
+| 개발 기간  | 2024년 8월 ~ 2024년 9월                   |
+| 개발 인원  | 5명                                       |
+| 목표       | MERN 스택으로 소모임 커뮤니티 플랫폼 구현 |
 
 ---
 
@@ -61,6 +61,7 @@ MongoDB (Mongoose)
 **개념**: JWT(JSON Web Token)는 사용자가 로그인했음을 증명하는 "디지털 신분증"입니다.
 
 **동작 흐름**:
+
 ```
 1. 사용자가 이메일+비밀번호로 로그인
 2. 서버가 JWT accessToken(짧은 유효기간) + refreshToken(긴 유효기간) 발급
@@ -74,6 +75,7 @@ MongoDB (Mongoose)
 `localStorage`에 저장하면 JavaScript로 접근이 가능해 XSS(사이트 간 스크립트) 공격에 취약합니다. `HTTP-Only 쿠키`는 JavaScript에서 직접 접근할 수 없어 더 안전합니다.
 
 **관련 코드**:
+
 - `backend/src/middleware/auth.js` — JWT 검증 미들웨어
 - `frontend/src/utils/axios.js` — 토큰 만료 시 자동 갱신 인터셉터
 
@@ -95,11 +97,12 @@ const io = socketIo(app); // 에러!
 // 올바른 방법
 const app = express();
 const server = http.createServer(app); // Express를 HTTP 서버로 감싸기
-const io = socketIo(server);           // HTTP 서버에 소켓 연결
-server.listen(4000);                   // app.listen() 대신 server.listen()
+const io = socketIo(server); // HTTP 서버에 소켓 연결
+server.listen(4000); // app.listen() 대신 server.listen()
 ```
 
 **채팅 흐름**:
+
 ```
 사용자 A가 메시지 입력
     → 클라이언트: socket.emit("message", { content: "안녕!" })
@@ -109,6 +112,7 @@ server.listen(4000);                   // app.listen() 대신 server.listen()
 ```
 
 **관련 코드**:
+
 - `backend/index.js` — http 서버 + Socket.io 초기화
 - `backend/src/routes/message.js` — 소켓 이벤트 핸들러
 
@@ -121,6 +125,7 @@ server.listen(4000);                   // app.listen() 대신 server.listen()
 **개념**: 사용자가 이미지를 올리면 원본을 저장하고, 목록 화면처럼 작게 보여주는 곳에는 **썸네일(축소 이미지)** 을 사용합니다. 매번 원본을 전송하면 용량이 너무 크기 때문입니다.
 
 **동작 흐름**:
+
 ```
 사용자가 이미지 선택
     → Multer: 서버에 파일 저장 (날짜별 폴더 분류)
@@ -131,6 +136,7 @@ server.listen(4000);                   // app.listen() 대신 server.listen()
 ```
 
 **사용 라이브러리**:
+
 - **Multer** — 파일 업로드를 처리하는 Express 미들웨어. 어떤 폴더에 어떤 이름으로 저장할지 설정합니다.
 - **Sharp** — 고성능 이미지 처리 라이브러리. 빠르게 리사이징, 포맷 변환이 가능합니다.
 - **UUID** — 업로드된 파일명이 겹치지 않도록 고유한 이름을 생성합니다.
@@ -142,6 +148,7 @@ server.listen(4000);                   // app.listen() 대신 server.listen()
 **개념**: 사용자가 가입할 때 입력한 관심사, 지역, 직업 정보를 바탕으로 관련된 모임을 우선 보여줍니다.
 
 **점수 기반 정렬**:
+
 ```
 지역 점수 (regionScore):
   - 내 동네와 같은 모임 → 0점 (가장 가까움)
@@ -168,6 +175,7 @@ MongoDB의 **Aggregation Pipeline**을 사용해 서버에서 직접 점수 계�
 **개념**: React 컴포넌트는 부모→자식 방향으로만 데이터를 전달할 수 있습니다. 하지만 로그인 정보처럼 **앱 전체에서 필요한 데이터**를 매번 props로 전달하면 코드가 복잡해집니다. Redux는 "전역 저장소"를 만들어 어느 컴포넌트에서든 직접 접근할 수 있게 합니다.
 
 **이 프로젝트의 Redux 구조**:
+
 ```
 store/
 ├── reducers/
@@ -190,6 +198,7 @@ store/
 **개념**: 팀 프로젝트에서 사람마다 다른 코드 스타일을 사용하면 코드 리뷰가 어렵고 Git diff가 지저분해집니다. **Prettier**를 사용해 코드 스타일을 강제로 통일합니다.
 
 **GitHub Actions 워크플로우 동작 순서**:
+
 ```
 1. 개발자가 코드 push 또는 PR 생성
 2. GitHub Actions 자동 실행
@@ -210,6 +219,7 @@ store/
 **개념**: OAuth는 제3자(카카오, 구글 등)가 사용자 인증을 대신해주는 표준 방식입니다. 사용자는 플랫폼에 비밀번호를 직접 입력하지 않아도 됩니다.
 
 **흐름**:
+
 ```
 1. 사용자: "카카오로 로그인" 버튼 클릭
 2. 카카오 로그인 페이지로 이동
@@ -233,11 +243,12 @@ store/
 **원인**: Socket.io는 Express 앱 객체가 아닌 **Node.js HTTP 서버 객체**와 연결해야 합니다. Express는 내부적으로 HTTP 서버를 만들어주지만, 직접 접근이 안 됩니다.
 
 **해결**:
+
 ```js
 const http = require("http");
 const server = http.createServer(app); // Express를 HTTP 서버로 감싸기
-const io = socketIo(server);           // HTTP 서버에 소켓 연결
-server.listen(process.env.PORT);       // server.listen() 사용
+const io = socketIo(server); // HTTP 서버에 소켓 연결
+server.listen(process.env.PORT); // server.listen() 사용
 ```
 
 **결과**: 실시간 채팅 정상 작동
@@ -251,6 +262,7 @@ server.listen(process.env.PORT);       // server.listen() 사용
 **원인**: Windows의 파일 시스템(NTFS)은 대소문자를 **구분하지 않음**. Linux는 대소문자를 **구분함**.
 
 **해결**:
+
 ```bash
 # Git이 파일명 변경을 인식하도록 강제 rename
 git mv header.jsx Header.jsx
@@ -293,9 +305,7 @@ const persistConfig = {
 
 ```jsx
 // 내 메시지: 오른쪽 / 상대 메시지: 왼쪽
-<Box sx={{ justifyContent: message.sender === currentUser ? "flex-end" : "flex-start" }}>
-  {message.content}
-</Box>
+<Box sx={{ justifyContent: message.sender === currentUser ? "flex-end" : "flex-start" }}>{message.content}</Box>
 ```
 
 시간 표시도 12/24시간 형식으로 조건부 표시.
@@ -345,7 +355,7 @@ const getNextSequenceValue = async (sequenceName) => {
   const doc = await Counter.findByIdAndUpdate(
     sequenceName,
     { $inc: { sequence_value: 1 } }, // 1씩 증가
-    { new: true, upsert: true }       // 없으면 생성
+    { new: true, upsert: true }, // 없으면 생성
   );
   return doc.sequence_value;
 };
@@ -357,14 +367,14 @@ const getNextSequenceValue = async (sequenceName) => {
 
 이 프로젝트를 통해 학습한 핵심 개념들입니다.
 
-| 개념 | 배운 내용 |
-|------|----------|
-| REST API | URL은 리소스(명사), HTTP 메서드는 행동(동사)으로 설계 |
-| JWT 인증 | accessToken + refreshToken 이중 토큰으로 보안과 편의성 균형 |
-| WebSocket | 실시간 양방향 통신을 위한 HTTP와의 차이점 |
-| 비동기 처리 | async/await, Promise로 DB 쿼리와 API 호출 처리 |
-| Redux | 전역 상태의 필요성과 액션-리듀서-스토어 패턴 |
-| React Query | 서버 상태와 클라이언트 상태를 분리하는 이유 |
-| CI/CD | GitHub Actions로 코드 품질을 자동으로 유지하는 방법 |
-| OAuth | 제3자 인증 흐름(카카오 로그인)의 동작 원리 |
-| MongoDB | NoSQL의 유연한 스키마와 Aggregation Pipeline 활용 |
+| 개념        | 배운 내용                                                   |
+| ----------- | ----------------------------------------------------------- |
+| REST API    | URL은 리소스(명사), HTTP 메서드는 행동(동사)으로 설계       |
+| JWT 인증    | accessToken + refreshToken 이중 토큰으로 보안과 편의성 균형 |
+| WebSocket   | 실시간 양방향 통신을 위한 HTTP와의 차이점                   |
+| 비동기 처리 | async/await, Promise로 DB 쿼리와 API 호출 처리              |
+| Redux       | 전역 상태의 필요성과 액션-리듀서-스토어 패턴                |
+| React Query | 서버 상태와 클라이언트 상태를 분리하는 이유                 |
+| CI/CD       | GitHub Actions로 코드 품질을 자동으로 유지하는 방법         |
+| OAuth       | 제3자 인증 흐름(카카오 로그인)의 동작 원리                  |
+| MongoDB     | NoSQL의 유연한 스키마와 Aggregation Pipeline 활용           |

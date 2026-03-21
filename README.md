@@ -53,67 +53,74 @@
 
 ### Frontend (화면 담당)
 
-| 기술 | 역할 |
-|------|------|
-| React 18 | UI 컴포넌트 기반 프론트엔드 프레임워크 |
-| Redux Toolkit | 전역 상태 관리 (로그인 정보, 채팅 등) |
-| React Query | 서버 API 데이터 캐싱 및 비동기 처리 |
-| Material-UI (MUI) | UI 컴포넌트 라이브러리 |
-| React Router | 페이지 라우팅 (URL 관리) |
-| Axios | HTTP API 통신 |
-| Socket.io-client | 실시간 채팅 (WebSocket) |
-| Framer Motion | 애니메이션 효과 |
-| CKEditor 5 | 게시판 글쓰기 에디터 |
-| TUI Image Editor | 갤러리 이미지 편집 |
-| Cropper.js | 프로필 이미지 크롭 |
+| 기술              | 역할                                   |
+| ----------------- | -------------------------------------- |
+| React 18          | UI 컴포넌트 기반 프론트엔드 프레임워크 |
+| Redux Toolkit     | 전역 상태 관리 (로그인 정보, 채팅 등)  |
+| React Query       | 서버 API 데이터 캐싱 및 비동기 처리    |
+| Material-UI (MUI) | UI 컴포넌트 라이브러리                 |
+| React Router      | 페이지 라우팅 (URL 관리)               |
+| Axios             | HTTP API 통신                          |
+| Socket.io-client  | 실시간 채팅 (WebSocket)                |
+| Framer Motion     | 애니메이션 효과                        |
+| CKEditor 5        | 게시판 글쓰기 에디터                   |
+| TUI Image Editor  | 갤러리 이미지 편집                     |
+| Cropper.js        | 프로필 이미지 크롭                     |
 
 ### Backend (서버 담당)
 
-| 기술 | 역할 |
-|------|------|
-| Node.js | 서버 런타임 환경 |
-| Express.js | HTTP 서버 및 REST API 라우팅 |
-| Socket.io | 실시간 양방향 채팅 |
-| MongoDB | NoSQL 데이터베이스 |
-| Mongoose | MongoDB 스키마 모델링 (ODM) |
-| JWT (jsonwebtoken) | 로그인 인증 토큰 발급 및 검증 |
-| bcryptjs | 비밀번호 해싱 (암호화) |
-| Multer | 파일(이미지) 업로드 처리 |
-| Sharp | 이미지 리사이징 및 썸네일 생성 |
-| Nodemailer | 이메일 인증 코드 발송 |
+| 기술               | 역할                           |
+| ------------------ | ------------------------------ |
+| Node.js            | 서버 런타임 환경               |
+| Express.js         | HTTP 서버 및 REST API 라우팅   |
+| Socket.io          | 실시간 양방향 채팅             |
+| MongoDB            | NoSQL 데이터베이스             |
+| Mongoose           | MongoDB 스키마 모델링 (ODM)    |
+| JWT (jsonwebtoken) | 로그인 인증 토큰 발급 및 검증  |
+| bcryptjs           | 비밀번호 해싱 (암호화)         |
+| Multer             | 파일(이미지) 업로드 처리       |
+| Sharp              | 이미지 리사이징 및 썸네일 생성 |
+| Nodemailer         | 이메일 인증 코드 발송          |
 
 ### DevOps & 협업 도구
 
-| 도구 | 역할 |
-|------|------|
+| 도구           | 역할                                |
+| -------------- | ----------------------------------- |
 | GitHub Actions | CI/CD 자동화 (Prettier 코드 포맷팅) |
-| Prettier | 코드 스타일 통일 |
-| GitHub / Git | 버전 관리 및 협업 |
-| Slack / Jira | 팀 소통 및 일정 관리 |
+| Prettier       | 코드 스타일 통일                    |
+| GitHub / Git   | 버전 관리 및 협업                   |
+| Slack / Jira   | 팀 소통 및 일정 관리                |
 
 ---
 
 ## 기술 선정 이유
 
 ### React
+
 컴포넌트 단위로 UI를 분리해 코드 재사용성이 높고, 상태 관리 라이브러리와의 결합이 자유로워 복잡한 UI를 효율적으로 구성할 수 있습니다.
 
 ### Redux Toolkit
+
 로그인 사용자 정보, 채팅 상태, 찜 목록 등 여러 페이지에서 공유해야 하는 데이터를 한 곳에서 관리합니다. `redux-persist`와 함께 사용해 새로고침 후에도 상태가 유지됩니다.
 
 ### React Query
+
 서버에서 받아온 데이터(클럽 목록, 미팅 정보 등)의 캐싱과 자동 갱신을 담당합니다. API 호출 중복을 줄이고 로딩/에러 상태를 쉽게 처리할 수 있습니다.
 
 ### Express.js
+
 가볍고 유연한 Node.js 서버 프레임워크입니다. 미들웨어 기반 구조 덕분에 인증, 파일 업로드, 에러 처리를 모듈화해 추가하기 쉽습니다.
 
 ### MongoDB
+
 유연한 스키마 구조(NoSQL)로 사용자 관심사, 클럽 정보 등 다양한 형태의 데이터를 자유롭게 저장합니다. `Mongoose`를 통해 스키마를 정의하고 유효성 검사를 처리합니다.
 
 ### Socket.io
+
 HTTP 요청-응답 방식으로는 구현하기 어려운 **실시간 양방향 통신**을 가능하게 합니다. 클럽 채팅방에서 메시지를 보내면 방 안의 모든 사용자에게 즉시 전달됩니다.
 
 ### JWT (JSON Web Token)
+
 사용자가 로그인하면 서버가 토큰을 발급하고, 이후 요청마다 토큰을 검사해 인증합니다. `accessToken`(단기)과 `refreshToken`(장기)을 쿠키로 관리해 보안성을 높였습니다.
 
 ---
@@ -121,12 +128,14 @@ HTTP 요청-응답 방식으로는 구현하기 어려운 **실시간 양방향 
 ## 주요 기능
 
 ### 회원 관리
+
 - **이메일 회원가입** — 이메일 인증 코드 발송 후 가입
 - **카카오 소셜 로그인** — OAuth 2.0 기반 간편 로그인
 - **JWT 인증** — 액세스 토큰 + 리프레시 토큰으로 로그인 상태 유지
 - **프로필 설정** — 프로필 사진(크롭), 닉네임, 관심사, 지역, 직업 설정
 
 ### 모임 (Club)
+
 - **모임 생성/수정/삭제** — 카테고리, 지역, 대표 이미지, 모임 소개 등록
 - **모임 검색** — 카테고리별·지역별 필터링, 이름으로 검색
 - **모임 가입/탈퇴** — 멤버 관리, 관리자/매니저 권한 부여
@@ -134,32 +143,38 @@ HTTP 요청-응답 방식으로는 구현하기 어려운 **실시간 양방향 
 - **맞춤 추천** — 로그인 사용자의 관심사·지역 기반 모임 추천
 
 ### 게시판 (Board)
+
 - CKEditor 5 기반 **리치 텍스트 글쓰기**
 - 게시글 CRUD (작성/조회/수정/삭제)
 - **투표 기능** — 단일/복수 선택 투표 생성, 익명 투표 지원
 
 ### 갤러리 (Gallery)
+
 - 이미지 업로드 및 TUI Image Editor로 **편집 후 저장**
 - 원본 이미지 + 썸네일 자동 생성 (Sharp)
 - 갤러리 CRUD 및 **댓글 기능**
 
 ### 실시간 채팅 (Chat)
+
 - Socket.io 기반 **실시간 메시지 전송**
 - 채팅 내 **이미지 전송** 지원
 - 메시지 MongoDB 저장 (채팅 기록 유지)
 - 클럽 멤버만 채팅방 접근 가능
 
 ### 정기모임 (Meeting)
+
 - 모임 일정 등록 (날짜, 장소, 비용, 정원)
 - **참석 신청/취소**
 - 날짜별·카테고리별 정기모임 목록 조회
 - 사용자 관심사 기반 모임 추천
 
 ### 이벤트 (Event)
+
 - 플랫폼 이벤트 게시글 CRUD
 - 이벤트 이미지 업로드
 
 ### 마이페이지
+
 - 내가 가입한 모임, 찜 목록, 초대 목록 관리
 - 프로필 수정 (사진, 관심사, 지역, 직업)
 - 개인 메시지함 (MyMessage)
@@ -319,22 +334,22 @@ REACT_APP_API_URL=http://localhost:4000
 
 > REST API 설계 원칙에 따라 URL은 **리소스(명사)** 로, HTTP 메서드는 **행동(동사)** 으로 표현합니다.
 
-| 메서드 | URL 예시 | 설명 |
-|--------|----------|------|
-| GET | `/clubs` | 모임 목록 조회 |
-| POST | `/clubs/create` | 모임 생성 |
-| GET | `/clubs/read/:id` | 특정 모임 조회 |
-| POST | `/clubs/update/:id` | 모임 수정 |
-| DELETE | `/clubs/delete/:id` | 모임 삭제 |
-| POST | `/clubs/addMember/:id` | 모임 가입 |
-| GET | `/clubs/home/recommend` | 맞춤 추천 모임 |
-| POST | `/userSigns/register` | 회원가입 |
-| POST | `/userSigns/login` | 로그인 |
-| POST | `/users/refresh-token` | 액세스 토큰 갱신 |
-| GET | `/meetings/:clubNumber` | 정기모임 목록 |
-| POST | `/meetings/create` | 정기모임 생성 |
-| POST | `/clubs/boards/posts` | 게시글 작성 |
-| GET | `/clubs/gallery/:clubNumber/images` | 갤러리 목록 |
+| 메서드 | URL 예시                            | 설명             |
+| ------ | ----------------------------------- | ---------------- |
+| GET    | `/clubs`                            | 모임 목록 조회   |
+| POST   | `/clubs/create`                     | 모임 생성        |
+| GET    | `/clubs/read/:id`                   | 특정 모임 조회   |
+| POST   | `/clubs/update/:id`                 | 모임 수정        |
+| DELETE | `/clubs/delete/:id`                 | 모임 삭제        |
+| POST   | `/clubs/addMember/:id`              | 모임 가입        |
+| GET    | `/clubs/home/recommend`             | 맞춤 추천 모임   |
+| POST   | `/userSigns/register`               | 회원가입         |
+| POST   | `/userSigns/login`                  | 로그인           |
+| POST   | `/users/refresh-token`              | 액세스 토큰 갱신 |
+| GET    | `/meetings/:clubNumber`             | 정기모임 목록    |
+| POST   | `/meetings/create`                  | 정기모임 생성    |
+| POST   | `/clubs/boards/posts`               | 게시글 작성      |
+| GET    | `/clubs/gallery/:clubNumber/images` | 갤러리 목록      |
 
 ---
 
