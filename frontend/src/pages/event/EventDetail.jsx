@@ -77,9 +77,7 @@ const EventDetail = ({ eventId, onClose }) => {
               </div>
               <div className="text-right">
                 <p className="text-sm text-gray-500">등록 날짜: {formatDateTime(post.createdAt)}</p>
-                <p className="text-sm text-gray-500">
-                  종료 날짜: {post.endTime ? formatDateTime(post.endTime) : "없음"}
-                </p>
+                <p className="text-sm text-gray-500">종료 날짜: {post.endTime ? formatDateTime(post.endTime) : "없음"}</p>
               </div>
             </div>
           </div>
@@ -94,20 +92,9 @@ const EventDetail = ({ eventId, onClose }) => {
       {/* 스낵바 */}
       {snackbarOpen && (
         <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[2000]">
-          <div
-            className={`flex items-center gap-3 px-5 py-3 rounded-lg shadow-lg min-w-[280px] text-white ${
-              snackbarSeverity === "success"
-                ? "bg-green-600"
-                : snackbarSeverity === "error"
-                ? "bg-red-600"
-                : "bg-yellow-500"
-            }`}
-          >
+          <div className={`flex items-center gap-3 px-5 py-3 rounded-lg shadow-lg min-w-[280px] text-white ${snackbarSeverity === "success" ? "bg-green-600" : snackbarSeverity === "error" ? "bg-red-600" : "bg-yellow-500"}`}>
             <span className="flex-1 text-sm">{snackbarMessage}</span>
-            <button
-              onClick={handleSnackbarClose}
-              className="hover:text-gray-200 font-bold text-lg leading-none"
-            >
+            <button onClick={handleSnackbarClose} className="hover:text-gray-200 font-bold text-lg leading-none">
               ×
             </button>
           </div>

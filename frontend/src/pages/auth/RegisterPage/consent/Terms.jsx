@@ -21,10 +21,7 @@ const TermsPopup = ({ onClose, handleCheck, checked }) => {
           </label>
         </div>
         <div className="flex justify-end px-4 py-3 border-t border-gray-200">
-          <button
-            onClick={onClose}
-            className="text-blue-600 hover:text-blue-800 text-sm font-medium px-3 py-1"
-          >
+          <button onClick={onClose} className="text-blue-600 hover:text-blue-800 text-sm font-medium px-3 py-1">
             닫기
           </button>
         </div>

@@ -27,19 +27,13 @@ const MySetting = () => {
           <button
             onClick={() => handleButtonClick(key)}
             className={`w-full flex items-center justify-between text-left px-4 py-3.5 rounded-xl font-nanum-bold text-sm transition-all duration-200
-              ${view === key
-                ? "bg-primary-600 text-white shadow-sm"
-                : "bg-white text-gray-700 hover:bg-primary-50 hover:text-primary-700 border border-gray-200"
-              }`}
+              ${view === key ? "bg-primary-600 text-white shadow-sm" : "bg-white text-gray-700 hover:bg-primary-50 hover:text-primary-700 border border-gray-200"}`}
           >
             <div className="flex items-center gap-2.5">
               <span className={view === key ? "text-white/80" : "text-primary-400"}>{icon}</span>
               {label}
             </div>
-            {view === key
-              ? <FiChevronUp className="w-4 h-4 opacity-70" />
-              : <FiChevronDown className="w-4 h-4 opacity-40" />
-            }
+            {view === key ? <FiChevronUp className="w-4 h-4 opacity-70" /> : <FiChevronDown className="w-4 h-4 opacity-40" />}
           </button>
 
           {view === key && (

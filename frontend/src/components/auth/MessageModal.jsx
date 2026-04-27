@@ -23,10 +23,7 @@ const MessageModal = ({ message, onMessageRead, onClose }) => {
 
   return (
     <div className="fixed inset-0 z-[300] bg-black/50 flex items-center justify-center p-4" onClick={onClose}>
-      <div
-        className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden"
-        onClick={(e) => e.stopPropagation()}
-      >
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between p-4 border-b border-gray-100">
           <h3 className="text-base font-nanum-bold text-gray-800">쪽지 내용</h3>
           <button onClick={onClose} className="p-1 text-gray-400 hover:text-gray-700 transition-colors">

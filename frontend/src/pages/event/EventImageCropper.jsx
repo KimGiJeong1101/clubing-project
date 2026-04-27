@@ -45,17 +45,7 @@ const EventImageCropper = ({ src, onCropComplete, onClose }) => {
       canvas.width = completedCrop.width;
       canvas.height = completedCrop.height;
       const ctx = canvas.getContext("2d");
-      ctx.drawImage(
-        image,
-        completedCrop.x * scaleX,
-        completedCrop.y * scaleY,
-        completedCrop.width * scaleX,
-        completedCrop.height * scaleY,
-        0,
-        0,
-        completedCrop.width,
-        completedCrop.height
-      );
+      ctx.drawImage(image, completedCrop.x * scaleX, completedCrop.y * scaleY, completedCrop.width * scaleX, completedCrop.height * scaleY, 0, 0, completedCrop.width, completedCrop.height);
       canvas.toBlob((blob) => {
         const croppedImageUrl = URL.createObjectURL(blob);
         onCropComplete(croppedImageUrl);
@@ -75,24 +65,13 @@ const EventImageCropper = ({ src, onCropComplete, onClose }) => {
 
   return (
     <div className="fixed inset-0 z-[11000] bg-black/50 flex justify-center items-center">
-      <div
-        className="relative bg-white p-5 rounded-lg shadow-lg overflow-hidden"
-        style={{ maxWidth: "90%", maxHeight: "90%", width: modalSize.width, height: modalSize.height }}
-      >
+      <div className="relative bg-white p-5 rounded-lg shadow-lg overflow-hidden" style={{ maxWidth: "90%", maxHeight: "90%", width: modalSize.width, height: modalSize.height }}>
         {/* 닫기 버튼 */}
-        <button
-          onClick={onClose}
-          className="absolute top-[10px] right-[10px] z-[11001] bg-white text-black border border-black rounded-[10px] w-5 h-[30px] cursor-pointer text-sm"
-        >
+        <button onClick={onClose} className="absolute top-[10px] right-[10px] z-[11001] bg-white text-black border border-black rounded-[10px] w-5 h-[30px] cursor-pointer text-sm">
           X
         </button>
 
-        <ReactCrop
-          crop={crop}
-          onChange={handleCropChange}
-          onComplete={handleCropComplete}
-          style={{ width: "100%", height: "100%" }}
-        >
+        <ReactCrop crop={crop} onChange={handleCropChange} onComplete={handleCropComplete} style={{ width: "100%", height: "100%" }}>
           <img
             src={src}
             alt="Source"
@@ -108,10 +87,7 @@ const EventImageCropper = ({ src, onCropComplete, onClose }) => {
         </ReactCrop>
 
         {/* 완료 버튼 */}
-        <button
-          onClick={handleConfirmCrop}
-          className="absolute bottom-[10px] right-[10px] z-[11001] bg-white text-black border border-black rounded-[10px] px-3 py-1 cursor-pointer text-sm"
-        >
+        <button onClick={handleConfirmCrop} className="absolute bottom-[10px] right-[10px] z-[11001] bg-white text-black border border-black rounded-[10px] px-3 py-1 cursor-pointer text-sm">
           완료
         </button>
 
@@ -120,10 +96,7 @@ const EventImageCropper = ({ src, onCropComplete, onClose }) => {
           <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[11002]">
             <div className="flex items-center gap-3 bg-yellow-500 text-white px-5 py-3 rounded-lg shadow-lg min-w-[280px]">
               <span className="flex-1 text-sm">{snackbarMessage}</span>
-              <button
-                onClick={() => handleSnackbarClose()}
-                className="hover:text-gray-200 font-bold text-lg leading-none"
-              >
+              <button onClick={() => handleSnackbarClose()} className="hover:text-gray-200 font-bold text-lg leading-none">
                 ×
               </button>
             </div>

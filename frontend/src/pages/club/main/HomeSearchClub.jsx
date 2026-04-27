@@ -42,27 +42,19 @@ const HomeSearchClub = ({ setSelectedSido, setSelectedSigoon, setSelectedDong, i
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === "Enter") { e.preventDefault(); if (results.length > 0) handleSelect(results[0]); }
+    if (e.key === "Enter") {
+      e.preventDefault();
+      if (results.length > 0) handleSelect(results[0]);
+    }
   };
 
   return (
     <div className="w-full">
-      <input
-        type="text"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        onKeyDown={handleKeyDown}
-        placeholder="*동을 입력해주세요"
-        className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-500 hover:border-[#A67153] transition-colors mt-2"
-      />
+      <input type="text" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} onKeyDown={handleKeyDown} placeholder="*동을 입력해주세요" className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-500 hover:border-[#A67153] transition-colors mt-2" />
       {results.length > 0 && (
         <ul className="border border-gray-200 rounded-lg mt-1 bg-white shadow-md max-h-44 overflow-y-auto z-10">
           {results.map((item, index) => (
-            <li
-              key={index}
-              className="px-4 py-2.5 text-sm cursor-pointer hover:bg-gray-50 transition-colors"
-              onClick={() => handleSelect(item)}
-            >
+            <li key={index} className="px-4 py-2.5 text-sm cursor-pointer hover:bg-gray-50 transition-colors" onClick={() => handleSelect(item)}>
               {item.full_nm}
             </li>
           ))}

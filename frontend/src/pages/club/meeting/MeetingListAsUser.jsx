@@ -17,9 +17,16 @@ const MeetingListAsUser = () => {
     return response.data;
   };
 
-  const { data: meetingListAsUser, isLoading, isError, error, isFetching, refetch } = useQuery({
+  const {
+    data: meetingListAsUser,
+    isLoading,
+    isError,
+    error,
+    isFetching,
+    refetch,
+  } = useQuery({
     queryKey: ["meetingListAsUser"],
-    queryFn:  getMeetingListAsUser,
+    queryFn: getMeetingListAsUser,
     keepPreviousData: true,
     staleTime: 0,
     cacheTime: 0,
@@ -39,11 +46,7 @@ const MeetingListAsUser = () => {
           <h2 className="font-nanum-bold text-gray-800 text-lg">맞춤 추천 정모</h2>
           <span className="text-xs text-gray-400 font-nanum">선택한 카테고리 위주로 추천해드려요</span>
         </div>
-        <button
-          onClick={refreshHandler}
-          className="flex items-center gap-1.5 text-xs text-primary-600 hover:text-primary-800 font-nanum-bold transition-colors"
-          aria-label="추천 새로고침"
-        >
+        <button onClick={refreshHandler} className="flex items-center gap-1.5 text-xs text-primary-600 hover:text-primary-800 font-nanum-bold transition-colors" aria-label="추천 새로고침">
           <FiRefreshCw className={`w-3.5 h-3.5 ${spinning ? "animate-spin" : ""}`} />
           새로고침
         </button>
@@ -52,31 +55,33 @@ const MeetingListAsUser = () => {
       {/* 목록 */}
       {isLoading && !isFetching ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {Array(4).fill(0).map((_, i) => (
-            <div key={i} className="bg-white rounded-2xl overflow-hidden shadow-sm animate-pulse flex">
-              <div className="w-[120px] bg-gray-200 flex-shrink-0 h-[100px]" />
-              <div className="flex-1 p-3.5 space-y-2">
-                <div className="h-4 bg-gray-200 rounded w-3/4" />
-                <div className="h-3 bg-gray-100 rounded w-1/2" />
+          {Array(4)
+            .fill(0)
+            .map((_, i) => (
+              <div key={i} className="bg-white rounded-2xl overflow-hidden shadow-sm animate-pulse flex">
+                <div className="w-[120px] bg-gray-200 flex-shrink-0 h-[100px]" />
+                <div className="flex-1 p-3.5 space-y-2">
+                  <div className="h-4 bg-gray-200 rounded w-3/4" />
+                  <div className="h-3 bg-gray-100 rounded w-1/2" />
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
         </div>
       ) : isError ? (
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 text-center text-sm text-gray-400">
-          오류: {error?.message}
-        </div>
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 text-center text-sm text-gray-400">오류: {error?.message}</div>
       ) : isLoading && !isFetching ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {Array(6).fill(0).map((_, i) => (
-            <div key={i} className="bg-white rounded-2xl overflow-hidden shadow-sm animate-pulse">
-              <div className="w-full aspect-video bg-gray-200" />
-              <div className="p-4 space-y-2">
-                <div className="h-4 bg-gray-200 rounded w-3/4" />
-                <div className="h-3 bg-gray-100 rounded w-1/2" />
+          {Array(6)
+            .fill(0)
+            .map((_, i) => (
+              <div key={i} className="bg-white rounded-2xl overflow-hidden shadow-sm animate-pulse">
+                <div className="w-full aspect-video bg-gray-200" />
+                <div className="p-4 space-y-2">
+                  <div className="h-4 bg-gray-200 rounded w-3/4" />
+                  <div className="h-3 bg-gray-100 rounded w-1/2" />
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
         </div>
       ) : !email ? (
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm flex flex-col items-center py-12 text-center">
@@ -88,11 +93,7 @@ const MeetingListAsUser = () => {
       ) : meetingListAsUser?.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {meetingListAsUser.slice(0, 6).map((meeting, idx) => (
-            <MeetingCard
-              key={idx}
-              meeting={meeting}
-              onClick={() => navigate(`/clubs/main?clubNumber=${meeting.clubNumber}`)}
-            />
+            <MeetingCard key={idx} meeting={meeting} onClick={() => navigate(`/clubs/main?clubNumber=${meeting.clubNumber}`)} />
           ))}
         </div>
       ) : (

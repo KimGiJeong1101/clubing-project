@@ -16,23 +16,20 @@ const CategoryPopup = ({ categories, onSelect, onClose, selectedCategories }) =>
     }
   };
 
-  const handleSubmit = () => { onSelect(localSelectedCategories); onClose(); };
-  const handleClose = (e) => { e.stopPropagation(); onClose(); };
+  const handleSubmit = () => {
+    onSelect(localSelectedCategories);
+    onClose();
+  };
+  const handleClose = (e) => {
+    e.stopPropagation();
+    onClose();
+  };
 
   return (
-    <div
-      className="fixed inset-0 z-[1300] bg-black/50 flex items-center justify-center"
-      onClick={handleClose}
-    >
+    <div className="fixed inset-0 z-[1300] bg-black/50 flex items-center justify-center" onClick={handleClose}>
       <Draggable>
-        <div
-          className="bg-white rounded-2xl shadow-2xl w-[90vw] max-w-[600px] max-h-[80vh] overflow-auto relative p-6"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <button
-            className="absolute top-4 right-4 p-1.5 text-gray-400 hover:text-gray-700 transition-colors"
-            onClick={handleClose}
-          >
+        <div className="bg-white rounded-2xl shadow-2xl w-[90vw] max-w-[600px] max-h-[80vh] overflow-auto relative p-6" onClick={(e) => e.stopPropagation()}>
+          <button className="absolute top-4 right-4 p-1.5 text-gray-400 hover:text-gray-700 transition-colors" onClick={handleClose}>
             <FiX className="w-5 h-5" />
           </button>
 
@@ -48,10 +45,11 @@ const CategoryPopup = ({ categories, onSelect, onClose, selectedCategories }) =>
                     return (
                       <button
                         key={sub}
-                        onClick={(e) => { e.stopPropagation(); handleSelect(main, sub); }}
-                        className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                          isActive ? "bg-primary-600 text-white" : "bg-primary-50 text-primary-700 hover:bg-primary-100"
-                        }`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleSelect(main, sub);
+                        }}
+                        className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${isActive ? "bg-primary-600 text-white" : "bg-primary-50 text-primary-700 hover:bg-primary-100"}`}
                       >
                         {sub}
                       </button>

@@ -20,9 +20,7 @@ const Snackbar = ({ open, message, severity, onClose }) => {
     info: "bg-blue-500",
   };
   return (
-    <div
-      className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-[500] flex items-center gap-3 px-5 py-3 rounded-lg shadow-lg text-white text-sm font-medium ${colorMap[severity] ?? "bg-gray-700"}`}
-    >
+    <div className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-[500] flex items-center gap-3 px-5 py-3 rounded-lg shadow-lg text-white text-sm font-medium ${colorMap[severity] ?? "bg-gray-700"}`}>
       <span>{message}</span>
       <button onClick={onClose} className="ml-2 hover:opacity-70 transition-opacity">
         <FiX size={16} />
@@ -263,29 +261,22 @@ const Gallery = () => {
     setAlertOpen(false);
   };
 
-  if (isLoading) return (
-    <div className="flex justify-center items-center py-20">
-      <div className="w-8 h-8 border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin" />
-    </div>
-  );
+  if (isLoading)
+    return (
+      <div className="flex justify-center items-center py-20">
+        <div className="w-8 h-8 border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin" />
+      </div>
+    );
 
   return (
     <div className="relative w-full overflow-x-hidden">
       {/* 에러 메시지 */}
-      {error && (
-        <div className="px-4 py-2 mb-4 text-sm text-red-700 bg-red-100 rounded-lg">
-          데이터 로드 에러: {error.message}
-        </div>
-      )}
+      {error && <div className="px-4 py-2 mb-4 text-sm text-red-700 bg-red-100 rounded-lg">데이터 로드 에러: {error.message}</div>}
 
       {/* 이미지 없을 때 */}
       {sortedImages.length === 0 ? (
         <div className="w-full text-center py-12 px-4">
-          <img
-            src="/NoImagesAvailable.webp"
-            alt="No images available"
-            className="w-full max-w-[600px] mx-auto"
-          />
+          <img src="/NoImagesAvailable.webp" alt="No images available" className="w-full max-w-[600px] mx-auto" />
         </div>
       ) : (
         /* 이미지 그리드: 모바일 1열 → md 2열 → lg 3열 */
@@ -313,11 +304,7 @@ const Gallery = () => {
                     }}
                     className="absolute top-2 right-2 z-[1000] bg-white/80 backdrop-blur-sm rounded-full p-0.5 text-primary-600 hover:text-primary-800 transition-colors shadow-sm"
                   >
-                    {selectedImageIds.includes(item._id) ? (
-                      <FiCheckSquare size={22} />
-                    ) : (
-                      <FiSquare size={22} />
-                    )}
+                    {selectedImageIds.includes(item._id) ? <FiCheckSquare size={22} /> : <FiSquare size={22} />}
                   </button>
                 )}
               </div>
@@ -327,76 +314,32 @@ const Gallery = () => {
       )}
 
       {/* GalleryModal */}
-      <GalleryModal
-        open={open}
-        handleClose={handleClose}
-        postId={selectedId}
-        images={selectedImages}
-        writer={selectedWriter}
-        title={selectedTitle}
-        content={selectedContent}
-        createdAt={selectedCreatedAt}
-        updatedAt={selectedUpdatedAt}
-        handlePrev={handlePrev}
-        handleNext={handleNext}
-      />
+      <GalleryModal open={open} handleClose={handleClose} postId={selectedId} images={selectedImages} writer={selectedWriter} title={selectedTitle} content={selectedContent} createdAt={selectedCreatedAt} updatedAt={selectedUpdatedAt} handlePrev={handlePrev} handleNext={handleNext} />
 
       {/* 우측 고정 액션 버튼 그룹 */}
       <div className="fixed top-[180px] right-4 z-[1000] flex flex-col gap-1.5">
         {/* 이미지 등록 버튼 */}
-        <button
-          onClick={handleRegisterOpen}
-          className="bg-white rounded-xl p-2.5 shadow-md hover:shadow-lg transition-all group"
-          title="이미지 등록"
-        >
-          <FiPlusSquare
-            size={20}
-            className="text-primary-400 group-hover:text-primary-600 transition-colors"
-          />
+        <button onClick={handleRegisterOpen} className="bg-white rounded-xl p-2.5 shadow-md hover:shadow-lg transition-all group" title="이미지 등록">
+          <FiPlusSquare size={20} className="text-primary-400 group-hover:text-primary-600 transition-colors" />
         </button>
 
         {/* 선택 모드 토글 버튼 */}
-        <button
-          onClick={handleSelectModeToggle}
-          className={`rounded-xl p-2.5 shadow-md hover:shadow-lg transition-all group ${
-            selectMode ? "bg-primary-600" : "bg-white"
-          }`}
-          title="선택 모드"
-        >
-          <FiCheckCircle
-            size={20}
-            className={`transition-colors ${
-              selectMode
-                ? "text-white"
-                : "text-primary-400 group-hover:text-primary-600"
-            }`}
-          />
+        <button onClick={handleSelectModeToggle} className={`rounded-xl p-2.5 shadow-md hover:shadow-lg transition-all group ${selectMode ? "bg-primary-600" : "bg-white"}`} title="선택 모드">
+          <FiCheckCircle size={20} className={`transition-colors ${selectMode ? "text-white" : "text-primary-400 group-hover:text-primary-600"}`} />
         </button>
 
         {/* 선택 모드 활성 시 추가 버튼들 */}
         {selectMode && (
           <>
-            <button
-              onClick={handleDeleteSelectedImages}
-              className="bg-white rounded-xl px-2.5 py-2 shadow-md hover:shadow-lg transition-all text-xs font-nanum-bold text-red-400 hover:text-red-600 flex items-center gap-1"
-              title="선택 삭제"
-            >
+            <button onClick={handleDeleteSelectedImages} className="bg-white rounded-xl px-2.5 py-2 shadow-md hover:shadow-lg transition-all text-xs font-nanum-bold text-red-400 hover:text-red-600 flex items-center gap-1" title="선택 삭제">
               <FiTrash2 size={13} />
               선택삭제
             </button>
-            <button
-              onClick={handleDeleteAllImages}
-              className="bg-white rounded-xl px-2.5 py-2 shadow-md hover:shadow-lg transition-all text-xs font-nanum-bold text-red-400 hover:text-red-600 flex items-center gap-1"
-              title="전체 삭제"
-            >
+            <button onClick={handleDeleteAllImages} className="bg-white rounded-xl px-2.5 py-2 shadow-md hover:shadow-lg transition-all text-xs font-nanum-bold text-red-400 hover:text-red-600 flex items-center gap-1" title="전체 삭제">
               <FiTrash size={13} />
               전체삭제
             </button>
-            <button
-              onClick={handleEditOpen}
-              className="bg-white rounded-xl px-2.5 py-2 shadow-md hover:shadow-lg transition-all text-xs font-nanum-bold text-primary-500 hover:text-primary-700 flex items-center gap-1"
-              title="수정"
-            >
+            <button onClick={handleEditOpen} className="bg-white rounded-xl px-2.5 py-2 shadow-md hover:shadow-lg transition-all text-xs font-nanum-bold text-primary-500 hover:text-primary-700 flex items-center gap-1" title="수정">
               <FiEdit2 size={13} />
               수정
             </button>
@@ -411,10 +354,7 @@ const Gallery = () => {
             {/* 모달 헤더 */}
             <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 flex-shrink-0">
               <h2 className="text-base font-nanum-bold text-gray-900">이미지 등록</h2>
-              <button
-                onClick={handleRegisterClose}
-                className="text-gray-400 hover:text-gray-700 transition-colors p-1 rounded-lg hover:bg-gray-100"
-              >
+              <button onClick={handleRegisterClose} className="text-gray-400 hover:text-gray-700 transition-colors p-1 rounded-lg hover:bg-gray-100">
                 <FiX size={20} />
               </button>
             </div>
@@ -433,10 +373,7 @@ const Gallery = () => {
             {/* 모달 헤더 */}
             <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 flex-shrink-0">
               <h2 className="text-base font-nanum-bold text-gray-900">이미지 수정</h2>
-              <button
-                onClick={handleEditClose}
-                className="text-gray-400 hover:text-gray-700 transition-colors p-1 rounded-lg hover:bg-gray-100"
-              >
+              <button onClick={handleEditClose} className="text-gray-400 hover:text-gray-700 transition-colors p-1 rounded-lg hover:bg-gray-100">
                 <FiX size={20} />
               </button>
             </div>
@@ -458,37 +395,16 @@ const Gallery = () => {
       )}
 
       {/* 전체 삭제 확인 모달 */}
-      <AlertModal
-        open={confirmDeleteOpen}
-        handleClose={handleConfirmDeleteClose}
-        handleConfirm={handleConfirmDelete}
-        title="전체 삭제"
-        description="정말로 모든 이미지를 삭제하시겠습니까?"
-        confirmText="삭제"
-        cancelText="취소"
-      />
+      <AlertModal open={confirmDeleteOpen} handleClose={handleConfirmDeleteClose} handleConfirm={handleConfirmDelete} title="전체 삭제" description="정말로 모든 이미지를 삭제하시겠습니까?" confirmText="삭제" cancelText="취소" />
 
       {/* 선택 개수 오류 알림 모달 */}
-      <AlertModal
-        open={alertOpen}
-        handleClose={handleAlertClose}
-        handleConfirm={handleAlertClose}
-        title="이미지 선택 오류"
-        description="수정 하실 때는 하나의 이미지만 선택해주세요."
-        confirmText="확인"
-        cancelText=""
-      />
+      <AlertModal open={alertOpen} handleClose={handleAlertClose} handleConfirm={handleAlertClose} title="이미지 선택 오류" description="수정 하실 때는 하나의 이미지만 선택해주세요." confirmText="확인" cancelText="" />
 
       {/* 로딩 Backdrop */}
       <Backdrop open={isLoading || isFetching} />
 
       {/* Snackbar */}
-      <Snackbar
-        open={snackbarOpen}
-        message={snackbarMessage}
-        severity={snackbarSeverity}
-        onClose={handleSnackbarClose}
-      />
+      <Snackbar open={snackbarOpen} message={snackbarMessage} severity={snackbarSeverity} onClose={handleSnackbarClose} />
     </div>
   );
 };

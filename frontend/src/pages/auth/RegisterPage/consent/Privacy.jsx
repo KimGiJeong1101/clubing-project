@@ -11,8 +11,8 @@ const PrivacyPopup = ({ onClose, handleCheck, checked }) => {
         <div className="flex flex-col max-h-[60vh] overflow-y-auto p-4">
           <div className="mb-4 flex-grow">
             <div className="box-border rounded border border-[#d6d6d6] p-4 h-[230px] overflow-y-auto bg-[#f9f9f9] text-sm text-gray-700">
-              여기에 개인정보 수집 및 이용 내용 작성합니다. 여기에 개인정보 수집 및 이용 내용 작성합니다. 여기에 개인정보 수집 및 이용 내용 작성합니다. 여기에 개인정보 수집 및 이용 내용 작성합니다. 여기에 개인정보 수집 및 이용 내용 작성합니다. 여기에 개인정보 수집 및 이용 내용 작성합니다. 여기에 개인정보 수집 및 이용 내용 작성합니다. 여기에 개인정보 수집 및 이용 내용 작성합니다. 여기에 개인정보 수집 및 이용 내용 작성합니다. 여기에 개인정보 수집 및 이용 내용 작성합니다. 여기에 개인정보 수집 및 이용
-              내용 작성합니다. 여기에 개인정보 수집 및 이용 내용 작성합니다.
+              여기에 개인정보 수집 및 이용 내용 작성합니다. 여기에 개인정보 수집 및 이용 내용 작성합니다. 여기에 개인정보 수집 및 이용 내용 작성합니다. 여기에 개인정보 수집 및 이용 내용 작성합니다. 여기에 개인정보 수집 및 이용 내용 작성합니다. 여기에 개인정보 수집 및 이용 내용 작성합니다. 여기에 개인정보 수집 및 이용 내용 작성합니다. 여기에 개인정보 수집 및 이용 내용 작성합니다. 여기에 개인정보 수집 및 이용 내용 작성합니다. 여기에 개인정보 수집 및 이용 내용 작성합니다. 여기에 개인정보 수집 및
+              이용 내용 작성합니다. 여기에 개인정보 수집 및 이용 내용 작성합니다.
             </div>
           </div>
           <label className="flex items-center gap-2 cursor-pointer">
@@ -21,10 +21,7 @@ const PrivacyPopup = ({ onClose, handleCheck, checked }) => {
           </label>
         </div>
         <div className="flex justify-end px-4 py-3 border-t border-gray-200">
-          <button
-            onClick={onClose}
-            className="text-blue-600 hover:text-blue-800 text-sm font-medium px-3 py-1"
-          >
+          <button onClick={onClose} className="text-blue-600 hover:text-blue-800 text-sm font-medium px-3 py-1">
             닫기
           </button>
         </div>

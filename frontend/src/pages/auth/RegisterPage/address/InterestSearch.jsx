@@ -4,7 +4,12 @@ import { useForm } from "react-hook-form";
 
 const InterestSearch = ({ setInterestSido, setInterestSigoon, setInterestDong }) => {
   const [interestResults, setInterestResults] = useState([]);
-  const { formState: { errors }, register, setValue, watch } = useForm();
+  const {
+    formState: { errors },
+    register,
+    setValue,
+    watch,
+  } = useForm();
 
   const { user } = useSelector((state) => state.user?.userData || {});
   const apiKey = process.env.REACT_APP_KEY_API;
@@ -34,7 +39,10 @@ const InterestSearch = ({ setInterestSido, setInterestSigoon, setInterestDong })
   };
 
   const handleInterestKeyDown = (e) => {
-    if (e.key === "Enter") { e.preventDefault(); if (interestResults.length > 0) handleInterestSelect(interestResults[0]); }
+    if (e.key === "Enter") {
+      e.preventDefault();
+      if (interestResults.length > 0) handleInterestSelect(interestResults[0]);
+    }
   };
 
   const handleChange = (e) => {
@@ -48,24 +56,12 @@ const InterestSearch = ({ setInterestSido, setInterestSigoon, setInterestDong })
 
   return (
     <div className="w-full">
-      <input
-        id="interestSearchTerm"
-        type="text"
-        className={`w-full border rounded-lg px-4 py-2.5 text-sm bg-white outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-500 mt-2 ${errors.interestSearchTerm ? "border-red-400" : "border-gray-300"}`}
-        placeholder="*읍면동 중 하나 입력해주세요 예) 강화읍"
-        {...register("interestSearchTerm", { pattern: { value: /^[가-힣\s]*$/, message: "한글만 입력 가능합니다." } })}
-        onKeyDown={handleInterestKeyDown}
-        onChange={handleChange}
-      />
+      <input id="interestSearchTerm" type="text" className={`w-full border rounded-lg px-4 py-2.5 text-sm bg-white outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-500 mt-2 ${errors.interestSearchTerm ? "border-red-400" : "border-gray-300"}`} placeholder="*읍면동 중 하나 입력해주세요 예) 강화읍" {...register("interestSearchTerm", { pattern: { value: /^[가-힣\s]*$/, message: "한글만 입력 가능합니다." } })} onKeyDown={handleInterestKeyDown} onChange={handleChange} />
       {errors.interestSearchTerm && <p className="text-xs text-red-500 mt-1">{errors.interestSearchTerm.message}</p>}
       {interestResults.length > 0 && (
         <ul className="border border-gray-200 rounded-lg mt-1 bg-white shadow-md max-h-40 overflow-y-auto">
           {interestResults.map((item, index) => (
-            <li
-              key={index}
-              className="px-4 py-2 text-sm cursor-pointer hover:bg-gray-100 transition-colors"
-              onClick={() => handleInterestSelect(item)}
-            >
+            <li key={index} className="px-4 py-2 text-sm cursor-pointer hover:bg-gray-100 transition-colors" onClick={() => handleInterestSelect(item)}>
               {item.full_nm}
             </li>
           ))}

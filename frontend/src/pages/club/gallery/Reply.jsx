@@ -260,19 +260,12 @@ const Reply = ({ postType, postId }) => {
             <div key={index} className="mb-0.5">
               <div className="flex items-start">
                 {/* 아바타 */}
-                <img
-                  src={reply.writerProfileImage || "default-profile.png"}
-                  alt={reply.writerNickName || "Unknown"}
-                  className="w-10 h-10 rounded-full object-cover mr-4 flex-shrink-0"
-                />
+                <img src={reply.writerProfileImage || "default-profile.png"} alt={reply.writerNickName || "Unknown"} className="w-10 h-10 rounded-full object-cover mr-4 flex-shrink-0" />
                 <div className="flex-grow">
                   <div className="flex justify-between items-center">
                     <div className="flex items-center">
                       <span className="font-bold text-sm">{reply.writerNickName || "Unknown"}</span>
-                      <button
-                        onClick={(event) => handleMenuOpen(event, reply)}
-                        className="ml-1 p-1 text-gray-500 hover:text-gray-700 rounded"
-                      >
+                      <button onClick={(event) => handleMenuOpen(event, reply)} className="ml-1 p-1 text-gray-500 hover:text-gray-700 rounded">
                         <FiMoreHorizontal size={16} />
                       </button>
                     </div>
@@ -281,16 +274,8 @@ const Reply = ({ postType, postId }) => {
 
                   {editMode === reply._id ? (
                     <div className="flex items-center mt-2">
-                      <textarea
-                        className="flex-grow border border-gray-300 rounded px-2 py-1 text-sm resize-none min-h-[32px] focus:outline-none focus:border-blue-400"
-                        value={editComment}
-                        onChange={(e) => setEditComment(e.target.value)}
-                        rows={1}
-                      />
-                      <button
-                        onClick={handleEditSubmit}
-                        className="ml-1 p-1 text-blue-500 hover:text-blue-700"
-                      >
+                      <textarea className="flex-grow border border-gray-300 rounded px-2 py-1 text-sm resize-none min-h-[32px] focus:outline-none focus:border-blue-400" value={editComment} onChange={(e) => setEditComment(e.target.value)} rows={1} />
+                      <button onClick={handleEditSubmit} className="ml-1 p-1 text-blue-500 hover:text-blue-700">
                         <FiSend size={16} />
                       </button>
                     </div>
@@ -303,19 +288,12 @@ const Reply = ({ postType, postId }) => {
                     <div className="mt-2">
                       {reply.replies.map((childReply, childIndex) => (
                         <div key={childIndex} className="flex items-start mb-2">
-                          <img
-                            src={childReply.writerProfileImage || "default-profile.png"}
-                            alt={childReply.writerNickName || "Unknown"}
-                            className="w-[30px] h-[30px] rounded-full object-cover mr-3 flex-shrink-0"
-                          />
+                          <img src={childReply.writerProfileImage || "default-profile.png"} alt={childReply.writerNickName || "Unknown"} className="w-[30px] h-[30px] rounded-full object-cover mr-3 flex-shrink-0" />
                           <div className="flex-grow">
                             <div className="flex justify-between items-center">
                               <div className="flex items-center">
                                 <span className="font-bold text-xs">{childReply.writerNickName || "Unknown"}</span>
-                                <button
-                                  onClick={(event) => handleMenuOpen(event, childReply, true)}
-                                  className="ml-1 p-1 text-gray-500 hover:text-gray-700 rounded"
-                                >
+                                <button onClick={(event) => handleMenuOpen(event, childReply, true)} className="ml-1 p-1 text-gray-500 hover:text-gray-700 rounded">
                                   <FiMoreHorizontal size={14} />
                                 </button>
                               </div>
@@ -324,16 +302,8 @@ const Reply = ({ postType, postId }) => {
 
                             {editChildMode === childReply._id ? (
                               <div className="flex items-center mt-2">
-                                <textarea
-                                  className="flex-grow border border-gray-300 rounded px-2 py-1 text-sm resize-none min-h-[32px] focus:outline-none focus:border-blue-400"
-                                  value={editChildComment}
-                                  onChange={(e) => setEditChildComment(e.target.value)}
-                                  rows={1}
-                                />
-                                <button
-                                  onClick={handleEditChildSubmit}
-                                  className="ml-1 p-1 text-blue-500 hover:text-blue-700"
-                                >
+                                <textarea className="flex-grow border border-gray-300 rounded px-2 py-1 text-sm resize-none min-h-[32px] focus:outline-none focus:border-blue-400" value={editChildComment} onChange={(e) => setEditChildComment(e.target.value)} rows={1} />
+                                <button onClick={handleEditChildSubmit} className="ml-1 p-1 text-blue-500 hover:text-blue-700">
                                   <FiSend size={16} />
                                 </button>
                               </div>
@@ -346,26 +316,14 @@ const Reply = ({ postType, postId }) => {
                     </div>
                   )}
 
-                  <button
-                    className="text-xs text-primary-500 mt-0.5 hover:underline"
-                    onClick={() => setActiveReplyIndex(index)}
-                  >
+                  <button className="text-xs text-primary-500 mt-0.5 hover:underline" onClick={() => setActiveReplyIndex(index)}>
                     답글
                   </button>
 
                   {activeReplyIndex === index && (
                     <div className="flex items-center mt-2">
-                      <textarea
-                        className="flex-grow border border-gray-300 rounded px-2 py-1 text-sm resize-none min-h-[32px] focus:outline-none focus:border-blue-400"
-                        placeholder="답글을 입력하세요"
-                        value={replyContent}
-                        onChange={handleReplyChange}
-                        rows={1}
-                      />
-                      <button
-                        onClick={() => handleReplySubmit(reply._id)}
-                        className="ml-1 p-1 text-blue-500 hover:text-blue-700"
-                      >
+                      <textarea className="flex-grow border border-gray-300 rounded px-2 py-1 text-sm resize-none min-h-[32px] focus:outline-none focus:border-blue-400" placeholder="답글을 입력하세요" value={replyContent} onChange={handleReplyChange} rows={1} />
+                      <button onClick={() => handleReplySubmit(reply._id)} className="ml-1 p-1 text-blue-500 hover:text-blue-700">
                         <FiSend size={16} />
                       </button>
                     </div>
@@ -381,21 +339,11 @@ const Reply = ({ postType, postId }) => {
 
       {/* 드롭다운 메뉴 (portal 대신 fixed 포지셔닝) */}
       {menuOpen && (
-        <div
-          ref={menuRef}
-          className="fixed z-50 bg-white border border-gray-200 rounded shadow-lg"
-          style={{ top: menuPosition.top, left: menuPosition.left }}
-        >
-          <button
-            onClick={handleEditReply}
-            className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
-          >
+        <div ref={menuRef} className="fixed z-50 bg-white border border-gray-200 rounded shadow-lg" style={{ top: menuPosition.top, left: menuPosition.left }}>
+          <button onClick={handleEditReply} className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100">
             수정하기
           </button>
-          <button
-            onClick={handleDeleteReply}
-            className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
-          >
+          <button onClick={handleDeleteReply} className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100">
             삭제하기
           </button>
         </div>
@@ -404,18 +352,8 @@ const Reply = ({ postType, postId }) => {
       {/* 댓글 입력창 */}
       <div className="flex items-center">
         <div className="flex-grow relative">
-          <textarea
-            className="w-full border border-gray-300 rounded px-3 py-1 text-sm resize-none min-h-[32px] focus:outline-none focus:border-blue-400 pr-10"
-            placeholder="댓글을 입력하세요"
-            value={comment}
-            onChange={handleCommentChange}
-            onKeyDown={handleKeyDown}
-            rows={1}
-          />
-          <button
-            onClick={handleCommentSubmit}
-            className="absolute right-2 top-1/2 -translate-y-1/2 text-blue-500 hover:text-blue-700 p-1"
-          >
+          <textarea className="w-full border border-gray-300 rounded px-3 py-1 text-sm resize-none min-h-[32px] focus:outline-none focus:border-blue-400 pr-10" placeholder="댓글을 입력하세요" value={comment} onChange={handleCommentChange} onKeyDown={handleKeyDown} rows={1} />
+          <button onClick={handleCommentSubmit} className="absolute right-2 top-1/2 -translate-y-1/2 text-blue-500 hover:text-blue-700 p-1">
             <FiSend size={14} />
           </button>
         </div>
@@ -424,11 +362,7 @@ const Reply = ({ postType, postId }) => {
       {/* Snackbar */}
       {snackbarOpen && (
         <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50">
-          <div
-            className={`flex items-center gap-2 px-4 py-3 rounded shadow-lg text-white ${
-              snackbarSeverity === "error" ? "bg-red-500" : "bg-green-500"
-            }`}
-          >
+          <div className={`flex items-center gap-2 px-4 py-3 rounded shadow-lg text-white ${snackbarSeverity === "error" ? "bg-red-500" : "bg-green-500"}`}>
             <span>{snackbarMessage}</span>
             <button onClick={handleSnackbarClose} className="ml-2 font-bold text-white hover:opacity-75">
               ×

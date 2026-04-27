@@ -1,17 +1,5 @@
 import React from "react";
-import {
-  FiFeather,
-  FiAnchor,
-  FiCoffee,
-  FiStar,
-  FiNavigation,
-  FiBook,
-  FiUsers,
-  FiMusic,
-  FiDollarSign,
-  FiGlobe,
-  FiHeart,
-} from "react-icons/fi";
+import { FiFeather, FiAnchor, FiCoffee, FiStar, FiNavigation, FiBook, FiUsers, FiMusic, FiDollarSign, FiGlobe, FiHeart } from "react-icons/fi";
 
 const CategoryModal = ({ open, onClose, onCategorySelect }) => {
   const handleCategoryClick = (category) => {
@@ -46,19 +34,14 @@ const CategoryModal = ({ open, onClose, onCategorySelect }) => {
       {/* 배경 클릭 시 닫기 */}
       <div className="absolute inset-0" onClick={onClose} />
 
-      <div className="relative z-10 bg-white border-2 border-black shadow-2xl p-8"
-           style={{ width: 600, height: 430 }}>
+      <div className="relative z-10 bg-white border-2 border-black shadow-2xl p-8" style={{ width: 600, height: 430 }}>
         <h2 className="text-2xl font-bold text-center mb-2">관심사 선택</h2>
         <hr className="mb-4" />
 
         <div className="grid grid-cols-4 gap-4">
           {categories.map((cat) => (
             <div key={cat.label} className="flex flex-col items-center">
-              <button
-                aria-label={cat.label}
-                onClick={FadHandleClick}
-                className={`flex items-center justify-center w-[70px] h-[70px] rounded-full bg-gray-100 shadow-md hover:bg-gray-200 transition-colors my-[10px] ${cat.color}`}
-              >
+              <button aria-label={cat.label} onClick={FadHandleClick} className={`flex items-center justify-center w-[70px] h-[70px] rounded-full bg-gray-100 shadow-md hover:bg-gray-200 transition-colors my-[10px] ${cat.color}`}>
                 {cat.icon}
               </button>
               <span className="text-center text-sm">{cat.label}</span>

@@ -141,12 +141,7 @@ const ReadVote = ({ voteId, onDelete }) => {
             {/* 투표 제목 (읽기 전용) */}
             <div className="mb-4">
               <label className="block text-xs text-gray-500 mb-1">투표 제목</label>
-              <input
-                type="text"
-                value={vote.title}
-                readOnly
-                className="w-full border border-gray-300 rounded px-3 py-2 text-sm bg-gray-50 cursor-default"
-              />
+              <input type="text" value={vote.title} readOnly className="w-full border border-gray-300 rounded px-3 py-2 text-sm bg-gray-50 cursor-default" />
             </div>
 
             {/* 투표 옵션 목록 (투표 전, 종료 전) */}
@@ -154,15 +149,7 @@ const ReadVote = ({ voteId, onDelete }) => {
               <ul className="space-y-2 mb-4">
                 {vote.options.map((option, index) => {
                   return (
-                    <li
-                      key={index}
-                      onClick={() => handleOptionClick(option)}
-                      className={`flex items-center border rounded px-3 py-2 cursor-pointer transition-colors ${
-                        selectedOption === option
-                          ? "border-[#A67153] bg-[#f5ede6]"
-                          : "border-gray-200 bg-white hover:bg-gray-50"
-                      }`}
-                    >
+                    <li key={index} onClick={() => handleOptionClick(option)} className={`flex items-center border rounded px-3 py-2 cursor-pointer transition-colors ${selectedOption === option ? "border-[#A67153] bg-[#f5ede6]" : "border-gray-200 bg-white hover:bg-gray-50"}`}>
                       <span className="text-sm">{option}</span>
                     </li>
                   );
@@ -175,35 +162,22 @@ const ReadVote = ({ voteId, onDelete }) => {
               {!isVoteEnded ? (
                 <>
                   {!hasVoted ? (
-                    <button
-                      onClick={handleVote}
-                      disabled={!selectedOption}
-                      className="px-4 py-2 rounded text-sm font-medium bg-primary-100 text-primary-800 hover:bg-primary-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
+                    <button onClick={handleVote} disabled={!selectedOption} className="px-4 py-2 rounded text-sm font-medium bg-primary-100 text-primary-800 hover:bg-primary-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                       투표하기
                     </button>
                   ) : (
-                    <button
-                      onClick={handleSummaryOpen}
-                      className="px-4 py-2 rounded text-sm font-medium bg-primary-100 text-primary-800 hover:bg-primary-200 transition-colors"
-                    >
+                    <button onClick={handleSummaryOpen} className="px-4 py-2 rounded text-sm font-medium bg-primary-100 text-primary-800 hover:bg-primary-200 transition-colors">
                       투표 결과 보기
                     </button>
                   )}
                 </>
               ) : (
-                <button
-                  onClick={handleSummaryOpen}
-                  className="px-4 py-2 rounded text-sm font-medium bg-primary-100 text-primary-800 hover:bg-primary-200 transition-colors"
-                >
+                <button onClick={handleSummaryOpen} className="px-4 py-2 rounded text-sm font-medium bg-primary-100 text-primary-800 hover:bg-primary-200 transition-colors">
                   투표 결과 보기
                 </button>
               )}
               {isAuthor && (
-                <button
-                  onClick={handleDelete}
-                  className="px-4 py-2 rounded text-sm font-medium bg-red-500 text-white hover:bg-red-600 transition-colors"
-                >
+                <button onClick={handleDelete} className="px-4 py-2 rounded text-sm font-medium bg-red-500 text-white hover:bg-red-600 transition-colors">
                   투표 삭제
                 </button>
               )}
@@ -212,12 +186,7 @@ const ReadVote = ({ voteId, onDelete }) => {
             {/* 투표 종료 시간 (읽기 전용) */}
             <div className="mb-4">
               <label className="block text-xs text-gray-500 mb-1">투표 종료 시간</label>
-              <input
-                type="datetime-local"
-                value={formatToLocalDatetime(vote.endTime)}
-                readOnly
-                className="w-full border border-gray-300 rounded px-3 py-2 text-sm bg-gray-50 cursor-default"
-              />
+              <input type="datetime-local" value={formatToLocalDatetime(vote.endTime)} readOnly className="w-full border border-gray-300 rounded px-3 py-2 text-sm bg-gray-50 cursor-default" />
             </div>
           </div>
 
@@ -237,14 +206,8 @@ const ReadVote = ({ voteId, onDelete }) => {
 
           {/* 투표 결과 모달 */}
           {openSummary && (
-            <div
-              className="fixed inset-0 z-[300] bg-black/50 flex items-center justify-center p-4"
-              onClick={handleSummaryClose}
-            >
-              <div
-                className="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
-                onClick={(e) => e.stopPropagation()}
-              >
+            <div className="fixed inset-0 z-[300] bg-black/50 flex items-center justify-center p-4" onClick={handleSummaryClose}>
+              <div className="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
                 <div className="px-6 py-4 border-b border-gray-200">
                   <h2 className="text-lg font-semibold">투표 결과</h2>
                 </div>
@@ -254,18 +217,13 @@ const ReadVote = ({ voteId, onDelete }) => {
                       <li key={index} className="flex flex-col border-b pb-2 last:border-0">
                         <span className="font-medium text-sm">{item.option}</span>
                         <span className="text-xs text-gray-500">선택 수: {item.count}</span>
-                        {!vote.anonymous && (
-                          <span className="text-xs text-gray-400">투표한 사람: {item.emails}</span>
-                        )}
+                        {!vote.anonymous && <span className="text-xs text-gray-400">투표한 사람: {item.emails}</span>}
                       </li>
                     ))}
                   </ul>
                 </div>
                 <div className="px-6 py-4 border-t border-gray-200 flex justify-end">
-                  <button
-                    onClick={handleSummaryClose}
-                    className="px-4 py-2 rounded text-sm font-medium text-gray-600 hover:bg-gray-100 transition-colors"
-                  >
+                  <button onClick={handleSummaryClose} className="px-4 py-2 rounded text-sm font-medium text-gray-600 hover:bg-gray-100 transition-colors">
                     닫기
                   </button>
                 </div>

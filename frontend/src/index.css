@@ -19,23 +19,27 @@
 /* ── 폰트 ── */
 @font-face {
   font-family: "NanumSquareNeoLight";
-  src: url("https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-aLt.woff") format("woff"),
-       url("https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-aLt.ttf") format("truetype");
+  src:
+    url("https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-aLt.woff") format("woff"),
+    url("https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-aLt.ttf") format("truetype");
 }
 @font-face {
   font-family: "NanumSquareNeo";
-  src: url("https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-bRg.woff") format("woff"),
-       url("https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-bRg.ttf") format("truetype");
+  src:
+    url("https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-bRg.woff") format("woff"),
+    url("https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-bRg.ttf") format("truetype");
 }
 @font-face {
   font-family: "NanumSquareNeoBold";
-  src: url("https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-cBd.woff") format("woff"),
-       url("https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-cBd.ttf") format("truetype");
+  src:
+    url("https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-cBd.woff") format("woff"),
+    url("https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-cBd.ttf") format("truetype");
 }
 @font-face {
   font-family: "NanumSquareNeoExtraBold";
-  src: url("https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-dEb.woff") format("woff"),
-       url("https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-dEb.ttf") format("truetype");
+  src:
+    url("https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-dEb.woff") format("woff"),
+    url("https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-dEb.ttf") format("truetype");
 }
 @font-face {
   font-family: "KCC-Hanbit";
@@ -73,8 +77,12 @@
   font-size: 40px;
   color: #dbc7b5;
 }
-.slick-prev { left: -65px; }
-.slick-next { right: -65px; }
+.slick-prev {
+  left: -65px;
+}
+.slick-next {
+  right: -65px;
+}
 
 /* ── 공통 유틸 ── */
 @layer components {

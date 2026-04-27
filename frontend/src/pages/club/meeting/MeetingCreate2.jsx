@@ -144,47 +144,26 @@ const MeetingCreate2 = ({ clubNumber, secondModalClose, secondModal, category, s
       <div className="fixed inset-0 z-40" style={{ backgroundColor: "rgba(0,0,0,0.5)" }} onClick={secondModalClose} />
 
       {/* 모달 */}
-      <div
-        className="fixed z-50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white border-2 border-black shadow-2xl p-8"
-        style={{ width: 700, height: 450 }}
-      >
+      <div className="fixed z-50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white border-2 border-black shadow-2xl p-8" style={{ width: 700, height: 450 }}>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="flex gap-4">
             {/* 이미지 업로드 영역 */}
             <div className="w-[280px] flex-shrink-0">
-              <input
-                id="img"
-                type="file"
-                accept="image/png, image/gif, image/jpeg"
-                onChange={handleFileChange}
-                className="hidden"
-              />
+              <input id="img" type="file" accept="image/png, image/gif, image/jpeg" onChange={handleFileChange} className="hidden" />
               <label htmlFor="img">
-                <span className="block w-full border border-gray-400 rounded text-center py-1.5 cursor-pointer text-sm hover:bg-gray-50 transition-colors">
-                  정모 대표사진 선택하기
-                </span>
+                <span className="block w-full border border-gray-400 rounded text-center py-1.5 cursor-pointer text-sm hover:bg-gray-50 transition-colors">정모 대표사진 선택하기</span>
               </label>
 
               {!preview && (
-                <div
-                  className="mt-4 w-[280px] h-[200px] flex items-center justify-center border-2 border-dashed border-gray-400"
-                  onDragOver={(e) => e.preventDefault()}
-                  onDrop={handleDrop}
-                >
-                  <p className="text-base text-gray-500 text-center px-2">
-                    이미지 미리보기가 없습니다. 이미지를 업로드하세요.
-                  </p>
+                <div className="mt-4 w-[280px] h-[200px] flex items-center justify-center border-2 border-dashed border-gray-400" onDragOver={(e) => e.preventDefault()} onDrop={handleDrop}>
+                  <p className="text-base text-gray-500 text-center px-2">이미지 미리보기가 없습니다. 이미지를 업로드하세요.</p>
                 </div>
               )}
 
               {preview && (
                 <div className="mt-4 relative w-[280px] h-[200px]">
                   <img src={preview} alt="미리보기" className="w-full h-full object-cover" />
-                  <button
-                    type="button"
-                    onClick={cropButtonClick}
-                    className="absolute bottom-2 right-2 bg-black/50 text-white rounded-full p-1 cursor-pointer hover:bg-black/70 transition-colors"
-                  >
+                  <button type="button" onClick={cropButtonClick} className="absolute bottom-2 right-2 bg-black/50 text-white rounded-full p-1 cursor-pointer hover:bg-black/70 transition-colors">
                     <FiCrop size={16} />
                   </button>
                 </div>
@@ -194,13 +173,7 @@ const MeetingCreate2 = ({ clubNumber, secondModalClose, secondModal, category, s
             {/* 입력 필드 영역 */}
             <div className="flex-grow flex flex-col gap-2">
               <div>
-                <input
-                  id="title"
-                  type="text"
-                  placeholder="정모 제목"
-                  className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-blue-400"
-                  {...register("title", { required: " 필수입력 요소." })}
-                />
+                <input id="title" type="text" placeholder="정모 제목" className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-blue-400" {...register("title", { required: " 필수입력 요소." })} />
               </div>
 
               <div className="mb-1.5">
@@ -217,45 +190,26 @@ const MeetingCreate2 = ({ clubNumber, secondModalClose, secondModal, category, s
               </div>
 
               <div>
-                <textarea
-                  id="cost"
-                  placeholder="비용"
-                  className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-blue-400 resize-none"
-                  {...register("cost", { required: " 필수입력 요소." })}
-                />
+                <textarea id="cost" placeholder="비용" className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-blue-400 resize-none" {...register("cost", { required: " 필수입력 요소." })} />
               </div>
             </div>
           </div>
 
           {/* 위치 */}
           <div className="mt-2 mb-4">
-            <textarea
-              id="where"
-              placeholder="모임 장소를 입력하세요"
-              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-blue-400 resize-none"
-              {...register("where", { required: " 필수입력 요소." })}
-            />
+            <textarea id="where" placeholder="모임 장소를 입력하세요" className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-blue-400 resize-none" {...register("where", { required: " 필수입력 요소." })} />
           </div>
 
           {/* 하단: 인원 수 + 공지 체크 + 등록 버튼 */}
           <div className="flex items-center gap-4">
             <div className="w-2/5">
-              <textarea
-                id="totalCount"
-                placeholder="숫자만 입력하세요 (인원 수)"
-                className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-blue-400 resize-none"
-                {...register("totalCount", { required: " 필수입력 요소." })}
-              />
+              <textarea id="totalCount" placeholder="숫자만 입력하세요 (인원 수)" className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-blue-400 resize-none" {...register("totalCount", { required: " 필수입력 요소." })} />
             </div>
             <div className="flex items-center gap-2 flex-grow justify-end">
               <span className="text-xl">
                 정모 공지 <span className="text-gray-400">(전체 멤버 알림)</span>
               </span>
-              <input
-                type="checkbox"
-                onChange={checkedChange}
-                className="w-8 h-8 cursor-pointer accent-blue-600"
-              />
+              <input type="checkbox" onChange={checkedChange} className="w-8 h-8 cursor-pointer accent-blue-600" />
             </div>
           </div>
 
@@ -268,20 +222,12 @@ const MeetingCreate2 = ({ clubNumber, secondModalClose, secondModal, category, s
       </div>
 
       {/* 크롭 모달 */}
-      {cropModalOpen && (
-        <MeetingImageCropper
-          src={preview}
-          onCropComplete={handleCropComplete}
-          onClose={() => setCropModalOpen(false)}
-        />
-      )}
+      {cropModalOpen && <MeetingImageCropper src={preview} onCropComplete={handleCropComplete} onClose={() => setCropModalOpen(false)} />}
 
       {/* 스낵바 */}
       {openSnackbar && (
         <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[60]">
-          <div className="bg-white text-primary-600 rounded-2xl px-6 py-3 shadow-lg text-center min-w-[250px] border border-primary-100">
-            {snackbarMessage}
-          </div>
+          <div className="bg-white text-primary-600 rounded-2xl px-6 py-3 shadow-lg text-center min-w-[250px] border border-primary-100">{snackbarMessage}</div>
         </div>
       )}
     </>

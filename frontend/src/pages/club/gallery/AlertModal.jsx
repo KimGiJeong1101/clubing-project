@@ -26,17 +26,11 @@ const AlertModal = ({ open, handleClose, handleConfirm, title, description, conf
             <p className="text-sm text-gray-600 mb-6">{description}</p>
 
             <div className="flex justify-between gap-3">
-              <button
-                onClick={handleConfirm}
-                className="flex-1 py-2 rounded-lg text-sm font-semibold text-white bg-primary-700 hover:bg-primary-600 transition-colors"
-              >
+              <button onClick={handleConfirm} className="flex-1 py-2 rounded-lg text-sm font-semibold text-white bg-primary-700 hover:bg-primary-600 transition-colors">
                 {confirmText}
               </button>
               {cancelText && (
-                <button
-                  onClick={handleClose}
-                  className="flex-1 py-2 rounded-lg text-sm font-semibold bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors"
-                >
+                <button onClick={handleClose} className="flex-1 py-2 rounded-lg text-sm font-semibold bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors">
                   {cancelText}
                 </button>
               )}

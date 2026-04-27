@@ -28,30 +28,13 @@ const ImageCropper = ({ src, onCropComplete, onClose }) => {
   return (
     <div className="fixed inset-0 z-[11000] bg-black/50 flex items-center justify-center">
       <div className="relative bg-white rounded-xl shadow-2xl p-5 w-[90vw] max-w-[1200px] h-[70vh] max-h-[600px] overflow-hidden">
-        <button
-          onClick={onClose}
-          className="absolute top-2.5 right-2.5 z-[11001] bg-white border border-black text-black rounded-lg w-5 h-7 text-xs cursor-pointer hover:bg-gray-100 transition-colors"
-        >
+        <button onClick={onClose} className="absolute top-2.5 right-2.5 z-[11001] bg-white border border-black text-black rounded-lg w-5 h-7 text-xs cursor-pointer hover:bg-gray-100 transition-colors">
           X
         </button>
-        <ReactCrop
-          crop={crop}
-          onChange={setCrop}
-          onComplete={setCrop}
-          style={{ width: "100%", height: "100%" }}
-          locked
-        >
-          <img
-            src={src}
-            alt="Source"
-            onLoad={onLoad}
-            style={{ width: "100%", height: "100%", objectFit: "contain", maxWidth: "100%", maxHeight: "100%", overflow: "hidden" }}
-          />
+        <ReactCrop crop={crop} onChange={setCrop} onComplete={setCrop} style={{ width: "100%", height: "100%" }} locked>
+          <img src={src} alt="Source" onLoad={onLoad} style={{ width: "100%", height: "100%", objectFit: "contain", maxWidth: "100%", maxHeight: "100%", overflow: "hidden" }} />
         </ReactCrop>
-        <button
-          onClick={handleCropComplete}
-          className="absolute bottom-2.5 right-2.5 z-[11001] bg-white border border-black text-black rounded-lg px-4 py-1.5 text-sm cursor-pointer hover:bg-gray-100 transition-colors"
-        >
+        <button onClick={handleCropComplete} className="absolute bottom-2.5 right-2.5 z-[11001] bg-white border border-black text-black rounded-lg px-4 py-1.5 text-sm cursor-pointer hover:bg-gray-100 transition-colors">
           완료
         </button>
       </div>

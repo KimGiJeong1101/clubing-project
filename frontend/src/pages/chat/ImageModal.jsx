@@ -22,25 +22,10 @@ const ImageModal = ({ open, onClose, imageUrl }) => {
   if (!open) return null;
 
   return (
-    <div
-      className="fixed inset-0 z-[300] bg-black/50 flex items-center justify-center"
-      onClick={handleBackdropClick}
-    >
-      <div
-        className="relative max-w-[90vw] max-h-[90vh] bg-transparent"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <img
-          src={imageUrl}
-          alt="Full size"
-          className="w-full h-auto object-contain"
-          style={{ maxHeight: "80vh", border: "none", outline: "none" }}
-        />
-        <button
-          onClick={handleClose}
-          className="absolute top-2 right-2 z-10 p-1 bg-white/20 hover:bg-white/40 rounded-full transition-colors"
-          aria-label="닫기"
-        >
+    <div className="fixed inset-0 z-[300] bg-black/50 flex items-center justify-center" onClick={handleBackdropClick}>
+      <div className="relative max-w-[90vw] max-h-[90vh] bg-transparent" onClick={(e) => e.stopPropagation()}>
+        <img src={imageUrl} alt="Full size" className="w-full h-auto object-contain" style={{ maxHeight: "80vh", border: "none", outline: "none" }} />
+        <button onClick={handleClose} className="absolute top-2 right-2 z-10 p-1 bg-white/20 hover:bg-white/40 rounded-full transition-colors" aria-label="닫기">
           <FiX size={24} color="#fff" />
         </button>
       </div>

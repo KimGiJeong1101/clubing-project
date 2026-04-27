@@ -16,19 +16,13 @@ const ClubCarousel = ({ clubList }) => {
     slidesToShow: 2,
     slidesToScroll: 1,
     arrows: false,
-    responsive: [
-      { breakpoint: 480, settings: { slidesToShow: 1, slidesToScroll: 1 } },
-    ],
+    responsive: [{ breakpoint: 480, settings: { slidesToShow: 1, slidesToScroll: 1 } }],
   };
 
   return (
     <div className="relative">
       {/* 좌측 버튼 */}
-      <button
-        onClick={() => sliderRef.current?.slickPrev()}
-        className="absolute -left-3 top-1/2 -translate-y-1/2 z-10 w-8 h-8 bg-white rounded-full shadow-md border border-gray-100 flex items-center justify-center text-gray-500 hover:text-primary-600 hover:border-primary-200 hover:shadow-lg transition-all duration-200"
-        aria-label="이전"
-      >
+      <button onClick={() => sliderRef.current?.slickPrev()} className="absolute -left-3 top-1/2 -translate-y-1/2 z-10 w-8 h-8 bg-white rounded-full shadow-md border border-gray-100 flex items-center justify-center text-gray-500 hover:text-primary-600 hover:border-primary-200 hover:shadow-lg transition-all duration-200" aria-label="이전">
         <FiChevronLeft className="w-4 h-4" />
       </button>
 
@@ -44,11 +38,7 @@ const ClubCarousel = ({ clubList }) => {
       </div>
 
       {/* 우측 버튼 */}
-      <button
-        onClick={() => sliderRef.current?.slickNext()}
-        className="absolute -right-3 top-1/2 -translate-y-1/2 z-10 w-8 h-8 bg-white rounded-full shadow-md border border-gray-100 flex items-center justify-center text-gray-500 hover:text-primary-600 hover:border-primary-200 hover:shadow-lg transition-all duration-200"
-        aria-label="다음"
-      >
+      <button onClick={() => sliderRef.current?.slickNext()} className="absolute -right-3 top-1/2 -translate-y-1/2 z-10 w-8 h-8 bg-white rounded-full shadow-md border border-gray-100 flex items-center justify-center text-gray-500 hover:text-primary-600 hover:border-primary-200 hover:shadow-lg transition-all duration-200" aria-label="다음">
         <FiChevronRight className="w-4 h-4" />
       </button>
     </div>

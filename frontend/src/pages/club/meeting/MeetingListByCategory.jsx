@@ -31,24 +31,32 @@ const MeetingListByCategory = ({ passCategory }) => {
     if (moreMeetingListCount !== 0) fetchMeetings();
   }, [moreMeetingListCount]);
 
-  const { data: categoryMeetingList, isLoading, isError, error, isFetching } = useQuery({
+  const {
+    data: categoryMeetingList,
+    isLoading,
+    isError,
+    error,
+    isFetching,
+  } = useQuery({
     queryKey: ["categoryMeetingList", passCategory],
-    queryFn:  getCategoryMeetingList,
+    queryFn: getCategoryMeetingList,
     keepPreviousData: true,
   });
 
   if (isLoading && !isFetching) {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {Array(6).fill(0).map((_, i) => (
-          <div key={i} className="bg-white rounded-2xl overflow-hidden shadow-sm animate-pulse">
-            <div className="w-full aspect-video bg-gray-200" />
-            <div className="p-4 space-y-2">
-              <div className="h-4 bg-gray-200 rounded w-3/4" />
-              <div className="h-3 bg-gray-100 rounded w-1/2" />
+        {Array(6)
+          .fill(0)
+          .map((_, i) => (
+            <div key={i} className="bg-white rounded-2xl overflow-hidden shadow-sm animate-pulse">
+              <div className="w-full aspect-video bg-gray-200" />
+              <div className="p-4 space-y-2">
+                <div className="h-4 bg-gray-200 rounded w-3/4" />
+                <div className="h-3 bg-gray-100 rounded w-1/2" />
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
       </div>
     );
   }
@@ -57,10 +65,7 @@ const MeetingListByCategory = ({ passCategory }) => {
     return <div className="text-sm text-gray-400 py-4">오류: {error.message}</div>;
   }
 
-  const allMeetings = [
-    ...(categoryMeetingList || []).slice(0, 4),
-    ...moreMeetingList.slice(0, moreMeetingListCount * 4),
-  ];
+  const allMeetings = [...(categoryMeetingList || []).slice(0, 4), ...moreMeetingList.slice(0, moreMeetingListCount * 4)];
 
   if (allMeetings.length === 0) {
     return (
@@ -75,21 +80,13 @@ const MeetingListByCategory = ({ passCategory }) => {
     <div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
         {allMeetings.map((meeting, idx) => (
-          <MeetingCard
-            key={idx}
-            meeting={meeting}
-            onClick={() => navigate(`/clubs/main?clubNumber=${meeting.clubNumber}`)}
-          />
+          <MeetingCard key={idx} meeting={meeting} onClick={() => navigate(`/clubs/main?clubNumber=${meeting.clubNumber}`)} />
         ))}
       </div>
 
       {/* 더보기 */}
-      {((moreMeetingListCount === 0 && categoryMeetingList?.length === 5) ||
-        (moreMeetingList.length > 0 && moreMeetingList.length % 4 === 0)) && (
-        <button
-          onClick={moreMeetingListHandler}
-          className="w-full py-3 bg-white hover:bg-primary-50 text-primary-600 font-nanum-bold rounded-2xl shadow-sm border border-gray-100 hover:border-primary-200 transition-all duration-200 text-sm"
-        >
+      {((moreMeetingListCount === 0 && categoryMeetingList?.length === 5) || (moreMeetingList.length > 0 && moreMeetingList.length % 4 === 0)) && (
+        <button onClick={moreMeetingListHandler} className="w-full py-3 bg-white hover:bg-primary-50 text-primary-600 font-nanum-bold rounded-2xl shadow-sm border border-gray-100 hover:border-primary-200 transition-all duration-200 text-sm">
           더 불러오기
         </button>
       )}

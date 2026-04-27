@@ -206,130 +206,86 @@ const EventCard = ({ eventData, onClose }) => {
   };
 
   return (
-      <div className="flex flex-col items-center max-w-full m-[10px]">
-        <h2 className="text-lg font-semibold mb-3">리스트 카드 모델링</h2>
+    <div className="flex flex-col items-center max-w-full m-[10px]">
+      <h2 className="text-lg font-semibold mb-3">리스트 카드 모델링</h2>
 
-        <div className="flex justify-center w-full">
-          {/* 카드 */}
-          <div className="w-full max-w-[350px] h-auto rounded-xl overflow-hidden shadow">
-            {/* 이미지 */}
-            <img
-              src={displayImage || "https://via.placeholder.com/345x140?text=No+Image"}
-              alt={title || "이미지 없음"}
-              className="w-full h-[200px] object-cover cursor-pointer"
-              onClick={() => fileInputRef.current.click()}
-            />
+      <div className="flex justify-center w-full">
+        {/* 카드 */}
+        <div className="w-full max-w-[350px] h-auto rounded-xl overflow-hidden shadow">
+          {/* 이미지 */}
+          <img src={displayImage || "https://via.placeholder.com/345x140?text=No+Image"} alt={title || "이미지 없음"} className="w-full h-[200px] object-cover cursor-pointer" onClick={() => fileInputRef.current.click()} />
 
-            {/* 카드 제목 */}
-            <div className="flex justify-between items-center px-[10px] m-[10px]">
-              <div className="flex-1 p-0">
-                {editTitle ? (
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="text"
-                      value={cardTitle}
-                      onChange={(e) => setCardTitle(e.target.value)}
-                      placeholder="새로운 제목"
-                      className="input-base text-sm flex-1"
-                    />
-                    <button
-                      onClick={() => setEditTitle(false)}
-                      className="btn-primary text-xs px-2 py-1"
-                    >
-                      저장
-                    </button>
-                  </div>
-                ) : (
-                  <p
-                    className="text-sm text-black line-clamp-2 cursor-pointer"
-                    onClick={() => setEditTitle(true)}
-                  >
-                    {cardTitle || title || "기본 타이틀"}
-                  </p>
-                )}
-              </div>
-              <FiMoreVertical size={28} className="cursor-pointer ml-2" />
+          {/* 카드 제목 */}
+          <div className="flex justify-between items-center px-[10px] m-[10px]">
+            <div className="flex-1 p-0">
+              {editTitle ? (
+                <div className="flex items-center gap-2">
+                  <input type="text" value={cardTitle} onChange={(e) => setCardTitle(e.target.value)} placeholder="새로운 제목" className="input-base text-sm flex-1" />
+                  <button onClick={() => setEditTitle(false)} className="btn-primary text-xs px-2 py-1">
+                    저장
+                  </button>
+                </div>
+              ) : (
+                <p className="text-sm text-black line-clamp-2 cursor-pointer" onClick={() => setEditTitle(true)}>
+                  {cardTitle || title || "기본 타이틀"}
+                </p>
+              )}
             </div>
+            <FiMoreVertical size={28} className="cursor-pointer ml-2" />
+          </div>
 
-            {/* 메타 정보 */}
-            <div className="px-5">
-              <p className="text-[10px]">조회수 : 100</p>
-              <p className="text-[10px]">등록날짜 : {dayjs().format("YYYY-MM-DD HH:mm:ss")}</p>
-              <p className="text-[10px]">
-                종료날짜 : {endTime ? endTime.format("YYYY-MM-DD HH:mm:ss") : "선택되지 않음"}
-              </p>
-            </div>
+          {/* 메타 정보 */}
+          <div className="px-5">
+            <p className="text-[10px]">조회수 : 100</p>
+            <p className="text-[10px]">등록날짜 : {dayjs().format("YYYY-MM-DD HH:mm:ss")}</p>
+            <p className="text-[10px]">종료날짜 : {endTime ? endTime.format("YYYY-MM-DD HH:mm:ss") : "선택되지 않음"}</p>
+          </div>
 
-            {/* 액션 */}
-            <div className="flex gap-1 p-2">
-              <button className="text-sm text-[#30231C] px-2 py-1">공유</button>
-              <button className="text-sm text-[#30231C] px-2 py-1">더 보기</button>
-            </div>
+          {/* 액션 */}
+          <div className="flex gap-1 p-2">
+            <button className="text-sm text-[#30231C] px-2 py-1">공유</button>
+            <button className="text-sm text-[#30231C] px-2 py-1">더 보기</button>
           </div>
         </div>
+      </div>
 
-        {/* 종료시일 설정 + 제출 */}
-        <div className="flex items-center justify-end mt-4 w-[350px] gap-2">
-          {isDatePickerOpen && (
-            <input
-              type="datetime-local"
-              className="border border-gray-300 rounded px-2 py-1 text-xs w-[180px] focus:outline-none focus:ring-2 focus:ring-[#A67153]"
-              value={endTime ? endTime.format("YYYY-MM-DDTHH:mm") : ""}
-              onChange={(e) => {
-                setEndTime(e.target.value ? dayjs(e.target.value) : null);
-                setIsDatePickerOpen(false);
-              }}
-            />
-          )}
-          <button
-            onClick={() => setIsDatePickerOpen(true)}
-            className="bg-primary-100 hover:bg-primary-200 text-primary-800 text-sm px-3 py-2 rounded transition-colors"
-          >
-            종료시일 설정
-          </button>
-          <button
-            onClick={handleSubmit}
-            className="bg-red-500 hover:bg-red-600 text-white text-sm px-3 py-2 rounded transition-colors"
-          >
-            제출
-          </button>
-        </div>
-
-        <input
-          type="file"
-          accept="image/*"
-          className="hidden"
-          ref={fileInputRef}
-          onChange={handleImageUpload}
-        />
-
-        {showCropper && (
-          <EventImageCropper
-            src={displayImage}
-            onCropComplete={setDisplayImage}
-            onClose={() => setShowCropper(false)}
+      {/* 종료시일 설정 + 제출 */}
+      <div className="flex items-center justify-end mt-4 w-[350px] gap-2">
+        {isDatePickerOpen && (
+          <input
+            type="datetime-local"
+            className="border border-gray-300 rounded px-2 py-1 text-xs w-[180px] focus:outline-none focus:ring-2 focus:ring-[#A67153]"
+            value={endTime ? endTime.format("YYYY-MM-DDTHH:mm") : ""}
+            onChange={(e) => {
+              setEndTime(e.target.value ? dayjs(e.target.value) : null);
+              setIsDatePickerOpen(false);
+            }}
           />
         )}
-
-        {/* 스낵바 */}
-        {snackbarOpen && (
-          <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[2000]">
-            <div
-              className={`flex items-center gap-3 px-5 py-3 rounded-lg shadow-lg min-w-[280px] text-white ${
-                snackbarSeverity === "success" ? "bg-green-600" : snackbarSeverity === "error" ? "bg-red-600" : "bg-yellow-600"
-              }`}
-            >
-              <span className="flex-1 text-sm">{snackbarMessage}</span>
-              <button
-                onClick={() => handleSnackbarClose()}
-                className="hover:text-gray-200 font-bold text-lg leading-none"
-              >
-                ×
-              </button>
-            </div>
-          </div>
-        )}
+        <button onClick={() => setIsDatePickerOpen(true)} className="bg-primary-100 hover:bg-primary-200 text-primary-800 text-sm px-3 py-2 rounded transition-colors">
+          종료시일 설정
+        </button>
+        <button onClick={handleSubmit} className="bg-red-500 hover:bg-red-600 text-white text-sm px-3 py-2 rounded transition-colors">
+          제출
+        </button>
       </div>
+
+      <input type="file" accept="image/*" className="hidden" ref={fileInputRef} onChange={handleImageUpload} />
+
+      {showCropper && <EventImageCropper src={displayImage} onCropComplete={setDisplayImage} onClose={() => setShowCropper(false)} />}
+
+      {/* 스낵바 */}
+      {snackbarOpen && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[2000]">
+          <div className={`flex items-center gap-3 px-5 py-3 rounded-lg shadow-lg min-w-[280px] text-white ${snackbarSeverity === "success" ? "bg-green-600" : snackbarSeverity === "error" ? "bg-red-600" : "bg-yellow-600"}`}>
+            <span className="flex-1 text-sm">{snackbarMessage}</span>
+            <button onClick={() => handleSnackbarClose()} className="hover:text-gray-200 font-bold text-lg leading-none">
+              ×
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 

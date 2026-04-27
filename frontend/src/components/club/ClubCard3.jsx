@@ -66,19 +66,11 @@ const ClubCard3 = ({ clubList }) => {
         const isAdmin = item.admin === user.email;
 
         return (
-          <div
-            key={item._id}
-            className="group relative bg-white rounded-2xl shadow-sm hover:shadow-md overflow-hidden flex items-center cursor-pointer transition-all duration-200 border border-gray-100 hover:border-primary-100"
-            onClick={() => handleClickChat(item._id)}
-          >
+          <div key={item._id} className="group relative bg-white rounded-2xl shadow-sm hover:shadow-md overflow-hidden flex items-center cursor-pointer transition-all duration-200 border border-gray-100 hover:border-primary-100" onClick={() => handleClickChat(item._id)}>
             {/* 썸네일 이미지 */}
             <div className="flex-shrink-0 w-[72px] h-[72px] m-3 rounded-xl overflow-hidden">
               {item.img ? (
-                <img
-                  src={`http://localhost:4000/${item.img}`}
-                  alt={item.title}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                />
+                <img src={`http://localhost:4000/${item.img}`} alt={item.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
               ) : (
                 <div className="w-full h-full bg-primary-50 flex items-center justify-center text-primary-300">
                   <FiMessageCircle size={28} />
@@ -92,37 +84,26 @@ const ClubCard3 = ({ clubList }) => {
               <div className="flex items-center justify-between gap-2 mb-1">
                 <div className="flex items-center gap-1.5 min-w-0">
                   <h3 className="text-sm font-nanum-bold text-gray-900 truncate">{item.title}</h3>
-                  {isAdmin && (
-                    <span className="flex-shrink-0 text-[10px] bg-primary-100 text-primary-700 font-nanum-bold px-1.5 py-0.5 rounded-full">
-                      내 모임
-                    </span>
-                  )}
+                  {isAdmin && <span className="flex-shrink-0 text-[10px] bg-primary-100 text-primary-700 font-nanum-bold px-1.5 py-0.5 rounded-full">내 모임</span>}
                 </div>
-                {timeLabel && (
-                  <span className="flex-shrink-0 text-[11px] text-gray-400">{timeLabel}</span>
-                )}
+                {timeLabel && <span className="flex-shrink-0 text-[11px] text-gray-400">{timeLabel}</span>}
               </div>
 
               {/* 2행: 최근 메시지 미리보기 */}
-              <p className={`text-xs truncate mb-1.5 ${item.latestMessage ? "text-gray-500" : "text-gray-300 italic"}`}>
-                {preview}
-              </p>
+              <p className={`text-xs truncate mb-1.5 ${item.latestMessage ? "text-gray-500" : "text-gray-300 italic"}`}>{preview}</p>
 
               {/* 3행: 멤버 아바타 + 인원 */}
               <div className="flex items-center gap-2">
                 <div className="flex -space-x-1.5">
                   {item.memberInfo?.slice(0, 4).map((m, i) => (
-                    <img
-                      key={i}
-                      src={m.profilePic || "https://via.placeholder.com/32"}
-                      alt=""
-                      className="w-5 h-5 rounded-full border-2 border-white object-cover"
-                    />
+                    <img key={i} src={m.profilePic || "https://via.placeholder.com/32"} alt="" className="w-5 h-5 rounded-full border-2 border-white object-cover" />
                   ))}
                 </div>
                 <div className="flex items-center gap-1 text-[11px] text-gray-400">
                   <FiUsers className="w-3 h-3" />
-                  <span>{item.members?.length}/{item.maxMember}명</span>
+                  <span>
+                    {item.members?.length}/{item.maxMember}명
+                  </span>
                 </div>
               </div>
             </div>

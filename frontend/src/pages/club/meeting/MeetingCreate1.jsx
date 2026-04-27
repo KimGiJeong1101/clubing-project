@@ -1,17 +1,5 @@
 import React from "react";
-import {
-  FiCoffee,
-  FiBook,
-  FiStar,
-  FiNavigation,
-  FiMusic,
-  FiUsers,
-  FiDollarSign,
-  FiGlobe,
-  FiHeart,
-  FiAnchor,
-  FiFeather,
-} from "react-icons/fi";
+import { FiCoffee, FiBook, FiStar, FiNavigation, FiMusic, FiUsers, FiDollarSign, FiGlobe, FiHeart, FiAnchor, FiFeather } from "react-icons/fi";
 
 const MeetingCreate1 = ({ open, handleCloseModal, FadHandleClick }) => {
   const categories = [
@@ -36,23 +24,13 @@ const MeetingCreate1 = ({ open, handleCloseModal, FadHandleClick }) => {
       {/* 배경 클릭 시 닫기 */}
       <div className="absolute inset-0" onClick={handleCloseModal} />
 
-      <div
-        className="relative z-10 bg-white rounded-[30px] border-2 border-black shadow-2xl p-8"
-        style={{ width: 650, height: 520 }}
-      >
+      <div className="relative z-10 bg-white rounded-[30px] border-2 border-black shadow-2xl p-8" style={{ width: 650, height: 520 }}>
         <h2 className="text-2xl font-bold text-center mb-5 text-primary-800">관심사 선택</h2>
 
         <div className="grid grid-cols-4 gap-4">
           {categories.map((item, index) => (
-            <div
-              key={index}
-              className="flex flex-col items-center transition-transform duration-300 hover:scale-105 cursor-pointer"
-              onClick={() => FadHandleClick(item.text)}
-            >
-              <div
-                className="flex items-center justify-center w-[100px] h-[100px] rounded-full text-white mb-2 transition-opacity duration-300 hover:opacity-80"
-                style={{ backgroundColor: item.color }}
-              >
+            <div key={index} className="flex flex-col items-center transition-transform duration-300 hover:scale-105 cursor-pointer" onClick={() => FadHandleClick(item.text)}>
+              <div className="flex items-center justify-center w-[100px] h-[100px] rounded-full text-white mb-2 transition-opacity duration-300 hover:opacity-80" style={{ backgroundColor: item.color }}>
                 {item.icon}
               </div>
               <span className="text-center text-[18px] font-[550]">{item.text}</span>

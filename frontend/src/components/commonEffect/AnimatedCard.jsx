@@ -17,12 +17,7 @@ const AnimatedCard = ({ image }) => {
   };
 
   return (
-    <div
-      onMouseMove={handleMouseMove}
-      onMouseOut={handleMouseOut}
-      style={{ transform, transition: "transform 0.2s ease" }}
-      className="absolute inset-0 overflow-hidden flex items-center justify-center bg-gray-100 rounded-lg"
-    >
+    <div onMouseMove={handleMouseMove} onMouseOut={handleMouseOut} style={{ transform, transition: "transform 0.2s ease" }} className="absolute inset-0 overflow-hidden flex items-center justify-center bg-gray-100 rounded-lg">
       <img src={image} alt="" className="w-full h-full object-cover" />
     </div>
   );

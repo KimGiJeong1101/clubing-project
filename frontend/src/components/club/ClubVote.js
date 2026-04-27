@@ -56,22 +56,12 @@ const VoteCreationForm = ({ options, setOptions, allowMultiple, setAllowMultiple
     <div className="p-4">
       {/* 투표 제목 */}
       <div className="mb-4">
-        <input
-          type="text"
-          placeholder="투표 제목"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#DBC7B5]"
-        />
+        <input type="text" placeholder="투표 제목" value={title} onChange={(e) => setTitle(e.target.value)} className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#DBC7B5]" />
       </div>
 
       {/* Category select */}
       <div className="mb-4">
-        <select
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#DBC7B5] bg-white"
-        >
+        <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#DBC7B5] bg-white">
           <option value="">Category 선택</option>
           {categories.map((cat) => (
             <option key={cat} value={cat}>
@@ -84,18 +74,9 @@ const VoteCreationForm = ({ options, setOptions, allowMultiple, setAllowMultiple
       {/* 투표 옵션 목록 */}
       {options.map((option, index) => (
         <div key={index} className="flex items-center mb-2 gap-2">
-          <input
-            type="text"
-            placeholder={`투표 항목 ${index + 1}`}
-            value={option}
-            onChange={(e) => handleOptionChange(index, e.target.value)}
-            className="flex-1 border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#DBC7B5]"
-          />
+          <input type="text" placeholder={`투표 항목 ${index + 1}`} value={option} onChange={(e) => handleOptionChange(index, e.target.value)} className="flex-1 border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#DBC7B5]" />
           {options.length > 2 && (
-            <button
-              onClick={() => removeOption(index)}
-              className="p-1 rounded hover:bg-gray-100 text-gray-500"
-            >
+            <button onClick={() => removeOption(index)} className="p-1 rounded hover:bg-gray-100 text-gray-500">
               <FiX size={18} />
             </button>
           )}
@@ -103,22 +84,14 @@ const VoteCreationForm = ({ options, setOptions, allowMultiple, setAllowMultiple
       ))}
 
       {/* 항목 추가 버튼 */}
-      <button
-        onClick={addOption}
-        className="mt-2 px-4 py-2 rounded-xl text-sm font-nanum-bold bg-primary-50 text-primary-700 hover:bg-primary-100 transition-colors border border-primary-100"
-      >
+      <button onClick={addOption} className="mt-2 px-4 py-2 rounded-xl text-sm font-nanum-bold bg-primary-50 text-primary-700 hover:bg-primary-100 transition-colors border border-primary-100">
         항목 추가
       </button>
 
       {/* 익명 투표 체크박스 */}
       <div className="mt-4">
         <label className="flex items-center gap-2 cursor-pointer text-sm">
-          <input
-            type="checkbox"
-            checked={anonymous}
-            onChange={(e) => setAnonymous(e.target.checked)}
-            className="w-4 h-4 accent-[#A67153]"
-          />
+          <input type="checkbox" checked={anonymous} onChange={(e) => setAnonymous(e.target.checked)} className="w-4 h-4 accent-[#A67153]" />
           익명 투표
         </label>
       </div>
@@ -126,13 +99,7 @@ const VoteCreationForm = ({ options, setOptions, allowMultiple, setAllowMultiple
       {/* 투표 종료 시간 */}
       <div className="mt-4">
         <label className="block text-xs text-gray-500 mb-1">투표 종료 시간</label>
-        <input
-          type="datetime-local"
-          value={endTime}
-          onChange={(e) => setEndTime(e.target.value)}
-          min={getTodayDateTime()}
-          className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#DBC7B5]"
-        />
+        <input type="datetime-local" value={endTime} onChange={(e) => setEndTime(e.target.value)} min={getTodayDateTime()} className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#DBC7B5]" />
       </div>
     </div>
   );

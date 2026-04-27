@@ -266,13 +266,7 @@ export default function CKEditor5Editor({ onChange, title, setTitle, content, se
       {/* 제목 입력 필드 */}
       <div className="mb-2 mt-1">
         <label className="block text-sm font-medium text-gray-700 mb-1">제목</label>
-        <input
-          type="text"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder="제목을 입력해주세요"
-          className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#6a82fb]"
-        />
+        <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="제목을 입력해주세요" className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#6a82fb]" />
       </div>
       <div className="main-container" style={{ width: "100%" }}>
         <div className="editor-container editor-container_document-editor" ref={editorContainerRef}>

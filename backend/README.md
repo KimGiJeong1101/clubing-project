@@ -41,36 +41,36 @@ backend/src/
 
 ### 채팅 (`/clubs/chatrooms`)
 
-| 메서드 | 경로 | 설명 |
-|---|---|---|
-| `POST` | `/room` | 채팅방 생성 또는 참가자 추가 |
-| `GET` | `/room/:clubId` | 채팅방 조회 (멤버 확인 포함) |
-| `GET` | `/:clubId/messages` | 메시지 조회 (skip 또는 before 커서) |
-| `GET` | `/:clubId/messages/search` | 전체 메시지 검색 (limit 없음, ASC 반환) |
-| `GET` | `/:clubId/messages/around` | 특정 타임스탬프 전후 메시지 조회 |
+| 메서드 | 경로                       | 설명                                    |
+| ------ | -------------------------- | --------------------------------------- |
+| `POST` | `/room`                    | 채팅방 생성 또는 참가자 추가            |
+| `GET`  | `/room/:clubId`            | 채팅방 조회 (멤버 확인 포함)            |
+| `GET`  | `/:clubId/messages`        | 메시지 조회 (skip 또는 before 커서)     |
+| `GET`  | `/:clubId/messages/search` | 전체 메시지 검색 (limit 없음, ASC 반환) |
+| `GET`  | `/:clubId/messages/around` | 특정 타임스탬프 전후 메시지 조회        |
 
 ### 모임 (`/clubs`)
 
-| 메서드 | 경로 | 설명 |
-|---|---|---|
-| `GET` | `/` | 전체 모임 목록 (지역 필터 가능) |
-| `GET` | `/:category` | 카테고리별 모임 목록 |
-| `GET` | `/scroll/:count` | 무한 스크롤용 추가 모임 로드 |
-| `GET` | `/home/card` | 홈 화면 모임 카드 |
-| `GET` | `/home/card/new` | 신규 모임 목록 |
-| `GET` | `/home/recommend` | 관심사/지역 기반 추천 모임 |
-| `POST` | `/addMember/:clubId` | 모임 가입 |
-| `POST` | `/cencellMember/:clubId` | 모임 탈퇴 |
-| `DELETE` | `/delete/:clubId` | 모임 삭제 |
+| 메서드   | 경로                     | 설명                            |
+| -------- | ------------------------ | ------------------------------- |
+| `GET`    | `/`                      | 전체 모임 목록 (지역 필터 가능) |
+| `GET`    | `/:category`             | 카테고리별 모임 목록            |
+| `GET`    | `/scroll/:count`         | 무한 스크롤용 추가 모임 로드    |
+| `GET`    | `/home/card`             | 홈 화면 모임 카드               |
+| `GET`    | `/home/card/new`         | 신규 모임 목록                  |
+| `GET`    | `/home/recommend`        | 관심사/지역 기반 추천 모임      |
+| `POST`   | `/addMember/:clubId`     | 모임 가입                       |
+| `POST`   | `/cencellMember/:clubId` | 모임 탈퇴                       |
+| `DELETE` | `/delete/:clubId`        | 모임 삭제                       |
 
 ### 정기모임 (`/meetings`)
 
-| 메서드 | 경로 | 설명 |
-|---|---|---|
-| `GET` | `/` | 날짜별 정모 목록 |
-| `GET` | `/category/:category` | 카테고리별 정모 목록 |
-| `GET` | `/suggestForUser` | 맞춤 추천 정모 |
-| `POST` | `/join/:meetingId` | 정모 참석 / 취소 토글 |
+| 메서드 | 경로                  | 설명                  |
+| ------ | --------------------- | --------------------- |
+| `GET`  | `/`                   | 날짜별 정모 목록      |
+| `GET`  | `/category/:category` | 카테고리별 정모 목록  |
+| `GET`  | `/suggestForUser`     | 맞춤 추천 정모        |
+| `POST` | `/join/:meetingId`    | 정모 참석 / 취소 토글 |
 
 ---
 
@@ -80,10 +80,10 @@ backend/src/
 
 **쿼리 파라미터:**
 
-| 파라미터 | 타입 | 설명 |
-|---|---|---|
-| `skip` | number | 건너뛸 메시지 수 (일반 모드, 기본값 0) |
-| `limit` | number | 가져올 메시지 수 (기본값 30) |
+| 파라미터 | 타입     | 설명                                                |
+| -------- | -------- | --------------------------------------------------- |
+| `skip`   | number   | 건너뛸 메시지 수 (일반 모드, 기본값 0)              |
+| `limit`  | number   | 가져올 메시지 수 (기본값 30)                        |
 | `before` | ISO 날짜 | 이 타임스탬프 이전 메시지만 조회 (around-mode 커서) |
 
 `before`가 있으면 `skip`은 무시되고 타임스탬프 커서 방식으로 전환됩니다.
@@ -118,12 +118,12 @@ GET /clubs/chatrooms/:clubId/messages/around?timestamp=2024-01-15T10:00:00Z
 
 ## Socket.io 이벤트
 
-| 이벤트 | 방향 | 설명 |
-|---|---|---|
-| `joinRoom` | 클라 → 서버 | 채팅방 입장 |
-| `message` (emit) | 클라 → 서버 | 메시지 전송 |
-| `message` (on) | 서버 → 클라 | 실시간 메시지 수신 |
-| `error` | 서버 → 클라 | 에러 알림 |
+| 이벤트           | 방향        | 설명               |
+| ---------------- | ----------- | ------------------ |
+| `joinRoom`       | 클라 → 서버 | 채팅방 입장        |
+| `message` (emit) | 클라 → 서버 | 메시지 전송        |
+| `message` (on)   | 서버 → 클라 | 실시간 메시지 수신 |
+| `error`          | 서버 → 클라 | 에러 알림          |
 
 ---
 
@@ -168,8 +168,8 @@ const io = socketIo(app);
 // ✅ 올바른 방법
 const http = require("http");
 const server = http.createServer(app); // Express를 HTTP 서버로 감싸기
-const io = socketIo(server);          // HTTP 서버에 소켓 연결
-server.listen(process.env.PORT);      // app.listen() 대신 server.listen()
+const io = socketIo(server); // HTTP 서버에 소켓 연결
+server.listen(process.env.PORT); // app.listen() 대신 server.listen()
 ```
 
 **채팅 흐름**:
@@ -198,11 +198,11 @@ server.listen(process.env.PORT);      // app.listen() 대신 server.listen()
     → 상세 화면: 원본 사용 (고화질)
 ```
 
-| 라이브러리 | 역할 |
-|---|---|
+| 라이브러리 | 역할                                           |
+| ---------- | ---------------------------------------------- |
 | **Multer** | 파일 업로드 미들웨어. 저장 폴더 및 파일명 설정 |
-| **Sharp** | 고성능 이미지 리사이징 및 포맷 변환 |
-| **UUID** | 업로드 파일명 중복 방지를 위한 고유 ID 생성 |
+| **Sharp**  | 고성능 이미지 리사이징 및 포맷 변환            |
+| **UUID**   | 업로드 파일명 중복 방지를 위한 고유 ID 생성    |
 
 ---
 
@@ -264,7 +264,7 @@ const getNextSequenceValue = async (sequenceName) => {
   const doc = await Counter.findByIdAndUpdate(
     sequenceName,
     { $inc: { sequence_value: 1 } }, // 1씩 증가
-    { new: true, upsert: true },      // 없으면 생성
+    { new: true, upsert: true }, // 없으면 생성
   );
   return doc.sequence_value;
 };

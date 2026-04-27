@@ -4,21 +4,28 @@ import { useDispatch } from "react-redux";
 import { loginUser } from "../../../store/actions/userActions";
 import { useNavigate, Link } from "react-router-dom";
 import { FiMail, FiLock } from "react-icons/fi";
-import FindEmailPage    from "./FindEmail";
+import FindEmailPage from "./FindEmail";
 import FindPasswordPage from "./FindPassword";
 
 const LoginPage = () => {
-  const { register, handleSubmit, formState: { errors }, reset, setValue, watch } = useForm({ mode: "onChange" });
-  const dispatch  = useDispatch();
-  const navigate  = useNavigate();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+    setValue,
+    watch,
+  } = useForm({ mode: "onChange" });
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const rememberMe = watch("rememberMe");
 
-  const [emailError,    setEmailError]    = useState("");
+  const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [popup, setPopup] = useState({ email: false, password: false });
 
   useEffect(() => {
-    const saved   = localStorage.getItem("lastLoginEmail");
+    const saved = localStorage.getItem("lastLoginEmail");
     const remember = localStorage.getItem("rememberMe") === "true";
     setValue("rememberMe", remember);
     if (saved) setValue("email", saved);
@@ -34,22 +41,29 @@ const LoginPage = () => {
         const err = res.payload?.error;
         const msg = res.payload?.message;
         if (err === "이메일이 확인되지 않습니다." || msg === "탈퇴한 회원입니다.") {
-          setEmailError(msg || err); setPasswordError("");
+          setEmailError(msg || err);
+          setPasswordError("");
         } else if (err === "비밀번호가 틀렸습니다.") {
-          setPasswordError(err); setEmailError("");
+          setPasswordError(err);
+          setEmailError("");
         } else {
           setEmailError("알 수 없는 오류가 발생했습니다.");
         }
       }
-      if (rememberMe) { localStorage.setItem("lastLoginEmail", email); localStorage.setItem("rememberMe", "true"); }
-      else { localStorage.removeItem("lastLoginEmail"); localStorage.setItem("rememberMe", "false"); }
+      if (rememberMe) {
+        localStorage.setItem("lastLoginEmail", email);
+        localStorage.setItem("rememberMe", "true");
+      } else {
+        localStorage.removeItem("lastLoginEmail");
+        localStorage.setItem("rememberMe", "false");
+      }
     } catch {
       setEmailError("로그인 중 오류가 발생했습니다.");
     }
   };
 
   const kakaoLogin = () => {
-    const clientId   = process.env.REACT_APP_KAKAO_API_URL;
+    const clientId = process.env.REACT_APP_KAKAO_API_URL;
     const redirectUri = "http://localhost:3000/kakao/callback";
     window.location.href = `https://kauth.kakao.com/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code`;
   };
@@ -78,9 +92,7 @@ const LoginPage = () => {
                 })}
               />
             </div>
-            {(emailError || errors.email) && (
-              <p className="text-xs text-red-500 mt-1">{emailError || errors.email.message}</p>
-            )}
+            {(emailError || errors.email) && <p className="text-xs text-red-500 mt-1">{emailError || errors.email.message}</p>}
           </div>
 
           {/* 비밀번호 */}
@@ -97,18 +109,12 @@ const LoginPage = () => {
                 })}
               />
             </div>
-            {(passwordError || errors.password) && (
-              <p className="text-xs text-red-500 mt-1">{passwordError || errors.password.message}</p>
-            )}
+            {(passwordError || errors.password) && <p className="text-xs text-red-500 mt-1">{passwordError || errors.password.message}</p>}
           </div>
 
           {/* 아이디 기억 */}
           <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="checkbox"
-              className="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-400 cursor-pointer"
-              {...register("rememberMe")}
-            />
+            <input type="checkbox" className="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-400 cursor-pointer" {...register("rememberMe")} />
             <span className="text-sm text-gray-600">아이디 기억하기</span>
           </label>
 
@@ -132,22 +138,16 @@ const LoginPage = () => {
 
       {/* 아이디/비밀번호 찾기 */}
       <div className="flex items-center gap-4 mt-5 text-sm text-gray-500">
-        <button
-          onClick={() => setPopup((p) => ({ ...p, email: true }))}
-          className="hover:text-gray-900 transition-colors"
-        >
+        <button onClick={() => setPopup((p) => ({ ...p, email: true }))} className="hover:text-gray-900 transition-colors">
           아이디 찾기
         </button>
         <span className="text-gray-300">|</span>
-        <button
-          onClick={() => setPopup((p) => ({ ...p, password: true }))}
-          className="hover:text-gray-900 transition-colors"
-        >
+        <button onClick={() => setPopup((p) => ({ ...p, password: true }))} className="hover:text-gray-900 transition-colors">
           비밀번호 찾기
         </button>
       </div>
 
-      <FindEmailPage    open={popup.email}    onClose={() => setPopup((p) => ({ ...p, email: false }))} />
+      <FindEmailPage open={popup.email} onClose={() => setPopup((p) => ({ ...p, email: false }))} />
       <FindPasswordPage open={popup.password} onClose={() => setPopup((p) => ({ ...p, password: false }))} />
     </div>
   );

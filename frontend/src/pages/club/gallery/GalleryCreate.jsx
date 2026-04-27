@@ -19,9 +19,7 @@ const GalleryCreate = ({ onRegisterComplete, initialData = {} }) => {
   const editorRef = useRef(null);
   const [title, setTitle] = useState(initialData.title || "");
   const [content, setContent] = useState(initialData.content || "");
-  const [selectedImages, setSelectedImages] = useState(
-    initialData.images ? initialData.images.map((url) => ({ url, name: null })) : [],
-  );
+  const [selectedImages, setSelectedImages] = useState(initialData.images ? initialData.images.map((url) => ({ url, name: null })) : []);
   const [currentImageIndex, setCurrentImageIndex] = useState(null);
   const fileInputRef = useRef(null);
 
@@ -75,9 +73,7 @@ const GalleryCreate = ({ onRegisterComplete, initialData = {} }) => {
     if (currentImageIndex !== null && selectedImages[currentImageIndex]?.url) {
       try {
         const dataURL = editorInstance.toDataURL();
-        setSelectedImages((prev) =>
-          prev.map((img, idx) => (idx === currentImageIndex ? { ...img, url: dataURL } : img)),
-        );
+        setSelectedImages((prev) => prev.map((img, idx) => (idx === currentImageIndex ? { ...img, url: dataURL } : img)));
       } catch (_) {}
     }
     setCurrentImageIndex(index);
@@ -106,9 +102,7 @@ const GalleryCreate = ({ onRegisterComplete, initialData = {} }) => {
             editorInstance.clearUndoStack();
             editorInstance.ui.activeMenuEvent();
             const dataURL = editorInstance.toDataURL();
-            setSelectedImages((prev) =>
-              prev.map((img, idx) => (idx === i ? { ...img, url: dataURL } : img)),
-            );
+            setSelectedImages((prev) => prev.map((img, idx) => (idx === i ? { ...img, url: dataURL } : img)));
           } catch (_) {}
         }
       }
@@ -123,7 +117,9 @@ const GalleryCreate = ({ onRegisterComplete, initialData = {} }) => {
         try {
           const blob = await fetch(image.url).then((r) => r.blob());
           formData.append("files", blob, image.name || "image.jpg");
-        } catch (_) { return; }
+        } catch (_) {
+          return;
+        }
       }
     }
 
@@ -153,18 +149,8 @@ const GalleryCreate = ({ onRegisterComplete, initialData = {} }) => {
   return (
     <div className="p-4 sm:p-6">
       {/* 이미지 선택 버튼 */}
-      <input
-        type="file"
-        accept="image/*"
-        multiple
-        onChange={handleImageUpload}
-        ref={fileInputRef}
-        className="hidden"
-      />
-      <button
-        onClick={() => fileInputRef.current.click()}
-        className="w-full flex items-center justify-center gap-2 px-4 py-3 mb-5 border-2 border-dashed border-primary-300 rounded-xl text-primary-600 hover:bg-primary-50 transition-colors text-sm font-nanum"
-      >
+      <input type="file" accept="image/*" multiple onChange={handleImageUpload} ref={fileInputRef} className="hidden" />
+      <button onClick={() => fileInputRef.current.click()} className="w-full flex items-center justify-center gap-2 px-4 py-3 mb-5 border-2 border-dashed border-primary-300 rounded-xl text-primary-600 hover:bg-primary-50 transition-colors text-sm font-nanum">
         <FiUpload size={16} />
         클릭하여 이미지 선택 (최대 8장)
       </button>
@@ -202,38 +188,20 @@ const GalleryCreate = ({ onRegisterComplete, initialData = {} }) => {
             <DragDropContext onDragEnd={onDragEnd}>
               <Droppable droppableId="images" direction="horizontal">
                 {(provided) => (
-                  <div
-                    className="grid grid-cols-4 gap-1.5"
-                    {...provided.droppableProps}
-                    ref={provided.innerRef}
-                  >
+                  <div className="grid grid-cols-4 gap-1.5" {...provided.droppableProps} ref={provided.innerRef}>
                     {imageBoxes.map((image, index) => (
                       <Draggable key={index} draggableId={`image-${index}`} index={index}>
                         {(provided, snapshot) => (
-                          <div
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            {...provided.dragHandleProps}
-                          >
+                          <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
                             <div
                               onClick={() => image.url && handleBoxClick(index)}
                               className={`relative w-full aspect-square rounded-lg overflow-hidden flex items-center justify-center transition-all
-                                ${currentImageIndex === index
-                                  ? "ring-2 ring-primary-500 ring-offset-1"
-                                  : "ring-1 ring-gray-200"}
+                                ${currentImageIndex === index ? "ring-2 ring-primary-500 ring-offset-1" : "ring-1 ring-gray-200"}
                                 ${snapshot.isDragging ? "opacity-50 scale-95" : ""}
                                 ${image.url ? "cursor-pointer hover:opacity-90" : "bg-gray-50 cursor-default"}
                               `}
                             >
-                              {image.url ? (
-                                <img
-                                  src={image.url}
-                                  alt={`이미지 ${index + 1}`}
-                                  className="w-full h-full object-cover"
-                                />
-                              ) : (
-                                <span className="text-[10px] text-gray-300 select-none">{index + 1}</span>
-                              )}
+                              {image.url ? <img src={image.url} alt={`이미지 ${index + 1}`} className="w-full h-full object-cover" /> : <span className="text-[10px] text-gray-300 select-none">{index + 1}</span>}
                             </div>
                           </div>
                         )}
@@ -249,32 +217,17 @@ const GalleryCreate = ({ onRegisterComplete, initialData = {} }) => {
           {/* 제목 */}
           <div>
             <label className="block text-sm text-gray-600 mb-1.5">제목</label>
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary-400 focus:ring-1 focus:ring-primary-100 transition-all"
-              placeholder="제목을 입력해주세요"
-            />
+            <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary-400 focus:ring-1 focus:ring-primary-100 transition-all" placeholder="제목을 입력해주세요" />
           </div>
 
           {/* 내용 */}
           <div>
             <label className="block text-sm text-gray-600 mb-1.5">내용</label>
-            <textarea
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              rows={4}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary-400 focus:ring-1 focus:ring-primary-100 resize-none transition-all"
-              placeholder="내용을 입력해주세요"
-            />
+            <textarea value={content} onChange={(e) => setContent(e.target.value)} rows={4} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary-400 focus:ring-1 focus:ring-primary-100 resize-none transition-all" placeholder="내용을 입력해주세요" />
           </div>
 
           {/* 저장 버튼 */}
-          <button
-            onClick={handleSaveAll}
-            className="w-full py-2.5 bg-primary-600 text-white rounded-xl hover:bg-primary-700 active:scale-95 transition-all text-sm font-nanum-bold shadow-sm"
-          >
+          <button onClick={handleSaveAll} className="w-full py-2.5 bg-primary-600 text-white rounded-xl hover:bg-primary-700 active:scale-95 transition-all text-sm font-nanum-bold shadow-sm">
             저장
           </button>
         </div>
@@ -283,11 +236,7 @@ const GalleryCreate = ({ onRegisterComplete, initialData = {} }) => {
       {/* Snackbar */}
       {snackbarOpen && (
         <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50">
-          <div
-            className={`flex items-center gap-2 px-4 py-3 rounded-lg shadow-lg text-white text-sm ${
-              snackbarSeverity === "error" ? "bg-red-500" : "bg-green-500"
-            }`}
-          >
+          <div className={`flex items-center gap-2 px-4 py-3 rounded-lg shadow-lg text-white text-sm ${snackbarSeverity === "error" ? "bg-red-500" : "bg-green-500"}`}>
             <span>{snackbarMessage}</span>
             <button onClick={handleSnackbarClose} className="ml-1 hover:opacity-75">
               <FiX size={14} />

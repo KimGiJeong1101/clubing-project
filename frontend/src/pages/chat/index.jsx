@@ -1,14 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  getChatByClubid,
-  firstMessageGet,
-  OlderMessageGet,
-  loadMessagesBefore,
-  searchMessages,
-  loadMessagesAround,
-} from "../../store/actions/chatActions";
+import { getChatByClubid, firstMessageGet, OlderMessageGet, loadMessagesBefore, searchMessages, loadMessagesAround } from "../../store/actions/chatActions";
 import io from "socket.io-client";
 import ChatHeader from "./ChatHeader";
 import MessageList from "./MessageList";
@@ -66,7 +59,9 @@ const ChatPage = () => {
 
   // messages ref: handleScroll 등 클로저에서 최신 messages 참조용
   const messagesRef = useRef(messages);
-  useEffect(() => { messagesRef.current = messages; }, [messages]);
+  useEffect(() => {
+    messagesRef.current = messages;
+  }, [messages]);
 
   const handleSnackbarClose = () => setSnackbarOpen(false);
 
@@ -176,8 +171,8 @@ const ChatPage = () => {
           setMessages(result.payload);
           // around-mode 활성화: 타임스탬프 커서 방식으로 이전 메시지 로드
           setIsAroundMode(true);
-          setHasMore(true);   // 위로 스크롤 가능하게 유지
-          setSkip(0);         // skip 방식 사용 안 하므로 초기화
+          setHasMore(true); // 위로 스크롤 가능하게 유지
+          setSkip(0); // skip 방식 사용 안 하므로 초기화
         }
       })
       .catch((err) => console.error("loadMessagesAround error:", err));
@@ -198,7 +193,10 @@ const ChatPage = () => {
         if (isAroundMode) {
           // around-mode: 현재 메시지 중 가장 오래된 것의 timestamp 를 커서로 사용
           const oldest = messagesRef.current[0];
-          if (!oldest) { setLoading(false); return; }
+          if (!oldest) {
+            setLoading(false);
+            return;
+          }
           const result = await dispatch(loadMessagesBefore({ clubId: clubNumber, before: oldest.timestamp }));
           olderMessages = result.payload;
         } else {
@@ -311,11 +309,9 @@ const ChatPage = () => {
   // DESC 정렬 기준 (index 0 = 최신)
   // ↑ = 오래된 메시지로 이동 = index 증가
   // ↓ = 최신 메시지로 이동 = index 감소
-  const handlePrevMatch = () =>
-    setCurrentMatchIndex((p) => Math.min(matchCount - 1, p + 1));
+  const handlePrevMatch = () => setCurrentMatchIndex((p) => Math.min(matchCount - 1, p + 1));
 
-  const handleNextMatch = () =>
-    setCurrentMatchIndex((p) => Math.max(0, p - 1));
+  const handleNextMatch = () => setCurrentMatchIndex((p) => Math.max(0, p - 1));
 
   useEffect(() => {
     if (showSearchInput && searchInputRef.current) {
@@ -338,7 +334,10 @@ const ChatPage = () => {
       {showSearchInput && (
         <SearchInput
           searchTerm={searchTerm}
-          setSearchTerm={(term) => { setSearchTerm(term); setCurrentMatchIndex(0); }}
+          setSearchTerm={(term) => {
+            setSearchTerm(term);
+            setCurrentMatchIndex(0);
+          }}
           onClose={handleCloseSearch}
           matchCount={matchCount}
           currentMatchIndex={currentMatchIndex}
@@ -350,34 +349,14 @@ const ChatPage = () => {
       )}
 
       <div className="flex flex-col flex-1 overflow-hidden">
-        <MessageList
-          messages={messages}
-          userId={userId}
-          handleScroll={handleScroll}
-          isAtBottom={isAtBottom}
-          newMessageReceived={newMessageReceived}
-          searchTerm={searchTerm}
-          currentMatchId={currentMatchId}
-          resetKey={messageListResetKey}
-        />
+        <MessageList messages={messages} userId={userId} handleScroll={handleScroll} isAtBottom={isAtBottom} newMessageReceived={newMessageReceived} searchTerm={searchTerm} currentMatchId={currentMatchId} resetKey={messageListResetKey} />
       </div>
 
-      <MessageInput
-        message={message}
-        setMessage={setMessage}
-        handleSendMessage={handleSendMessage}
-        handleKeyPress={handleKeyPress}
-      />
+      <MessageInput message={message} setMessage={setMessage} handleSendMessage={handleSendMessage} handleKeyPress={handleKeyPress} />
 
       <ImageModal open={isModalOpen} onClose={handleCloseModal} imageUrl={selectedImage} />
 
-      <CustomSnackbarWithTimer
-        open={snackbarOpen}
-        message={snackbarMessage}
-        severity={snackbarSeverity}
-        onClose={handleSnackbarClose}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-      />
+      <CustomSnackbarWithTimer open={snackbarOpen} message={snackbarMessage} severity={snackbarSeverity} onClose={handleSnackbarClose} anchorOrigin={{ vertical: "bottom", horizontal: "center" }} />
     </div>
   );
 };

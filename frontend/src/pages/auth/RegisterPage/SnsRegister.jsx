@@ -20,13 +20,25 @@ import CustomButton2 from "../../../components/club/CustomButton2";
 import CustomSnackbarWithTimer from "../../../components/auth/Snackbar";
 
 const SnsRegister = () => {
-  const { register, handleSubmit, formState: { errors }, reset, watch, setValue, control } = useForm({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+    watch,
+    setValue,
+    control,
+  } = useForm({
     defaultValues: {
-      email: "", age: { year: "1990", month: "9", day: "10" }, gender: "남성",
+      email: "",
+      age: { year: "1990", month: "9", day: "10" },
+      gender: "남성",
       homeLocation: { sido: "서울특별시", sigoon: "동작구", dong: "상도동" },
       workplace: { w_sido: "", w_sigoon: "", w_dong: "" },
       interestLocation: { i_sido: "", i_sigoon: "", i_dong: "" },
-      category: [], selectedJobs: [], phone: [],
+      category: [],
+      selectedJobs: [],
+      phone: [],
     },
     mode: "onChange",
   });
@@ -48,9 +60,21 @@ const SnsRegister = () => {
   const [workplace, setWorkplace] = useState({ w_sido: "", w_sigoon: "", w_dong: "" });
   const [interestLocation, setInterestLocation] = useState({ i_sido: "", i_sigoon: "", i_dong: "" });
 
-  useEffect(() => { setValue("homeLocation.sido", homeLocation.sido); setValue("homeLocation.sigoon", homeLocation.sigoon); setValue("homeLocation.dong", homeLocation.dong); }, [homeLocation, setValue]);
-  useEffect(() => { setValue("workplace.w_sido", workplace.w_sido); setValue("workplace.w_sigoon", workplace.w_sigoon); setValue("workplace.w_dong", workplace.w_dong); }, [workplace, setValue]);
-  useEffect(() => { setValue("interestLocation.i_sido", interestLocation.i_sido); setValue("interestLocation.i_sigoon", interestLocation.i_sigoon); setValue("interestLocation.i_dong", interestLocation.i_dong); }, [interestLocation, setValue]);
+  useEffect(() => {
+    setValue("homeLocation.sido", homeLocation.sido);
+    setValue("homeLocation.sigoon", homeLocation.sigoon);
+    setValue("homeLocation.dong", homeLocation.dong);
+  }, [homeLocation, setValue]);
+  useEffect(() => {
+    setValue("workplace.w_sido", workplace.w_sido);
+    setValue("workplace.w_sigoon", workplace.w_sigoon);
+    setValue("workplace.w_dong", workplace.w_dong);
+  }, [workplace, setValue]);
+  useEffect(() => {
+    setValue("interestLocation.i_sido", interestLocation.i_sido);
+    setValue("interestLocation.i_sigoon", interestLocation.i_sigoon);
+    setValue("interestLocation.i_dong", interestLocation.i_dong);
+  }, [interestLocation, setValue]);
 
   const [isCategoryPopupOpen, setIsCategoryPopupOpen] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState([]);
@@ -59,16 +83,25 @@ const SnsRegister = () => {
   const [selectedJobs, setSelectedJobs] = useState([]);
 
   function groupCategories(cats) {
-    return cats.reduce((acc, cat) => { if (!acc[cat.main]) acc[cat.main] = []; acc[cat.main].push(cat.sub); return acc; }, {});
+    return cats.reduce((acc, cat) => {
+      if (!acc[cat.main]) acc[cat.main] = [];
+      acc[cat.main].push(cat.sub);
+      return acc;
+    }, {});
   }
 
   useEffect(() => {
     const grouped = groupCategories(selectedCategories);
     setGroupedCategories(grouped);
-    setValue("category", Object.keys(grouped).map((main) => ({ main, sub: grouped[main] })));
+    setValue(
+      "category",
+      Object.keys(grouped).map((main) => ({ main, sub: grouped[main] })),
+    );
   }, [selectedCategories, setValue]);
 
-  useEffect(() => { setValue("selectedJobs", selectedJobs); }, [selectedJobs, setValue]);
+  useEffect(() => {
+    setValue("selectedJobs", selectedJobs);
+  }, [selectedJobs, setValue]);
 
   const handleSelection = (newSelections) => {
     if (isCategoryPopupOpen) setSelectedCategories(newSelections);
@@ -80,8 +113,14 @@ const SnsRegister = () => {
   const nickNameValue = watch("nickName");
 
   const handleCheckNickName = async () => {
-    if (!nickNameValue?.trim()) { setSnackbar({ open: true, msg: "닉네임을 입력해주세요.", ok: false }); return; }
-    if (errors.nickName) { setSnackbar({ open: true, msg: "유효한 닉네임을 입력하세요.", ok: false }); return; }
+    if (!nickNameValue?.trim()) {
+      setSnackbar({ open: true, msg: "닉네임을 입력해주세요.", ok: false });
+      return;
+    }
+    if (errors.nickName) {
+      setSnackbar({ open: true, msg: "유효한 닉네임을 입력하세요.", ok: false });
+      return;
+    }
     try {
       const response = await axios.post(`${apiUrl}/users/check-nickname`, { nickName: nickNameValue });
       setSnackbar({ open: true, msg: response.data.message, ok: true });
@@ -107,7 +146,7 @@ const SnsRegister = () => {
   const handleCheck = (type) => {
     setCheckboxState((prev) => {
       const newState = !prev[type];
-      const allChecked = type === "all" ? newState : ["terms", "privacy", "marketing"].every((k) => k === type ? newState : prev[k]);
+      const allChecked = type === "all" ? newState : ["terms", "privacy", "marketing"].every((k) => (k === type ? newState : prev[k]));
       return { ...prev, [type]: newState, all: allChecked };
     });
   };
@@ -117,7 +156,11 @@ const SnsRegister = () => {
     setCheckboxState({ terms: newChecked, privacy: newChecked, marketing: newChecked, all: newChecked });
   };
 
-  const generateOptions = (start, end) => { const o = []; for (let i = start; i <= end; i++) o.push(i); return o; };
+  const generateOptions = (start, end) => {
+    const o = [];
+    for (let i = start; i <= end; i++) o.push(i);
+    return o;
+  };
   const years = generateOptions(1950, 2040);
   const months = generateOptions(1, 12);
   const days = generateOptions(1, 31);
@@ -138,30 +181,58 @@ const SnsRegister = () => {
     const { w_sido = "", w_sigoon = "", w_dong = "" } = workplace;
     const { i_sido = "", i_sigoon = "", i_dong = "" } = interestLocation;
 
-    if (!isNickNameChecked) { setSnackbar({ open: true, msg: "닉네임 중복 검사를 해야 합니다.", ok: false }); return; }
-    if (!sido || !sigoon || !dong) { setSnackbar({ open: true, msg: "집 주소를 설정해 주세요.", ok: false }); return; }
-    if (selectedJobs.length === 0) { setSnackbar({ open: true, msg: "직종을 설정해 주세요", ok: false }); return; }
-    if (category.filter((c) => c.main).length < 3) { setSnackbar({ open: true, msg: "최소 3개의 메인 카테고리를 설정해 주세요.", ok: false }); return; }
-    if (!terms) { setSnackbar({ open: true, msg: "Clubing 이용약관에 동의해야 합니다.", ok: false }); return; }
-    if (!privacy) { setSnackbar({ open: true, msg: "개인정보 수집 및 이용에 동의해야 합니다.", ok: false }); return; }
+    if (!isNickNameChecked) {
+      setSnackbar({ open: true, msg: "닉네임 중복 검사를 해야 합니다.", ok: false });
+      return;
+    }
+    if (!sido || !sigoon || !dong) {
+      setSnackbar({ open: true, msg: "집 주소를 설정해 주세요.", ok: false });
+      return;
+    }
+    if (selectedJobs.length === 0) {
+      setSnackbar({ open: true, msg: "직종을 설정해 주세요", ok: false });
+      return;
+    }
+    if (category.filter((c) => c.main).length < 3) {
+      setSnackbar({ open: true, msg: "최소 3개의 메인 카테고리를 설정해 주세요.", ok: false });
+      return;
+    }
+    if (!terms) {
+      setSnackbar({ open: true, msg: "Clubing 이용약관에 동의해야 합니다.", ok: false });
+      return;
+    }
+    if (!privacy) {
+      setSnackbar({ open: true, msg: "개인정보 수집 및 이용에 동의해야 합니다.", ok: false });
+      return;
+    }
 
     const body = {
-      email, name, nickName,
+      email,
+      name,
+      nickName,
       age: { year, month, day },
       gender,
       homeLocation: { city: sido, district: sigoon, neighborhood: dong },
       workplace: { city: w_sido, district: w_sigoon, neighborhood: w_dong },
       interestLocation: { city: i_sido, district: i_sigoon, neighborhood: i_dong },
-      category: category.reduce((acc, cat) => { if (cat.main && Array.isArray(cat.sub)) acc.push({ main: cat.main, sub: cat.sub }); return acc; }, []),
+      category: category.reduce((acc, cat) => {
+        if (cat.main && Array.isArray(cat.sub)) acc.push({ main: cat.main, sub: cat.sub });
+        return acc;
+      }, []),
       job: selectedJobs,
       phone,
-      termsAccepted: terms, privacyAccepted: privacy, marketingAccepted: marketing,
+      termsAccepted: terms,
+      privacyAccepted: privacy,
+      marketingAccepted: marketing,
       profilePic: { originalImage: "https://via.placeholder.com/600x400?text=no+user+image", thumbnailImage: "https://via.placeholder.com/600x400?text=no+user+image", introduction: "" },
       registrationMethod: 1,
     };
 
     dispatch(registerUser(body))
-      .then(() => { setSnackbar({ open: true, msg: "회원가입에 성공하셨습니다.", ok: true }); setTimeout(() => navigate("/"), 1000); })
+      .then(() => {
+        setSnackbar({ open: true, msg: "회원가입에 성공하셨습니다.", ok: true });
+        setTimeout(() => navigate("/"), 1000);
+      })
       .catch(() => setSnackbar({ open: true, msg: "회원가입에 실패하였습니다.", ok: false }));
     reset();
   };
@@ -187,8 +258,7 @@ const SnsRegister = () => {
           {/* 이름 */}
           <div>
             <label className={labelCls}>이름</label>
-            <input type="text" placeholder="이름" className={`${inputCls} ${errors.name ? "border-red-400" : ""}`}
-              {...register("name", { required: "필수 필드입니다.", validate: userName })} />
+            <input type="text" placeholder="이름" className={`${inputCls} ${errors.name ? "border-red-400" : ""}`} {...register("name", { required: "필수 필드입니다.", validate: userName })} />
             {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name.message}</p>}
           </div>
 
@@ -196,13 +266,21 @@ const SnsRegister = () => {
           <div>
             <label className={labelCls}>닉네임</label>
             <div className="flex gap-2">
-              <input type="text" placeholder="닉네임" readOnly={isNickNameChecked}
-                className={`${inputCls} flex-1 ${isNickNameChecked ? "bg-gray-100 cursor-not-allowed" : ""}`}
-                {...register("nickName", { required: "필수 필드입니다.", maxLength: { value: 20, message: "최대 20자까지 입력할 수 있습니다." } })} />
+              <input type="text" placeholder="닉네임" readOnly={isNickNameChecked} className={`${inputCls} flex-1 ${isNickNameChecked ? "bg-gray-100 cursor-not-allowed" : ""}`} {...register("nickName", { required: "필수 필드입니다.", maxLength: { value: 20, message: "최대 20자까지 입력할 수 있습니다." } })} />
               {!isNickNameReset ? (
-                <CustomButton2 type="button" onClick={handleCheckNickName}>중복검사</CustomButton2>
+                <CustomButton2 type="button" onClick={handleCheckNickName}>
+                  중복검사
+                </CustomButton2>
               ) : (
-                <CustomButton2 type="button" onClick={() => { setIsNickNameChecked(false); setIsNickNameReset(false); }}>닉네임 수정</CustomButton2>
+                <CustomButton2
+                  type="button"
+                  onClick={() => {
+                    setIsNickNameChecked(false);
+                    setIsNickNameReset(false);
+                  }}
+                >
+                  닉네임 수정
+                </CustomButton2>
               )}
             </div>
             {errors.nickName && <p className="text-xs text-red-500 mt-1">{errors.nickName.message}</p>}
@@ -212,75 +290,122 @@ const SnsRegister = () => {
           <div>
             <label className={labelCls}>생년월일</label>
             <div className="flex gap-2">
-              <Controller name="age.year" control={control} defaultValue="" rules={{ required: "출생년도는 필수입니다." }}
+              <Controller
+                name="age.year"
+                control={control}
+                defaultValue=""
+                rules={{ required: "출생년도는 필수입니다." }}
                 render={({ field }) => (
                   <select {...field} className={selectCls}>
                     <option value="">출생년도</option>
-                    {years.map((y) => <option key={y} value={y}>{y}</option>)}
+                    {years.map((y) => (
+                      <option key={y} value={y}>
+                        {y}
+                      </option>
+                    ))}
                   </select>
-                )} />
-              <Controller name="age.month" control={control} defaultValue="" rules={{ required: "월은 필수입니다." }}
+                )}
+              />
+              <Controller
+                name="age.month"
+                control={control}
+                defaultValue=""
+                rules={{ required: "월은 필수입니다." }}
                 render={({ field }) => (
                   <select {...field} className={selectCls}>
                     <option value="">월</option>
-                    {months.map((m) => <option key={m} value={m}>{m}</option>)}
+                    {months.map((m) => (
+                      <option key={m} value={m}>
+                        {m}
+                      </option>
+                    ))}
                   </select>
-                )} />
-              <Controller name="age.day" control={control} defaultValue="" rules={{ required: "일은 필수입니다." }}
+                )}
+              />
+              <Controller
+                name="age.day"
+                control={control}
+                defaultValue=""
+                rules={{ required: "일은 필수입니다." }}
                 render={({ field }) => (
                   <select {...field} className={selectCls}>
                     <option value="">일</option>
-                    {days.map((d) => <option key={d} value={d}>{d}</option>)}
+                    {days.map((d) => (
+                      <option key={d} value={d}>
+                        {d}
+                      </option>
+                    ))}
                   </select>
-                )} />
+                )}
+              />
             </div>
           </div>
 
           {/* 성별 */}
           <div>
             <label className={labelCls}>성별</label>
-            <Controller name="gender" control={control} defaultValue=" " rules={{ required: "성별을 선택해 주세요." }}
+            <Controller
+              name="gender"
+              control={control}
+              defaultValue=" "
+              rules={{ required: "성별을 선택해 주세요." }}
               render={({ field }) => (
                 <div className="flex gap-2">
-                  <button type="button" onClick={() => field.onChange("남성")}
-                    className={`flex-1 py-2.5 rounded-lg font-medium text-white transition-all ${watch("gender") === "남성" ? "bg-blue-800 ring-2 ring-blue-400" : "bg-blue-500 hover:bg-blue-600"}`}>
+                  <button type="button" onClick={() => field.onChange("남성")} className={`flex-1 py-2.5 rounded-lg font-medium text-white transition-all ${watch("gender") === "남성" ? "bg-blue-800 ring-2 ring-blue-400" : "bg-blue-500 hover:bg-blue-600"}`}>
                     남자
                   </button>
-                  <button type="button" onClick={() => field.onChange("여성")}
-                    className={`flex-1 py-2.5 rounded-lg font-medium text-white transition-all ${watch("gender") === "여성" ? "bg-pink-700 ring-2 ring-pink-400" : "bg-pink-500 hover:bg-pink-600"}`}>
+                  <button type="button" onClick={() => field.onChange("여성")} className={`flex-1 py-2.5 rounded-lg font-medium text-white transition-all ${watch("gender") === "여성" ? "bg-pink-700 ring-2 ring-pink-400" : "bg-pink-500 hover:bg-pink-600"}`}>
                     여자
                   </button>
                 </div>
-              )} />
+              )}
+            />
             {errors.gender && <p className="text-xs text-red-500 mt-1">{errors.gender.message}</p>}
           </div>
 
           {/* 전화번호 */}
           <div>
             <label className={labelCls}>전화번호 (* 번호만 입력해 주세요)</label>
-            <Controller name="phone" control={control} defaultValue=""
+            <Controller
+              name="phone"
+              control={control}
+              defaultValue=""
               rules={{ required: "전화번호는 필수입니다.", pattern: { value: /^\d{3}-\d{4}-\d{4}$/, message: "전화번호 형식을 확인해 주세요. 예) 010-0000-0000" } }}
               render={({ field }) => (
-                <input {...field} type="text" placeholder="010-0000-0000"
+                <input
+                  {...field}
+                  type="text"
+                  placeholder="010-0000-0000"
                   className={`${inputCls} ${errors.phone ? "border-red-400" : ""}`}
-                  onChange={(e) => { const formatted = formatPhoneNumber(e.target.value); setValue("phone", formatted, { shouldValidate: true }); }}
-                  value={watch("phone")} />
-              )} />
+                  onChange={(e) => {
+                    const formatted = formatPhoneNumber(e.target.value);
+                    setValue("phone", formatted, { shouldValidate: true });
+                  }}
+                  value={watch("phone")}
+                />
+              )}
+            />
             {errors.phone && <p className="text-xs text-red-500 mt-1">{errors.phone.message}</p>}
           </div>
 
           {/* 주소 */}
           <div className="space-y-4">
             <div>
-              <p className="text-sm font-nanum-bold text-gray-600">집주소 <span className="text-gray-400 font-normal text-xs ml-1">(*읍면동 중 하나를 입력해 주세요)</span></p>
+              <p className="text-sm font-nanum-bold text-gray-600">
+                집주소 <span className="text-gray-400 font-normal text-xs ml-1">(*읍면동 중 하나를 입력해 주세요)</span>
+              </p>
               <HomeSearch setSelectedSido={(v) => setHomeLocation((p) => ({ ...p, sido: v }))} setSelectedSigoon={(v) => setHomeLocation((p) => ({ ...p, sigoon: v }))} setSelectedDong={(v) => setHomeLocation((p) => ({ ...p, dong: v }))} />
             </div>
             <div>
-              <p className="text-sm font-nanum-bold text-gray-600">직장주소 <span className="text-gray-400 font-normal text-xs ml-1">(*읍면동 중 하나를 입력해 주세요)</span></p>
+              <p className="text-sm font-nanum-bold text-gray-600">
+                직장주소 <span className="text-gray-400 font-normal text-xs ml-1">(*읍면동 중 하나를 입력해 주세요)</span>
+              </p>
               <WorkplaceSearch setWorkplaceSido={(v) => setWorkplace((p) => ({ ...p, w_sido: v }))} setWorkplaceSigoon={(v) => setWorkplace((p) => ({ ...p, w_sigoon: v }))} setWorkplaceDong={(v) => setWorkplace((p) => ({ ...p, w_dong: v }))} />
             </div>
             <div>
-              <p className="text-sm font-nanum-bold text-gray-600">관심지역 <span className="text-gray-400 font-normal text-xs ml-1">(*읍면동 중 하나를 입력해 주세요)</span></p>
+              <p className="text-sm font-nanum-bold text-gray-600">
+                관심지역 <span className="text-gray-400 font-normal text-xs ml-1">(*읍면동 중 하나를 입력해 주세요)</span>
+              </p>
               <InterestSearch setInterestSido={(v) => setInterestLocation((p) => ({ ...p, i_sido: v }))} setInterestSigoon={(v) => setInterestLocation((p) => ({ ...p, i_sigoon: v }))} setInterestDong={(v) => setInterestLocation((p) => ({ ...p, i_dong: v }))} />
             </div>
           </div>
@@ -288,7 +413,9 @@ const SnsRegister = () => {
           {/* 직종 */}
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <CustomButton2 type="button" onClick={() => setIsJobPopupOpen(true)}>직종 선택</CustomButton2>
+              <CustomButton2 type="button" onClick={() => setIsJobPopupOpen(true)}>
+                직종 선택
+              </CustomButton2>
               <span className="text-xs text-gray-500">(최대 3개 선택 가능)</span>
             </div>
             {isJobPopupOpen && <JobPopup jobCategories={JobCategories} onSelect={handleSelection} onClose={() => setIsJobPopupOpen(false)} selectedJobs={selectedJobs} />}
@@ -296,7 +423,9 @@ const SnsRegister = () => {
               {selectedJobs.map((job, i) => (
                 <span key={i} className="inline-flex items-center gap-1 bg-gray-200 text-gray-700 text-sm px-3 py-1 rounded-full">
                   {job}
-                  <button type="button" onClick={() => setSelectedJobs((p) => p.filter((j) => j !== job))}><FiX className="w-3 h-3" /></button>
+                  <button type="button" onClick={() => setSelectedJobs((p) => p.filter((j) => j !== job))}>
+                    <FiX className="w-3 h-3" />
+                  </button>
                 </span>
               ))}
             </div>
@@ -305,7 +434,9 @@ const SnsRegister = () => {
           {/* 카테고리 */}
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <CustomButton2 type="button" onClick={() => setIsCategoryPopupOpen(true)}>카테고리 선택</CustomButton2>
+              <CustomButton2 type="button" onClick={() => setIsCategoryPopupOpen(true)}>
+                카테고리 선택
+              </CustomButton2>
               <span className="text-xs text-gray-500">3개 이상 선택해 주세요</span>
             </div>
             {isCategoryPopupOpen && <CategoryPopup categories={categories} onSelect={handleSelection} onClose={() => setIsCategoryPopupOpen(false)} selectedCategories={selectedCategories} />}
@@ -317,7 +448,9 @@ const SnsRegister = () => {
                     {subs.map((sub, i) => (
                       <span key={i} className="inline-flex items-center gap-1 bg-gray-200 text-gray-700 text-xs px-2.5 py-1 rounded-full">
                         {sub}
-                        <button type="button" onClick={() => setSelectedCategories((p) => p.filter((c) => !(c.main === main && c.sub === sub)))}><FiX className="w-3 h-3" /></button>
+                        <button type="button" onClick={() => setSelectedCategories((p) => p.filter((c) => !(c.main === main && c.sub === sub)))}>
+                          <FiX className="w-3 h-3" />
+                        </button>
                       </span>
                     ))}
                   </div>
@@ -344,7 +477,9 @@ const SnsRegister = () => {
             ].map(({ key, label, popup }) => (
               <div key={key} className="flex items-center gap-2">
                 <CustomCheckbox checked={checkboxState[key]} onChange={() => handleCheck(key)} label={label} />
-                <button type="button" onClick={() => setIsPopupOpen((p) => ({ ...p, [popup]: true }))} className="text-xs text-primary-600 underline ml-auto">전체</button>
+                <button type="button" onClick={() => setIsPopupOpen((p) => ({ ...p, [popup]: true }))} className="text-xs text-primary-600 underline ml-auto">
+                  전체
+                </button>
               </div>
             ))}
           </div>
@@ -354,22 +489,20 @@ const SnsRegister = () => {
           {isPopupOpen.marketing && <MarketingPopup onClose={() => setIsPopupOpen((p) => ({ ...p, marketing: false }))} handleCheck={handleCheck} checked={{ marketing: checkboxState.marketing }} />}
 
           <div className="pt-4 space-y-4">
-            <CustomButton2 type="submit" className="!w-full !py-3 !text-base">회원가입</CustomButton2>
+            <CustomButton2 type="submit" className="!w-full !py-3 !text-base">
+              회원가입
+            </CustomButton2>
             <p className="text-center text-sm text-gray-500">
               아이디가 있다면?{" "}
-              <a href="/login" className="text-primary-600 hover:underline font-medium">로그인</a>
+              <a href="/login" className="text-primary-600 hover:underline font-medium">
+                로그인
+              </a>
             </p>
           </div>
         </form>
       </div>
 
-      <CustomSnackbarWithTimer
-        open={snackbar.open}
-        message={snackbar.msg}
-        severity={snackbar.ok ? "success" : "error"}
-        onClose={() => setSnackbar((p) => ({ ...p, open: false }))}
-        duration={5000}
-      />
+      <CustomSnackbarWithTimer open={snackbar.open} message={snackbar.msg} severity={snackbar.ok ? "success" : "error"} onClose={() => setSnackbar((p) => ({ ...p, open: false }))} duration={5000} />
     </div>
   );
 };

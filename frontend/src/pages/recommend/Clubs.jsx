@@ -1,9 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { FiPlus, FiSearch, FiX, FiUsers } from "react-icons/fi";
-import {
-  MdFastfood, MdMenuBook, MdNightlife, MdCelebration, MdSportsKabaddi,
-  MdColorLens, MdLocalAtm, MdFavorite, MdLocalAirport, MdPeople, MdAutoStories,
-} from "react-icons/md";
+import { MdFastfood, MdMenuBook, MdNightlife, MdCelebration, MdSportsKabaddi, MdColorLens, MdLocalAtm, MdFavorite, MdLocalAirport, MdPeople, MdAutoStories } from "react-icons/md";
 import { IoBoatOutline } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -11,17 +8,17 @@ import ClubListCard from "../../components/club/ClubListCard.js";
 import { throttle } from "lodash";
 
 const CATEGORIES = [
-  { color: "#71ABF0", icon: <MdFastfood    className="w-7 h-7" />, text: "푸드·드링크" },
-  { color: "#DC6A5A", icon: <MdMenuBook    className="w-7 h-7" />, text: "자기계발" },
-  { color: "#9363D1", icon: <MdNightlife   className="w-7 h-7" />, text: "취미" },
+  { color: "#71ABF0", icon: <MdFastfood className="w-7 h-7" />, text: "푸드·드링크" },
+  { color: "#DC6A5A", icon: <MdMenuBook className="w-7 h-7" />, text: "자기계발" },
+  { color: "#9363D1", icon: <MdNightlife className="w-7 h-7" />, text: "취미" },
   { color: "#6BAED4", icon: <IoBoatOutline className="w-7 h-7" />, text: "액티비티" },
   { color: "#EE7E8C", icon: <MdCelebration className="w-7 h-7" />, text: "파티" },
   { color: "#5C6BC0", icon: <MdSportsKabaddi className="w-7 h-7" />, text: "소셜게임" },
-  { color: "#F4A836", icon: <MdColorLens   className="w-7 h-7" />, text: "문화·예술" },
-  { color: "#C25BA1", icon: <MdLocalAtm    className="w-7 h-7" />, text: "N잡·재테크" },
-  { color: "#E8727E", icon: <MdFavorite    className="w-7 h-7" />, text: "연애·사랑" },
+  { color: "#F4A836", icon: <MdColorLens className="w-7 h-7" />, text: "문화·예술" },
+  { color: "#C25BA1", icon: <MdLocalAtm className="w-7 h-7" />, text: "N잡·재테크" },
+  { color: "#E8727E", icon: <MdFavorite className="w-7 h-7" />, text: "연애·사랑" },
   { color: "#5BAD6F", icon: <MdLocalAirport className="w-7 h-7" />, text: "여행·나들이" },
-  { color: "#7986CB", icon: <MdPeople      className="w-7 h-7" />, text: "동네·또래" },
+  { color: "#7986CB", icon: <MdPeople className="w-7 h-7" />, text: "동네·또래" },
   { color: "#8E44AD", icon: <MdAutoStories className="w-7 h-7" />, text: "외국어" },
 ];
 
@@ -35,7 +32,9 @@ function SkeletonCard() {
         <div className="h-3 bg-gray-100 rounded w-1/2" />
         <div className="flex items-center justify-between pt-3 border-t border-gray-100">
           <div className="flex gap-1">
-            {[0,1,2].map(i => <div key={i} className="w-7 h-7 rounded-full bg-gray-200" />)}
+            {[0, 1, 2].map((i) => (
+              <div key={i} className="w-7 h-7 rounded-full bg-gray-200" />
+            ))}
           </div>
           <div className="w-9 h-9 rounded-full bg-gray-200" />
         </div>
@@ -45,31 +44,32 @@ function SkeletonCard() {
 }
 
 const Clubs = () => {
-  const [category, setCategory]         = useState("");
+  const [category, setCategory] = useState("");
   const [searchRegion, setSearchRegion] = useState("");
-  const [scrollCount, setScrollCount]   = useState(1);
-  const [scrollData, setScrollData]     = useState([]);
+  const [scrollCount, setScrollCount] = useState(1);
+  const [scrollData, setScrollData] = useState([]);
   const navigate = useNavigate();
 
   const getClubList = async () => {
-    const url = category
-      ? `http://localhost:4000/clubs/${category}?searchRegion=${searchRegion}`
-      : `http://localhost:4000/clubs?searchRegion=${searchRegion}`;
+    const url = category ? `http://localhost:4000/clubs/${category}?searchRegion=${searchRegion}` : `http://localhost:4000/clubs?searchRegion=${searchRegion}`;
     const res = await fetch(url);
     return res.json();
   };
 
-  const { data: clubList = [], isLoading, isError, error } = useQuery({
+  const {
+    data: clubList = [],
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
     queryKey: ["recommendClubList", category, searchRegion],
-    queryFn:  getClubList,
+    queryFn: getClubList,
     keepPreviousData: true,
   });
 
   const getClubListScroll = async (count) => {
-    const url = category
-      ? `http://localhost:4000/clubs/scroll/${count}/${category}?searchRegion=${searchRegion}`
-      : `http://localhost:4000/clubs/scroll/${count}?searchRegion=${searchRegion}`;
-    const res  = await fetch(url);
+    const url = category ? `http://localhost:4000/clubs/scroll/${count}/${category}?searchRegion=${searchRegion}` : `http://localhost:4000/clubs/scroll/${count}?searchRegion=${searchRegion}`;
+    const res = await fetch(url);
     const data = await res.json();
     setScrollData((p) => [...p, ...data]);
     if (data.length === 6) window.addEventListener("scroll", handleScroll);
@@ -80,7 +80,10 @@ const Clubs = () => {
     throttle(() => {
       const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
       if (scrollTop + clientHeight >= scrollHeight - 10) {
-        setScrollCount((p) => { getClubListScroll(p + 1); return p + 1; });
+        setScrollCount((p) => {
+          getClubListScroll(p + 1);
+          return p + 1;
+        });
         window.removeEventListener("scroll", handleScroll);
       }
     }, 500),
@@ -101,7 +104,8 @@ const Clubs = () => {
   }, []);
 
   const handleRegionClick = () => {
-    setScrollData([]); setScrollCount(1);
+    setScrollData([]);
+    setScrollCount(1);
     new window.daum.Postcode({
       oncomplete: (data) => {
         const addr = data.userSelectedType === "R" ? data.roadAddress : data.jibunAddress;
@@ -111,7 +115,8 @@ const Clubs = () => {
   };
 
   const handleCategoryClick = (text) => {
-    setScrollData([]); setScrollCount(1);
+    setScrollData([]);
+    setScrollCount(1);
     setCategory((prev) => (prev === text ? "" : text));
   };
 
@@ -119,13 +124,8 @@ const Clubs = () => {
 
   return (
     <div className="w-full min-h-screen" style={{ background: "#FAF8F5" }}>
-
       {/* FAB */}
-      <button
-        onClick={() => navigate("/clubs/create")}
-        className="fixed bottom-10 right-10 z-50 w-14 h-14 rounded-full bg-primary-600 hover:bg-primary-700 active:scale-95 text-white shadow-xl flex items-center justify-center transition-all duration-200"
-        aria-label="모임 만들기"
-      >
+      <button onClick={() => navigate("/clubs/create")} className="fixed bottom-10 right-10 z-50 w-14 h-14 rounded-full bg-primary-600 hover:bg-primary-700 active:scale-95 text-white shadow-xl flex items-center justify-center transition-all duration-200" aria-label="모임 만들기">
         <FiPlus className="w-6 h-6" />
       </button>
 
@@ -162,8 +162,10 @@ const Clubs = () => {
                   >
                     {item.icon}
                   </div>
-                  <span className={`text-[10px] md:text-xs text-center leading-tight whitespace-nowrap transition-colors
-                    ${isActive ? "text-primary-600 font-nanum-bold" : "text-gray-500 font-nanum"}`}>
+                  <span
+                    className={`text-[10px] md:text-xs text-center leading-tight whitespace-nowrap transition-colors
+                    ${isActive ? "text-primary-600 font-nanum-bold" : "text-gray-500 font-nanum"}`}
+                  >
                     {item.text}
                   </span>
                 </button>
@@ -172,19 +174,14 @@ const Clubs = () => {
           </div>
 
           {/* ── 지역 검색 버튼 ── */}
-          <button
-            onClick={handleRegionClick}
-            className="mt-5 w-full flex items-center justify-between bg-gray-50 hover:bg-primary-50 border border-gray-200 hover:border-primary-200 rounded-2xl px-5 py-3 transition-all duration-200 group"
-          >
+          <button onClick={handleRegionClick} className="mt-5 w-full flex items-center justify-between bg-gray-50 hover:bg-primary-50 border border-gray-200 hover:border-primary-200 rounded-2xl px-5 py-3 transition-all duration-200 group">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 bg-primary-100 group-hover:bg-primary-200 rounded-xl flex items-center justify-center transition-colors">
                 <FiSearch className="w-4 h-4 text-primary-600" />
               </div>
               <div className="text-left">
                 <p className="text-sm font-nanum-bold text-gray-700">지역으로 모임 찾기</p>
-                <p className="text-xs text-gray-400">
-                  {searchRegion ? `현재 지역: ${searchRegion}` : "카테고리와 지역을 함께 선택해보세요"}
-                </p>
+                <p className="text-xs text-gray-400">{searchRegion ? `현재 지역: ${searchRegion}` : "카테고리와 지역을 함께 선택해보세요"}</p>
               </div>
             </div>
             <span className="text-xs text-primary-500 font-nanum-bold group-hover:underline">선택하기 →</span>
@@ -194,7 +191,6 @@ const Clubs = () => {
 
       {/* ── 클럽 목록 ── */}
       <div className="max-w-6xl mx-auto px-4 md:px-6 py-6 pb-20">
-
         {/* 활성 필터 */}
         {(searchRegion || category) && (
           <div className="flex flex-wrap gap-2 mb-5">
@@ -202,7 +198,11 @@ const Clubs = () => {
               <span className="inline-flex items-center gap-1.5 bg-white text-primary-700 font-nanum-bold px-4 py-1.5 rounded-full shadow-sm border border-primary-100 text-sm">
                 📍 {searchRegion}
                 <button
-                  onClick={() => { setSearchRegion(""); setScrollData([]); setScrollCount(1); }}
+                  onClick={() => {
+                    setSearchRegion("");
+                    setScrollData([]);
+                    setScrollCount(1);
+                  }}
                   className="hover:text-red-400 transition-colors ml-0.5"
                 >
                   <FiX className="w-3.5 h-3.5" />
@@ -213,7 +213,11 @@ const Clubs = () => {
               <span className="inline-flex items-center gap-1.5 bg-white text-primary-700 font-nanum-bold px-4 py-1.5 rounded-full shadow-sm border border-primary-100 text-sm">
                 {category}
                 <button
-                  onClick={() => { setCategory(""); setScrollData([]); setScrollCount(1); }}
+                  onClick={() => {
+                    setCategory("");
+                    setScrollData([]);
+                    setScrollCount(1);
+                  }}
                   className="hover:text-red-400 transition-colors ml-0.5"
                 >
                   <FiX className="w-3.5 h-3.5" />
@@ -225,7 +229,11 @@ const Clubs = () => {
 
         {isLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {Array(6).fill(0).map((_, i) => <SkeletonCard key={i} />)}
+            {Array(6)
+              .fill(0)
+              .map((_, i) => (
+                <SkeletonCard key={i} />
+              ))}
           </div>
         ) : isError ? (
           <div className="flex flex-col items-center py-20 text-center">
@@ -239,7 +247,12 @@ const Clubs = () => {
             <p className="text-sm text-gray-400">다른 카테고리나 지역으로 검색해보세요</p>
             {(category || searchRegion) && (
               <button
-                onClick={() => { setCategory(""); setSearchRegion(""); setScrollData([]); setScrollCount(1); }}
+                onClick={() => {
+                  setCategory("");
+                  setSearchRegion("");
+                  setScrollData([]);
+                  setScrollCount(1);
+                }}
                 className="mt-4 px-5 py-2 bg-primary-50 hover:bg-primary-100 text-primary-700 text-sm font-nanum-bold rounded-xl transition-colors"
               >
                 필터 초기화

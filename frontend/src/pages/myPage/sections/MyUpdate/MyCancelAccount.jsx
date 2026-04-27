@@ -67,10 +67,7 @@ const MyCancelAccount = ({ view }) => {
           <div className="p-6 bg-white rounded-2xl shadow-lg">
             <div className="mt-1 mb-1">
               <p className="text-base text-center mb-8">회원 탈퇴를 진행하시겠습니까?</p>
-              <button
-                onClick={handleDeleteAccount}
-                className="w-full px-4 py-4 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium transition-colors"
-              >
+              <button onClick={handleDeleteAccount} className="w-full px-4 py-4 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium transition-colors">
                 탈퇴하기
               </button>
             </div>
@@ -79,28 +76,14 @@ const MyCancelAccount = ({ view }) => {
 
         {/* Modal */}
         {isModalOpen && (
-          <div
-            className="fixed inset-0 z-[300] bg-black/50 flex items-center justify-center p-4"
-            onClick={handleCloseModal}
-          >
-            <div
-              className="bg-white rounded-2xl shadow-xl w-full max-w-lg p-8"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <h2 className="text-lg font-semibold text-center mb-6">
-                정말로 회원 탈퇴를 하시겠습니까?
-              </h2>
+          <div className="fixed inset-0 z-[300] bg-black/50 flex items-center justify-center p-4" onClick={handleCloseModal}>
+            <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg p-8" onClick={(e) => e.stopPropagation()}>
+              <h2 className="text-lg font-semibold text-center mb-6">정말로 회원 탈퇴를 하시겠습니까?</h2>
               <div className="grid grid-cols-2 gap-4 mt-2">
-                <button
-                  onClick={handleCloseModal}
-                  className="w-full px-4 py-2 border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors"
-                >
+                <button onClick={handleCloseModal} className="w-full px-4 py-2 border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors">
                   취소
                 </button>
-                <button
-                  onClick={handleConfirmDelete}
-                  className="w-full px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium transition-colors"
-                >
+                <button onClick={handleConfirmDelete} className="w-full px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium transition-colors">
                   탈퇴하기
                 </button>
               </div>

@@ -8,36 +8,28 @@ const GalleryModal = ({ open, handleClose, images, writer, title, content, creat
 
   if (!open) return null;
 
-  const formattedDate = createdAt
-    ? new Date(createdAt).toLocaleDateString("ko-KR", { year: "numeric", month: "long", day: "numeric" })
-    : null;
+  const formattedDate = createdAt ? new Date(createdAt).toLocaleDateString("ko-KR", { year: "numeric", month: "long", day: "numeric" }) : null;
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      style={{ backgroundColor: "rgba(0,0,0,0.85)" }}
-    >
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: "rgba(0,0,0,0.85)" }}>
       {/* 배경 클릭 시 닫기 */}
       <div className="absolute inset-0" onClick={handleClose} />
 
       {/* 이전 버튼 */}
       <button
-        onClick={(e) => { e.stopPropagation(); handlePrev(); }}
+        onClick={(e) => {
+          e.stopPropagation();
+          handlePrev();
+        }}
         className="absolute left-3 sm:left-6 z-20 flex items-center justify-center w-10 h-10 rounded-full bg-black/40 text-white hover:bg-black/60 transition-colors"
       >
         <FiChevronLeft size={22} />
       </button>
 
       {/* 모달 박스 */}
-      <div
-        className="relative z-10 flex flex-col md:flex-row bg-white rounded-2xl shadow-2xl overflow-hidden w-full max-w-[900px] max-h-[85vh]"
-        onClick={(e) => e.stopPropagation()}
-      >
+      <div className="relative z-10 flex flex-col md:flex-row bg-white rounded-2xl shadow-2xl overflow-hidden w-full max-w-[900px] max-h-[85vh]" onClick={(e) => e.stopPropagation()}>
         {/* 닫기 버튼 */}
-        <button
-          onClick={handleClose}
-          className="absolute top-3 right-3 z-20 p-1.5 bg-black/20 hover:bg-black/40 text-white rounded-full transition-colors"
-        >
+        <button onClick={handleClose} className="absolute top-3 right-3 z-20 p-1.5 bg-black/20 hover:bg-black/40 text-white rounded-full transition-colors">
           <FiX size={18} />
         </button>
 
@@ -63,9 +55,7 @@ const GalleryModal = ({ open, handleClose, images, writer, title, content, creat
                 </div>
               )}
             </div>
-            {content && (
-              <p className="mt-3 text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">{content}</p>
-            )}
+            {content && <p className="mt-3 text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">{content}</p>}
           </div>
 
           {/* 댓글 영역 */}
@@ -77,7 +67,10 @@ const GalleryModal = ({ open, handleClose, images, writer, title, content, creat
 
       {/* 다음 버튼 */}
       <button
-        onClick={(e) => { e.stopPropagation(); handleNext(); }}
+        onClick={(e) => {
+          e.stopPropagation();
+          handleNext();
+        }}
         className="absolute right-3 sm:right-6 z-20 flex items-center justify-center w-10 h-10 rounded-full bg-black/40 text-white hover:bg-black/60 transition-colors"
       >
         <FiChevronRight size={22} />

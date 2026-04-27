@@ -72,18 +72,13 @@ const MyChangePw = ({ view }) => {
     <div>
       {/* 비밀번호 */}
       <div className="flex items-start mb-3">
-        <label htmlFor="password" className={`${labelCls} pt-2.5`}>비밀번호</label>
+        <label htmlFor="password" className={`${labelCls} pt-2.5`}>
+          비밀번호
+        </label>
         <div className="flex-1">
           <div className="relative">
-            <input
-              id="password"
-              type={showPassword ? "text" : "password"}
-              placeholder="새 비밀번호"
-              {...register("password", userPassword)}
-              className={inputCls}
-            />
-            <button type="button" onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+            <input id="password" type={showPassword ? "text" : "password"} placeholder="새 비밀번호" {...register("password", userPassword)} className={inputCls} />
+            <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
               {showPassword ? <FiEyeOff size={16} /> : <FiEye size={16} />}
             </button>
           </div>
@@ -93,18 +88,13 @@ const MyChangePw = ({ view }) => {
 
       {/* 비밀번호 확인 */}
       <div className="flex items-start mb-4">
-        <label htmlFor="passwordCheck" className={`${labelCls} pt-2.5`}>비밀번호 확인</label>
+        <label htmlFor="passwordCheck" className={`${labelCls} pt-2.5`}>
+          비밀번호 확인
+        </label>
         <div className="flex-1">
           <div className="relative">
-            <input
-              id="passwordCheck"
-              type={showPasswordCheck ? "text" : "password"}
-              placeholder="비밀번호 확인"
-              {...register("passwordCheck", userPasswordCheck)}
-              className={inputCls}
-            />
-            <button type="button" onClick={() => setShowPasswordCheck(!showPasswordCheck)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+            <input id="passwordCheck" type={showPasswordCheck ? "text" : "password"} placeholder="비밀번호 확인" {...register("passwordCheck", userPasswordCheck)} className={inputCls} />
+            <button type="button" onClick={() => setShowPasswordCheck(!showPasswordCheck)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
               {showPasswordCheck ? <FiEyeOff size={16} /> : <FiEye size={16} />}
             </button>
           </div>
@@ -112,11 +102,7 @@ const MyChangePw = ({ view }) => {
         </div>
       </div>
 
-      <button
-        type="button"
-        onClick={handleSubmit(onSubmit)}
-        className="w-full py-3 bg-primary-600 hover:bg-primary-700 text-white font-nanum-bold rounded-xl transition-colors"
-      >
+      <button type="button" onClick={handleSubmit(onSubmit)} className="w-full py-3 bg-primary-600 hover:bg-primary-700 text-white font-nanum-bold rounded-xl transition-colors">
         비밀번호 변경
       </button>
 

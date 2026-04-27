@@ -54,10 +54,7 @@ const CategoryModalSub = ({ open, onClose, onSubCategorySelect, mainCategory }) 
         }}
       />
 
-      <div
-        className="relative z-10 bg-white border-2 border-black shadow-2xl p-8"
-        style={{ width: 800, height: 630 }}
-      >
+      <div className="relative z-10 bg-white border-2 border-black shadow-2xl p-8" style={{ width: 800, height: 630 }}>
         <h2 className="text-2xl font-bold text-center">관심사 선택</h2>
         <br />
         <hr className="mb-4" />
@@ -70,10 +67,7 @@ const CategoryModalSub = ({ open, onClose, onSubCategorySelect, mainCategory }) 
                 aria-label={item}
                 onClick={ButtonHandleClick}
                 className={`w-[100px] h-[50px] text-base rounded-lg shadow-md transition-colors my-[15px]
-                  ${selectedCategories.includes(item)
-                    ? "bg-green-600 text-white"
-                    : "bg-transparent text-green-600 border border-green-600 hover:bg-green-50"
-                  }`}
+                  ${selectedCategories.includes(item) ? "bg-green-600 text-white" : "bg-transparent text-green-600 border border-green-600 hover:bg-green-50"}`}
               >
                 {item}
               </button>

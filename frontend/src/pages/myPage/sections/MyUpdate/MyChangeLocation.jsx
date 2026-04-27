@@ -91,8 +91,7 @@ const MyChangeLocation = ({ view }) => {
 
   if (view !== "changeLocation") return null;
 
-  const formatLocation = (loc) =>
-    loc ? `${loc.city || ""} ${loc.district || ""} ${loc.neighborhood || ""}`.trim() || "정보 없음" : "정보 없음";
+  const formatLocation = (loc) => (loc ? `${loc.city || ""} ${loc.district || ""} ${loc.neighborhood || ""}`.trim() || "정보 없음" : "정보 없음");
 
   return (
     <div className="space-y-4">
@@ -102,11 +101,7 @@ const MyChangeLocation = ({ view }) => {
         <div className="flex items-center gap-3">
           <label className="text-sm font-nanum-bold text-gray-500 min-w-[80px]">변경 주소</label>
           <div className="flex-1">
-            <HomeSearch
-              setSelectedSido={(sido) => setHomeLocation((prev) => ({ ...prev, sido }))}
-              setSelectedSigoon={(sigoon) => setHomeLocation((prev) => ({ ...prev, sigoon }))}
-              setSelectedDong={(dong) => setHomeLocation((prev) => ({ ...prev, dong }))}
-            />
+            <HomeSearch setSelectedSido={(sido) => setHomeLocation((prev) => ({ ...prev, sido }))} setSelectedSigoon={(sigoon) => setHomeLocation((prev) => ({ ...prev, sigoon }))} setSelectedDong={(dong) => setHomeLocation((prev) => ({ ...prev, dong }))} />
           </div>
         </div>
       </div>
@@ -117,11 +112,7 @@ const MyChangeLocation = ({ view }) => {
         <div className="flex items-center gap-3">
           <label className="text-sm font-nanum-bold text-gray-500 min-w-[80px]">변경 주소</label>
           <div className="flex-1">
-            <WorkplaceSearch
-              setWorkplaceSido={(sido) => setWorkplace((prev) => ({ ...prev, w_sido: sido }))}
-              setWorkplaceSigoon={(sigoon) => setWorkplace((prev) => ({ ...prev, w_sigoon: sigoon }))}
-              setWorkplaceDong={(dong) => setWorkplace((prev) => ({ ...prev, w_dong: dong }))}
-            />
+            <WorkplaceSearch setWorkplaceSido={(sido) => setWorkplace((prev) => ({ ...prev, w_sido: sido }))} setWorkplaceSigoon={(sigoon) => setWorkplace((prev) => ({ ...prev, w_sigoon: sigoon }))} setWorkplaceDong={(dong) => setWorkplace((prev) => ({ ...prev, w_dong: dong }))} />
           </div>
         </div>
       </div>
@@ -132,20 +123,12 @@ const MyChangeLocation = ({ view }) => {
         <div className="flex items-center gap-3">
           <label className="text-sm font-nanum-bold text-gray-500 min-w-[80px]">변경 지역</label>
           <div className="flex-1">
-            <InterestSearch
-              setInterestSido={(sido) => setInterestLocation((prev) => ({ ...prev, i_sido: sido }))}
-              setInterestSigoon={(sigoon) => setInterestLocation((prev) => ({ ...prev, i_sigoon: sigoon }))}
-              setInterestDong={(dong) => setInterestLocation((prev) => ({ ...prev, i_dong: dong }))}
-            />
+            <InterestSearch setInterestSido={(sido) => setInterestLocation((prev) => ({ ...prev, i_sido: sido }))} setInterestSigoon={(sigoon) => setInterestLocation((prev) => ({ ...prev, i_sigoon: sigoon }))} setInterestDong={(dong) => setInterestLocation((prev) => ({ ...prev, i_dong: dong }))} />
           </div>
         </div>
       </div>
 
-      <button
-        type="button"
-        onClick={handleSubmit(onSubmit)}
-        className="w-full py-3 bg-primary-600 hover:bg-primary-700 text-white font-nanum-bold rounded-xl transition-colors"
-      >
+      <button type="button" onClick={handleSubmit(onSubmit)} className="w-full py-3 bg-primary-600 hover:bg-primary-700 text-white font-nanum-bold rounded-xl transition-colors">
         지역 변경
       </button>
 

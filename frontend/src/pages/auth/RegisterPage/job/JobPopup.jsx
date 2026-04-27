@@ -33,28 +33,17 @@ const JobPopup = ({ jobCategories, onSelect, onClose, selectedJobs }) => {
   };
 
   return (
-    <div
-      className="fixed inset-0 z-[1300] bg-black/50 flex items-center justify-center"
-      onClick={handleClose}
-    >
+    <div className="fixed inset-0 z-[1300] bg-black/50 flex items-center justify-center" onClick={handleClose}>
       <Draggable>
-        <div
-          className="bg-white p-8 rounded-2xl shadow-2xl w-[90vw] max-w-[600px] max-h-[80vh] overflow-auto relative"
-          onClick={(e) => e.stopPropagation()}
-        >
+        <div className="bg-white p-8 rounded-2xl shadow-2xl w-[90vw] max-w-[600px] max-h-[80vh] overflow-auto relative" onClick={(e) => e.stopPropagation()}>
           {/* X 버튼 */}
-          <button
-            className="absolute top-4 right-4 p-1 rounded-full hover:bg-gray-100 transition-colors"
-            onClick={handleClose}
-          >
+          <button className="absolute top-4 right-4 p-1 rounded-full hover:bg-gray-100 transition-colors" onClick={handleClose}>
             <FiX size={20} />
           </button>
 
           <h6 className="text-lg font-semibold mb-3">직무 선택 (최대 3개 선택 가능)</h6>
 
-          {error && (
-            <p className="text-red-500 text-sm mb-2">{error}</p>
-          )}
+          {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
 
           <div className="flex flex-wrap gap-2">
             {jobCategories.map((job) => (

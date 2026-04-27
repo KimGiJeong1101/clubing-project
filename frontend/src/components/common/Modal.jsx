@@ -4,8 +4,10 @@ import { FiX } from "react-icons/fi";
 function Modal({ open, onClose, title, children, maxWidth = "max-w-md" }) {
   useEffect(() => {
     if (open) document.body.style.overflow = "hidden";
-    else       document.body.style.overflow = "";
-    return () => { document.body.style.overflow = ""; };
+    else document.body.style.overflow = "";
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, [open]);
 
   if (!open) return null;

@@ -44,9 +44,17 @@ function Header() {
   };
 
   const cancellClub = () => {
-    if (!user.email) { alert("로그인이 필요한 서비스입니다."); navigate("/login"); return; }
-    axiosInstance.post(`http://localhost:4000/clubs/cencellMember/${clubNumber}`)
-      .then(() => { alert("모임 탈퇴 성공"); navigate("/mypage"); })
+    if (!user.email) {
+      alert("로그인이 필요한 서비스입니다.");
+      navigate("/login");
+      return;
+    }
+    axiosInstance
+      .post(`http://localhost:4000/clubs/cencellMember/${clubNumber}`)
+      .then(() => {
+        alert("모임 탈퇴 성공");
+        navigate("/mypage");
+      })
       .catch(() => alert("모임 탈퇴에 실패했습니다."));
     setMenuOpen(false);
   };
@@ -58,24 +66,14 @@ function Header() {
   return (
     <div className="fixed top-0 left-0 w-full h-[70px] bg-white border-b border-gray-100 shadow-sm z-[1100] flex items-center">
       <div className="max-w-7xl mx-auto w-full px-4 flex items-center gap-2">
-        <button
-          onClick={() => navigate("/clublist")}
-          className="p-2 text-gray-600 hover:text-gray-900 transition-colors"
-        >
+        <button onClick={() => navigate("/clublist")} className="p-2 text-gray-600 hover:text-gray-900 transition-colors">
           <FiArrowLeft className="w-5 h-5" />
         </button>
 
-        <h1 className="flex-1 text-base font-nanum-bold text-gray-900 truncate">
-          {getClub.clubs?.title}
-        </h1>
+        <h1 className="flex-1 text-base font-nanum-bold text-gray-900 truncate">{getClub.clubs?.title}</h1>
 
-        <button
-          onClick={() => setIsFavorite((p) => !p)}
-          className="p-2 transition-colors"
-        >
-          {isFavorite
-            ? <AiFillHeart className="w-5 h-5 text-red-400" />
-            : <FiHeart className="w-5 h-5 text-gray-400 hover:text-red-400 transition-colors" />}
+        <button onClick={() => setIsFavorite((p) => !p)} className="p-2 transition-colors">
+          {isFavorite ? <AiFillHeart className="w-5 h-5 text-red-400" /> : <FiHeart className="w-5 h-5 text-gray-400 hover:text-red-400 transition-colors" />}
         </button>
 
         <button className="p-2 text-gray-400 hover:text-gray-700 transition-colors">
@@ -83,10 +81,7 @@ function Header() {
         </button>
 
         <div className="relative" ref={menuRef}>
-          <button
-            onClick={() => setMenuOpen((p) => !p)}
-            className="p-2 text-gray-400 hover:text-gray-700 transition-colors"
-          >
+          <button onClick={() => setMenuOpen((p) => !p)} className="p-2 text-gray-400 hover:text-gray-700 transition-colors">
             <FiMenu className="w-5 h-5" />
           </button>
 

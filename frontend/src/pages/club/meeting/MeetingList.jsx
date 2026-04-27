@@ -10,28 +10,17 @@ import MeetingListAsUser from "./MeetingListAsUser";
 /* ── 공통 미팅 카드 ── */
 export const MeetingCard = ({ meeting, onClick }) => {
   const avatarList = meeting?.joinMemberInfo || [];
-  const joined     = meeting?.joinMember?.length ?? 0;
-  const total      = meeting?.totalCount ?? 0;
-  const isFull     = total > 0 && joined >= total;
+  const joined = meeting?.joinMember?.length ?? 0;
+  const total = meeting?.totalCount ?? 0;
+  const isFull = total > 0 && joined >= total;
 
   return (
-    <div
-      className="group bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden cursor-pointer flex flex-col"
-      onClick={onClick}
-    >
+    <div className="group bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden cursor-pointer flex flex-col" onClick={onClick}>
       {/* 이미지 */}
       <div className="w-full aspect-video overflow-hidden relative">
-        <img
-          src={`http://localhost:4000/${meeting.img}`}
-          alt="meeting"
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-        />
+        <img src={`http://localhost:4000/${meeting.img}`} alt="meeting" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
         {/* 마감 뱃지 */}
-        {isFull && (
-          <span className="absolute top-2 left-2 bg-black/60 text-white text-[10px] font-nanum-bold px-2 py-0.5 rounded-full">
-            마감
-          </span>
-        )}
+        {isFull && <span className="absolute top-2 left-2 bg-black/60 text-white text-[10px] font-nanum-bold px-2 py-0.5 rounded-full">마감</span>}
       </div>
 
       {/* 콘텐츠 */}
@@ -57,12 +46,7 @@ export const MeetingCard = ({ meeting, onClick }) => {
         <div className="flex items-center gap-2 mt-auto pt-3 border-t border-gray-100">
           <div className="flex -space-x-1.5">
             {avatarList.slice(0, 4).map((member, idx) => (
-              <img
-                key={idx}
-                src={member.thumbnailImage}
-                alt=""
-                className="w-6 h-6 rounded-full border-2 border-white object-cover"
-              />
+              <img key={idx} src={member.thumbnailImage} alt="" className="w-6 h-6 rounded-full border-2 border-white object-cover" />
             ))}
           </div>
           <div className="flex items-center gap-1 text-xs text-gray-500 ml-0.5">
@@ -137,10 +121,16 @@ const MeetingList = () => {
     return res.json();
   };
 
-  const { data: meetingList, isLoading, isError, error, isFetching } = useQuery({
+  const {
+    data: meetingList,
+    isLoading,
+    isError,
+    error,
+    isFetching,
+  } = useQuery({
     queryKey: ["meetingList", nowDate],
-    queryFn:  getMeetingList,
-    enabled:  !!nowDate,
+    queryFn: getMeetingList,
+    enabled: !!nowDate,
     keepPreviousData: true,
   });
 
@@ -153,7 +143,6 @@ const MeetingList = () => {
 
   return (
     <div className="w-full min-h-screen" style={{ background: "#FAF8F5" }}>
-
       {/* ── 페이지 헤더 ── */}
       <div className="bg-white border-b border-gray-100 shadow-sm">
         <div className="max-w-5xl mx-auto px-4 md:px-6 py-7">
@@ -169,15 +158,14 @@ const MeetingList = () => {
                   key={i}
                   onClick={() => handleTabClick(item.fullDate, i)}
                   className={`flex flex-col items-center px-3 py-2 rounded-xl font-nanum transition-all duration-200 min-w-[48px]
-                    ${selectedTab === i
-                      ? "bg-primary-600 text-white shadow-md"
-                      : "text-gray-500 hover:bg-gray-100"
-                    }`}
+                    ${selectedTab === i ? "bg-primary-600 text-white shadow-md" : "text-gray-500 hover:bg-gray-100"}`}
                 >
-                  <span className={`text-[10px] font-nanum mb-0.5
+                  <span
+                    className={`text-[10px] font-nanum mb-0.5
                     ${selectedTab !== i && item.isSunday ? "text-red-400" : ""}
                     ${selectedTab !== i && item.isSaturday ? "text-blue-400" : ""}
-                  `}>
+                  `}
+                  >
                     {item.isToday ? "오늘" : item.day}
                   </span>
                   <span className="text-base font-nanum-bold">{item.date}</span>
@@ -189,28 +177,27 @@ const MeetingList = () => {
       </div>
 
       <div className="max-w-5xl mx-auto px-4 md:px-6 py-6">
-
         {/* ── 날짜별 정모 리스트 ── */}
         <section>
           <div className="flex items-center gap-2 mb-4">
             <FiCalendar className="w-5 h-5 text-primary-500" />
-            <h2 className="font-nanum-bold text-gray-800">
-              {nowTime[selectedTab]?.fullDate} 정기모임
-            </h2>
+            <h2 className="font-nanum-bold text-gray-800">{nowTime[selectedTab]?.fullDate} 정기모임</h2>
           </div>
 
           {isLoading && !isFetching ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {Array(6).fill(0).map((_, i) => (
-                <div key={i} className="bg-white rounded-2xl overflow-hidden shadow-sm animate-pulse">
-                  <div className="w-full aspect-video bg-gray-200" />
-                  <div className="p-4 space-y-2">
-                    <div className="h-4 bg-gray-200 rounded w-3/4" />
-                    <div className="h-3 bg-gray-100 rounded w-1/2" />
-                    <div className="h-3 bg-gray-100 rounded w-2/3" />
+              {Array(6)
+                .fill(0)
+                .map((_, i) => (
+                  <div key={i} className="bg-white rounded-2xl overflow-hidden shadow-sm animate-pulse">
+                    <div className="w-full aspect-video bg-gray-200" />
+                    <div className="p-4 space-y-2">
+                      <div className="h-4 bg-gray-200 rounded w-3/4" />
+                      <div className="h-3 bg-gray-100 rounded w-1/2" />
+                      <div className="h-3 bg-gray-100 rounded w-2/3" />
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
             </div>
           ) : isError ? (
             <div className="bg-white rounded-2xl p-8 text-center text-gray-400">오류: {error.message}</div>
@@ -218,20 +205,12 @@ const MeetingList = () => {
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
                 {allMeetings.map((meeting, idx) => (
-                  <MeetingCard
-                    key={idx}
-                    meeting={meeting}
-                    onClick={() => navigate(`/clubs/main?clubNumber=${meeting.clubNumber}`)}
-                  />
+                  <MeetingCard key={idx} meeting={meeting} onClick={() => navigate(`/clubs/main?clubNumber=${meeting.clubNumber}`)} />
                 ))}
               </div>
               {/* 더보기 버튼 */}
-              {((moreMeetingListCount === 0 && meetingList?.length === 5) ||
-                (moreMeetingList.length > 0 && moreMeetingList.length % 4 === 0)) && (
-                <button
-                  onClick={moreMeetingListHandler}
-                  className="w-full py-3 bg-white hover:bg-primary-50 text-primary-600 font-nanum-bold rounded-2xl shadow-sm border border-gray-100 hover:border-primary-200 transition-all duration-200 text-sm"
-                >
+              {((moreMeetingListCount === 0 && meetingList?.length === 5) || (moreMeetingList.length > 0 && moreMeetingList.length % 4 === 0)) && (
+                <button onClick={moreMeetingListHandler} className="w-full py-3 bg-white hover:bg-primary-50 text-primary-600 font-nanum-bold rounded-2xl shadow-sm border border-gray-100 hover:border-primary-200 transition-all duration-200 text-sm">
                   더 불러오기
                 </button>
               )}
@@ -262,10 +241,7 @@ const MeetingList = () => {
                   key={idx}
                   onClick={() => handleCategoryTabChange(idx)}
                   className={`px-3.5 py-1.5 rounded-full text-xs font-nanum-bold transition-all duration-200 whitespace-nowrap
-                    ${selectedCategoryTab === idx
-                      ? "bg-primary-600 text-white shadow-sm"
-                      : "bg-white text-gray-500 hover:bg-gray-100 border border-gray-200"
-                    }`}
+                    ${selectedCategoryTab === idx ? "bg-primary-600 text-white shadow-sm" : "bg-white text-gray-500 hover:bg-gray-100 border border-gray-200"}`}
                 >
                   {cat}
                 </button>

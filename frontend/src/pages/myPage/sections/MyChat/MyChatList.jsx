@@ -35,18 +35,13 @@ const MyChatList = () => {
         const response = await axiosInstance.get("/users/myPage");
         const userClubs = response.data.user.clubs;
 
-        const clubResponses = await Promise.all(
-          userClubs.map((clubId) => axiosInstance.get(`/clubs/read/${clubId}`)),
-        );
+        const clubResponses = await Promise.all(userClubs.map((clubId) => axiosInstance.get(`/clubs/read/${clubId}`)));
         let clubsData = clubResponses.map((response) => response.data);
 
         // 멤버 정보 + 최근 메시지 병렬 fetch
         clubsData = await Promise.all(
           clubsData.map(async (club) => {
-            const [memberInfo, latestMessage] = await Promise.all([
-              Promise.all(club.members.map((memberId) => fetchUserByEmail(memberId))),
-              fetchLatestMessage(club._id),
-            ]);
+            const [memberInfo, latestMessage] = await Promise.all([Promise.all(club.members.map((memberId) => fetchUserByEmail(memberId))), fetchLatestMessage(club._id)]);
             return { ...club, memberInfo, latestMessage };
           }),
         );

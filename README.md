@@ -7,11 +7,11 @@
 **Clubing**은 관심사 기반의 소모임을 찾고, 만들고, 함께 활동할 수 있는 커뮤니티 플랫폼입니다.  
 카테고리별 모임 탐색, 실시간 채팅, 정기모임 관리, 갤러리 공유 등 모임 활동에 필요한 기능을 제공합니다.
 
-| 항목 | 내용 |
-|---|---|
-| 개발 기간 | 2024년 8월 ~ 2024년 9월 |
-| 개발 인원 | 5명 |
-| 목표 | MERN 스택으로 소모임 커뮤니티 플랫폼 구현 |
+| 항목      | 내용                                      |
+| --------- | ----------------------------------------- |
+| 개발 기간 | 2024년 8월 ~ 2024년 9월                   |
+| 개발 인원 | 5명                                       |
+| 목표      | MERN 스택으로 소모임 커뮤니티 플랫폼 구현 |
 
 ---
 
@@ -35,28 +35,30 @@ MongoDB (Mongoose)
 ## 기술 스택
 
 ### Frontend
-| 분류 | 기술 |
-|---|---|
-| 프레임워크 | React 18 (Create React App) |
-| 상태 관리 | Redux Toolkit, React Query (@tanstack/react-query) |
-| 라우팅 | React Router v6 |
-| 스타일 | Tailwind CSS v3 (커스텀 primary brown 팔레트) |
-| 실시간 통신 | Socket.io-client |
-| 이미지 편집 | TOAST UI Image Editor |
-| 애니메이션 | Framer Motion |
-| 아이콘 | React Icons (Feather) |
-| 폰트 | NanumSquareNeo |
+
+| 분류        | 기술                                               |
+| ----------- | -------------------------------------------------- |
+| 프레임워크  | React 18 (Create React App)                        |
+| 상태 관리   | Redux Toolkit, React Query (@tanstack/react-query) |
+| 라우팅      | React Router v6                                    |
+| 스타일      | Tailwind CSS v3 (커스텀 primary brown 팔레트)      |
+| 실시간 통신 | Socket.io-client                                   |
+| 이미지 편집 | TOAST UI Image Editor                              |
+| 애니메이션  | Framer Motion                                      |
+| 아이콘      | React Icons (Feather)                              |
+| 폰트        | NanumSquareNeo                                     |
 
 ### Backend
-| 분류 | 기술 |
-|---|---|
-| 런타임 | Node.js |
-| 프레임워크 | Express.js |
-| 데이터베이스 | MongoDB + Mongoose |
-| 인증 | JWT, Passport.js |
-| 실시간 통신 | Socket.io |
-| 파일 업로드 | Multer + Sharp |
-| CI/CD | GitHub Actions + Prettier |
+
+| 분류         | 기술                      |
+| ------------ | ------------------------- |
+| 런타임       | Node.js                   |
+| 프레임워크   | Express.js                |
+| 데이터베이스 | MongoDB + Mongoose        |
+| 인증         | JWT, Passport.js          |
+| 실시간 통신  | Socket.io                 |
+| 파일 업로드  | Multer + Sharp            |
+| CI/CD        | GitHub Actions + Prettier |
 
 ---
 
@@ -88,6 +90,7 @@ clubing-project_git_ReF/
 ## 빠른 시작
 
 ### 사전 요구사항
+
 - Node.js 18+
 - MongoDB 실행 중
 
@@ -109,16 +112,16 @@ npm start          # http://localhost:3000
 
 ## 주요 기능
 
-| 기능 | 설명 |
-|---|---|
-| 🔍 모임 찾기 | 카테고리 / 지역 필터 + 무한 스크롤 (미리 로드) |
-| 💬 실시간 채팅 | Socket.io 기반, 전체 메시지 검색 + 위치 이동 지원 |
-| 📅 정기모임 | 날짜별 / 카테고리별 정모 탐색 및 참석 신청 |
-| 🖼️ 갤러리 | 이미지 업로드, TOAST UI 편집, 드래그 순서 변경 |
-| 📋 게시판 | 일반 게시글 + 투표 기능, 등록 후 목록 즉시 반영 |
-| 👤 마이페이지 | 내 모임 / 채팅 목록 (최근 메시지 미리보기), 프로필 관리 |
-| 🎯 맞춤 추천 | 관심사 / 지역 기반 모임 및 정모 추천 (점수 기반 정렬) |
-| 🔐 카카오 로그인 | OAuth 2.0 기반 소셜 로그인 |
+| 기능             | 설명                                                    |
+| ---------------- | ------------------------------------------------------- |
+| 🔍 모임 찾기     | 카테고리 / 지역 필터 + 무한 스크롤 (미리 로드)          |
+| 💬 실시간 채팅   | Socket.io 기반, 전체 메시지 검색 + 위치 이동 지원       |
+| 📅 정기모임      | 날짜별 / 카테고리별 정모 탐색 및 참석 신청              |
+| 🖼️ 갤러리        | 이미지 업로드, TOAST UI 편집, 드래그 순서 변경          |
+| 📋 게시판        | 일반 게시글 + 투표 기능, 등록 후 목록 즉시 반영         |
+| 👤 마이페이지    | 내 모임 / 채팅 목록 (최근 메시지 미리보기), 프로필 관리 |
+| 🎯 맞춤 추천     | 관심사 / 지역 기반 모임 및 정모 추천 (점수 기반 정렬)   |
+| 🔐 카카오 로그인 | OAuth 2.0 기반 소셜 로그인                              |
 
 ---
 

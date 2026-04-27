@@ -10,13 +10,13 @@ import { useDispatch, useSelector } from "react-redux";
 import WishHearts from "../../../components/club/WishHearts.jsx";
 
 function ClubLayout() {
-  const location   = useLocation();
-  const navigate   = useNavigate();
-  const dispatch   = useDispatch();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const clubNumber = new URLSearchParams(location.search).get("clubNumber");
-  const getClub    = useSelector((s) => s.getClub);
-  const user       = useSelector((s) => s.user.userData.user);
+  const getClub = useSelector((s) => s.getClub);
+  const user = useSelector((s) => s.user.userData.user);
 
   const [joinHandler, setJoinHandler] = useState(false);
 
@@ -45,7 +45,8 @@ function ClubLayout() {
           { club: clubNumber, recipient: getClub.clubs.admin, sender: user.email, content: `${user.email}에서 모임에 가입했습니다.`, title: `${user.email}님 모임에 가입` },
         ];
         dispatch(sendMessage(msgs[0]));
-        axiosInstance.post("/users/messages", msgs[1])
+        axiosInstance
+          .post("/users/messages", msgs[1])
           .then(() => navigate("/mypage"))
           .catch((err) => console.error("메시지 전송 실패", err));
       })
@@ -64,10 +65,7 @@ function ClubLayout() {
               <div className="bg-[#F0EDED] flex items-center justify-center w-14">
                 <WishHearts />
               </div>
-              <button
-                onClick={handleJoin}
-                className="flex-1 bg-primary-600 hover:bg-primary-700 text-white text-lg font-nanum-bold py-3 transition-colors"
-              >
+              <button onClick={handleJoin} className="flex-1 bg-primary-600 hover:bg-primary-700 text-white text-lg font-nanum-bold py-3 transition-colors">
                 모임 가입하기
               </button>
             </div>

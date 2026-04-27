@@ -10,25 +10,13 @@ const ClubCard2 = ({ clubList }) => {
   return (
     <div className="space-y-3">
       {clubList.map((item) => (
-        <div
-          key={item._id}
-          className="group relative bg-white rounded-2xl shadow-sm hover:shadow-lg overflow-hidden flex cursor-pointer transition-all duration-300 h-[120px] border border-gray-100"
-          onClick={() => navigate(`/clubs/main?clubNumber=${item._id}`)}
-        >
+        <div key={item._id} className="group relative bg-white rounded-2xl shadow-sm hover:shadow-lg overflow-hidden flex cursor-pointer transition-all duration-300 h-[120px] border border-gray-100" onClick={() => navigate(`/clubs/main?clubNumber=${item._id}`)}>
           {/* 내가 만든 모임 뱃지 */}
-          {item.admin === user.email && (
-            <span className="absolute top-2 right-2 z-10 bg-primary-600 text-white text-[10px] font-nanum-bold px-2 py-0.5 rounded-full shadow-sm">
-              내가 만든 모임
-            </span>
-          )}
+          {item.admin === user.email && <span className="absolute top-2 right-2 z-10 bg-primary-600 text-white text-[10px] font-nanum-bold px-2 py-0.5 rounded-full shadow-sm">내가 만든 모임</span>}
 
           {/* 이미지 */}
           <div className="flex-shrink-0 w-[110px] overflow-hidden">
-            <img
-              src={`http://localhost:4000/${item.img}`}
-              alt={item.title}
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-            />
+            <img src={`http://localhost:4000/${item.img}`} alt={item.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
           </div>
 
           {/* 내용 */}
@@ -46,7 +34,9 @@ const ClubCard2 = ({ clubList }) => {
               )}
               <div className="flex items-center gap-1 text-xs text-gray-500 ml-auto">
                 <FiUsers className="w-3 h-3" />
-                <span>{item.members?.length}/{item.maxMember}</span>
+                <span>
+                  {item.members?.length}/{item.maxMember}
+                </span>
               </div>
             </div>
           </div>

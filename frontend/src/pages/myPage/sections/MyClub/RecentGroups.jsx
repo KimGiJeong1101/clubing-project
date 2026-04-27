@@ -24,9 +24,7 @@ const RecentGroups = () => {
         }
 
         const RecentClubs = visitList[0].clubs;
-        const clubResponses = await Promise.all(
-          RecentClubs.map((clubId) => axiosInstance.get(`/clubs/read/${clubId}`))
-        );
+        const clubResponses = await Promise.all(RecentClubs.map((clubId) => axiosInstance.get(`/clubs/read/${clubId}`)));
         const clubsData = clubResponses.map((response) => response.data);
 
         setClubs(clubsData);

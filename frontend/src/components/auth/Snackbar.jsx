@@ -2,25 +2,26 @@ import { useState, useEffect } from "react";
 
 const severityStyles = {
   success: "bg-green-500 text-white",
-  error:   "bg-red-500 text-white",
+  error: "bg-red-500 text-white",
   warning: "bg-yellow-400 text-gray-900",
-  info:    "bg-blue-500 text-white",
+  info: "bg-blue-500 text-white",
 };
 
-const CustomSnackbarWithTimer = ({
-  open,
-  message,
-  severity = "success",
-  onClose,
-  duration = 5000,
-}) => {
+const CustomSnackbarWithTimer = ({ open, message, severity = "success", onClose, duration = 5000 }) => {
   const [remaining, setRemaining] = useState(Math.round(duration / 1000));
 
   useEffect(() => {
-    if (!open) { setRemaining(Math.round(duration / 1000)); return; }
+    if (!open) {
+      setRemaining(Math.round(duration / 1000));
+      return;
+    }
     const interval = setInterval(() => {
       setRemaining((p) => {
-        if (p <= 1) { clearInterval(interval); onClose?.(); return 0; }
+        if (p <= 1) {
+          clearInterval(interval);
+          onClose?.();
+          return 0;
+        }
         return p - 1;
       });
     }, 1000);
@@ -34,7 +35,9 @@ const CustomSnackbarWithTimer = ({
       <div className={`flex items-center gap-3 px-5 py-3 rounded-xl shadow-xl text-sm font-nanum ${severityStyles[severity] || severityStyles.success}`}>
         <span>{message}</span>
         <span className="opacity-70 text-xs">({remaining}초)</span>
-        <button onClick={onClose} className="ml-1 opacity-70 hover:opacity-100 transition-opacity text-lg leading-none">×</button>
+        <button onClick={onClose} className="ml-1 opacity-70 hover:opacity-100 transition-opacity text-lg leading-none">
+          ×
+        </button>
       </div>
     </div>
   );

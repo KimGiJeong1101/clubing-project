@@ -259,22 +259,12 @@ export default function CKEditor5Editor({ post, onChange, title, setTitle, categ
     <div className="mb-4">
       {/* Title input */}
       <div className="mb-4">
-        <input
-          type="text"
-          placeholder="Title"
-          value={post.title}
-          onChange={(e) => setTitle(e.target.value)}
-          className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#DBC7B5]"
-        />
+        <input type="text" placeholder="Title" value={post.title} onChange={(e) => setTitle(e.target.value)} className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#DBC7B5]" />
       </div>
 
       {/* Category select */}
       <div className="mb-4">
-        <select
-          value={post.category}
-          onChange={(e) => setCategory(e.target.value)}
-          className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#DBC7B5] bg-white"
-        >
+        <select value={post.category} onChange={(e) => setCategory(e.target.value)} className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#DBC7B5] bg-white">
           <option value="">Category 선택</option>
           {categories.map((cat) => (
             <option key={cat} value={cat}>

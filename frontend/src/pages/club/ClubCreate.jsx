@@ -117,11 +117,7 @@ const ClubCreate = () => {
         <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 items-start">
           <label className={`${labelCls} pt-3`}>지역</label>
           <div className="col-span-3">
-            <HomeSearchClub
-              setSelectedSido={(v) => setHomeLocation((p) => ({ ...p, sido: v }))}
-              setSelectedSigoon={(v) => setHomeLocation((p) => ({ ...p, sigoon: v }))}
-              setSelectedDong={(v) => setHomeLocation((p) => ({ ...p, dong: v }))}
-            />
+            <HomeSearchClub setSelectedSido={(v) => setHomeLocation((p) => ({ ...p, sido: v }))} setSelectedSigoon={(v) => setHomeLocation((p) => ({ ...p, sigoon: v }))} setSelectedDong={(v) => setHomeLocation((p) => ({ ...p, dong: v }))} />
           </div>
         </div>
 
@@ -129,14 +125,7 @@ const ClubCreate = () => {
         <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 items-center">
           <label className={labelCls}>큰 관심사</label>
           <div className="col-span-3">
-            <input
-              readOnly
-              onClick={() => setOpenCategoryModal(true)}
-              value={selectedCategory}
-              placeholder="클릭하여 큰 관심사 선택"
-              className={`${inputCls} cursor-pointer bg-white`}
-              {...register("mainCategory", { required: "필수입력 요소." })}
-            />
+            <input readOnly onClick={() => setOpenCategoryModal(true)} value={selectedCategory} placeholder="클릭하여 큰 관심사 선택" className={`${inputCls} cursor-pointer bg-white`} {...register("mainCategory", { required: "필수입력 요소." })} />
           </div>
         </div>
 
@@ -144,13 +133,7 @@ const ClubCreate = () => {
         <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 items-center">
           <label className={labelCls}>상세 관심사</label>
           <div className="col-span-3">
-            <input
-              readOnly
-              onClick={() => setOpenCategoryModal(true)}
-              value={selectedSubCategory}
-              placeholder="큰 관심사 선택 후 자동 기입"
-              className={`${inputCls} cursor-pointer bg-white`}
-            />
+            <input readOnly onClick={() => setOpenCategoryModal(true)} value={selectedSubCategory} placeholder="큰 관심사 선택 후 자동 기입" className={`${inputCls} cursor-pointer bg-white`} />
           </div>
         </div>
 
@@ -158,26 +141,16 @@ const ClubCreate = () => {
         <div>
           <input id="img" type="file" accept="image/png,image/gif,image/jpeg" onChange={handleFileChange} className="hidden" />
           <label htmlFor="img">
-            <div className="w-full py-3 bg-[#A6836F] hover:bg-[#8a6c58] text-white text-sm font-medium rounded-lg text-center cursor-pointer transition-colors">
-              여기를 클릭해 모임 대표사진을 설정해보세요
-            </div>
+            <div className="w-full py-3 bg-[#A6836F] hover:bg-[#8a6c58] text-white text-sm font-medium rounded-lg text-center cursor-pointer transition-colors">여기를 클릭해 모임 대표사진을 설정해보세요</div>
           </label>
           {!preview ? (
-            <div
-              className="mt-3 w-full h-[300px] border-2 border-dashed border-[#A6836F] rounded-xl flex items-center justify-center text-gray-400 text-sm"
-              onDragOver={(e) => e.preventDefault()}
-              onDrop={handleDrop}
-            >
+            <div className="mt-3 w-full h-[300px] border-2 border-dashed border-[#A6836F] rounded-xl flex items-center justify-center text-gray-400 text-sm" onDragOver={(e) => e.preventDefault()} onDrop={handleDrop}>
               이미지 미리보기가 없습니다. 이미지를 업로드하거나 드래그하세요.
             </div>
           ) : (
             <div className="mt-3 relative w-full h-[300px] rounded-xl overflow-hidden">
               <img src={preview} alt="미리보기" className="w-full h-full object-cover" />
-              <button
-                type="button"
-                onClick={() => setCropModalOpen(true)}
-                className="absolute bottom-3 right-3 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition-colors"
-              >
+              <button type="button" onClick={() => setCropModalOpen(true)} className="absolute bottom-3 right-3 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition-colors">
                 <FiCrop className="w-5 h-5" />
               </button>
             </div>
@@ -220,13 +193,7 @@ const ClubCreate = () => {
       <CategoryModalSub open={openSubCategoryModal} onClose={() => setOpenSubCategoryModal(false)} onSubCategorySelect={handleSubCategorySelect} mainCategory={selectedCategory} />
       {cropModalOpen && <ImageCropper src={preview} onCropComplete={handleCropComplete} onClose={() => setCropModalOpen(false)} />}
 
-      <CustomSnackbarWithTimer
-        open={snackbar.open}
-        message={snackbar.msg}
-        severity="warning"
-        onClose={() => setSnackbar((p) => ({ ...p, open: false }))}
-        duration={3000}
-      />
+      <CustomSnackbarWithTimer open={snackbar.open} message={snackbar.msg} severity="warning" onClose={() => setSnackbar((p) => ({ ...p, open: false }))} duration={3000} />
     </form>
   );
 };
