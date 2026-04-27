@@ -1,56 +1,51 @@
 import React, { useState, useEffect } from "react";
-import CKEditor5Editor from "./EventBoardEditor"; // CKEditor5Editor 컴포넌트
-import { Box, Button, Snackbar, Alert, IconButton } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
+import { FiX } from "react-icons/fi";
+import CKEditor5Editor from "./EventBoardEditor";
 import axiosInstance from "./../../utils/axios";
-import { useSelector } from "react-redux"; // 작성자 정보를 가져오기 위한 임포트
+import { useSelector } from "react-redux";
 
 const EventModify = ({ eventId, onClose, onNext }) => {
-  // onSubmit 대신 onNext를 사용
-  const [title, setTitle] = useState(""); // 제목 상태
-  const [content, setContent] = useState(""); // 내용 상태
-  const [image, setImage] = useState(""); // 이미지 상태 추가
-  const [openSnackbar, setOpenSnackbar] = useState(false); // 스낵바 상태
-  const [snackbarMessage, setSnackbarMessage] = useState(""); // 스낵바 메시지
-  const userEmail = useSelector((state) => state?.user?.userData?.user?.email); // 작성자 이메일 가져오기
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const [image, setImage] = useState("");
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const userEmail = useSelector((state) => state?.user?.userData?.user?.email);
 
   useEffect(() => {
-    // 수정할 이벤트 데이터를 불러오기
     const fetchEventData = async () => {
       try {
         const response = await axiosInstance.get(`http://localhost:4000/events/${eventId}`);
         const { title, content, cardImage } = response.data;
         setTitle(title);
         setContent(content);
-        setImage(cardImage || ""); // 이미지가 없을 경우 기본값으로 설정
+        setImage(cardImage || "");
       } catch (error) {
         setSnackbarMessage("이벤트 데이터를 불러오는 데 실패했습니다.");
         setOpenSnackbar(true);
       }
     };
-
     fetchEventData();
   }, [eventId]);
 
   const handleEditorChange = (data) => {
-    setContent(data); // 에디터 내용 변경
+    setContent(data);
   };
 
   const handleNext = () => {
-    // handleModify 대신 handleNext 함수
-    const defaultImageUrl = "https://via.placeholder.com/400?text=No+Image"; // 기본 이미지 URL
-    const finalImage = image || defaultImageUrl; // 이미지가 없으면 기본 이미지 사용
+    const defaultImageUrl = "https://via.placeholder.com/400?text=No+Image";
+    const finalImage = image || defaultImageUrl;
 
     if (title && content) {
       const eventDetails = {
-        writer: userEmail, // 작성자 정보를 추가
+        writer: userEmail,
         title,
         content,
         cardImage: finalImage,
-        eventId: eventId,
+        eventId,
         isEdit: true,
       };
-      onNext(eventDetails); // 부모 컴포넌트로 데이터 넘기기
+      onNext(eventDetails);
     } else {
       setSnackbarMessage("제목과 내용을 입력해주세요.");
       setOpenSnackbar(true);
@@ -62,43 +57,49 @@ const EventModify = ({ eventId, onClose, onNext }) => {
   };
 
   return (
-    <Box>
-      <IconButton aria-label="close" onClick={onClose} sx={{ position: "absolute", top: 8, right: 8 }}>
-        <CloseIcon />
-      </IconButton>
-      <h1>이벤트 수정</h1>
-      <Box
-        sx={{
-          flex: 1,
-          overflow: "auto",
-          marginTop: "1px",
-          paddingRight: "10px",
-        }}
+    <div className="relative">
+      <button
+        aria-label="close"
+        onClick={onClose}
+        className="absolute top-2 right-2 p-1 rounded hover:bg-gray-100 transition-colors"
       >
-        <CKEditor5Editor title={title} setTitle={setTitle} content={content} onChange={handleEditorChange} setImage={setImage} />
-      </Box>
-      <Button
-        variant="contained"
-        color="primary"
+        <FiX size={20} />
+      </button>
+
+      <h1 className="text-2xl font-bold mb-4">이벤트 수정</h1>
+
+      <div className="flex-1 overflow-auto mt-[1px] pr-[10px]">
+        <CKEditor5Editor
+          title={title}
+          setTitle={setTitle}
+          content={content}
+          onChange={handleEditorChange}
+          setImage={setImage}
+        />
+      </div>
+
+      <button
         onClick={handleNext}
-        sx={{
-          backgroundColor: "#DBC7B5", // 기본 버튼 색상
-          "&:hover": {
-            backgroundColor: "#A67153", // 호버 시 색상
-          },
-          mt: 2,
-        }}
+        className="mt-4 bg-primary-600 hover:bg-primary-700 text-white px-5 py-2.5 rounded-xl font-nanum-bold transition-colors"
       >
-        {" "}
-        {/* handleModify에서 handleNext로 변경 */}
         다음
-      </Button>
-      <Snackbar open={openSnackbar} autoHideDuration={4000} onClose={handleCloseSnackbar}>
-        <Alert onClose={handleCloseSnackbar} severity="warning" sx={{ width: "100%" }}>
-          {snackbarMessage}
-        </Alert>
-      </Snackbar>
-    </Box>
+      </button>
+
+      {/* 스낵바 */}
+      {openSnackbar && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[2000]">
+          <div className="flex items-center gap-3 bg-yellow-500 text-white px-5 py-3 rounded-lg shadow-lg min-w-[280px]">
+            <span className="flex-1 text-sm">{snackbarMessage}</span>
+            <button
+              onClick={handleCloseSnackbar}
+              className="hover:text-gray-200 font-bold text-lg leading-none"
+            >
+              ×
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 

@@ -1,89 +1,50 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
+import { FiHeart } from "react-icons/fi";
+import { AiFillHeart } from "react-icons/ai";
 import axiosInstance from "../../utils/axios";
-import FavoriteIcon from "@mui/icons-material/Favorite";
 import { toggleFavorite } from "../../store/reducers/wishSlice";
 import CustomSnackbarWithTimer from "../auth/Snackbar";
 
 const WishHearts = () => {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
+  const dispatch  = useDispatch();
+  const navigate  = useNavigate();
+  const location  = useLocation();
 
-  // Redux store에서 상태를 가져옵니다.
-  const user = useSelector((state) => state.user.userData.user);
-  const favoriteList = useSelector((state) => state.wish.favoriteList);
+  const user         = useSelector((s) => s.user.userData.user);
+  const favoriteList = useSelector((s) => s.wish.favoriteList);
 
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  const clubNumber = Number(queryParams.get("clubNumber")); // URL 파라미터에서 clubNumber를 가져옵니다.
+  const clubNumber = Number(new URLSearchParams(location.search).get("clubNumber"));
+  const isFavorite = favoriteList.includes(clubNumber);
 
-  const [isFavorite, setIsFavorite] = useState(false);
-  //스낵바
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState("");
-  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
+  const [snackbar, setSnackbar] = useState({ open: false, msg: "", ok: true });
 
-  const handleSnackbarClose = () => {
-    setSnackbarOpen(false); // 스낵바 닫기
-  };
-
-  useEffect(() => {
-    // favoriteList와 clubNumber를 기반으로 isFavorite 상태 업데이트
-    setIsFavorite(favoriteList.includes(clubNumber));
-  }, [favoriteList, clubNumber]); // favoriteList와 clubNumber가 변경될 때마다 업데이트
-
-  const handleFavoriteToggle = () => {
-    if (user.email === "") {
-      alert("로그인이 필요한 서비스입니다.");
-      navigate("/login");
-      return;
-    }
-
+  const handleToggle = () => {
+    if (!user.email) { alert("로그인이 필요한 서비스입니다."); navigate("/login"); return; }
     const url = isFavorite ? `/clubs/removeWish/${clubNumber}` : `/clubs/addWish/${clubNumber}`;
-
-    axiosInstance
-      .post(url)
+    axiosInstance.post(url)
       .then(() => {
-        // 상태 업데이트
         dispatch(toggleFavorite({ clubNumber }));
-        setSnackbarMessage(isFavorite ? "모임의 찜을 해제했습니다." : "모임을 찜했습니다.");
-        setSnackbarSeverity("success");
-        setSnackbarOpen(true); // 스낵바 열기
+        setSnackbar({ open: true, msg: isFavorite ? "찜을 해제했습니다." : "모임을 찜했습니다.", ok: true });
       })
-      .catch((err) => {
-        console.log(err);
-        setSnackbarMessage("찜하기에 실패했습니다.");
-        setSnackbarSeverity("error");
-        setSnackbarOpen(true); // 실패 시 스낵바 열기
-      });
+      .catch(() => setSnackbar({ open: true, msg: "찜하기에 실패했습니다.", ok: false }));
   };
-
-  const FavoriteComponent = ({ isFavorite, onToggle }) => (
-    <FavoriteIcon
-      onClick={onToggle}
-      sx={{
-        fontSize: "26px",
-        padding: "7px",
-        color: isFavorite ? "lightcoral" : "gray",
-        ":hover": {
-          cursor: "pointer",
-        },
-      }}
-    />
-  );
 
   return (
     <>
-      <FavoriteComponent isFavorite={isFavorite} onToggle={handleFavoriteToggle} />
-
-      {/* 스낵바 컴포넌트 추가 */}
+      <button onClick={handleToggle} className="p-2 flex items-center justify-center transition-transform hover:scale-110">
+        {isFavorite
+          ? <AiFillHeart className="w-6 h-6 text-red-400" />
+          : <FiHeart     className="w-6 h-6 text-gray-400 hover:text-red-400 transition-colors" />
+        }
+      </button>
       <CustomSnackbarWithTimer
-        open={snackbarOpen}
-        message={snackbarMessage}
-        severity={snackbarSeverity}
-        onClose={handleSnackbarClose}
-        duration={5000} // 원하는 시간 동안 스낵바 유지
+        open={snackbar.open}
+        message={snackbar.msg}
+        severity={snackbar.ok ? "success" : "error"}
+        onClose={() => setSnackbar((p) => ({ ...p, open: false }))}
+        duration={5000}
       />
     </>
   );

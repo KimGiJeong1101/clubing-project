@@ -1,48 +1,57 @@
-// ClubCarousel.js
-import React from "react";
+import React, { useRef } from "react";
 import Slider from "react-slick";
-import ClubCard from "./ClubCard"; // ClubCard 컴포넌트의 경로를 맞게 조정
-import { borderRadius, Box } from "@mui/system";
-
-// 슬릭 설정을 위한 기본 옵션
-const settings = {
-  dots: true,
-  infinite: true,
-  speed: 500,
-  slidesToShow: 1, // 화면에 한 번에 보여줄 카드 수
-  centerMode: true, // 중앙 정렬 활성화
-  centerPadding: "40px", // 조정된 값
-  slidesToScroll: 1,
-  arrows: true, // 화살표 버튼 활성화
-  responsive: [
-    {
-      breakpoint: 1024,
-      settings: {
-        slidesToShow: 2,
-        slidesToScroll: 1,
-      },
-    },
-    {
-      breakpoint: 600,
-      settings: {
-        slidesToShow: 1,
-        slidesToScroll: 1,
-      },
-    },
-  ],
-};
+import ClubCard from "./ClubCard";
+import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 
 const ClubCarousel = ({ clubList }) => {
+  const sliderRef = useRef(null);
+
+  const settings = {
+    dots: true,
+    infinite: true,
+    speed: 400,
+    autoplay: true,
+    autoplaySpeed: 3000,
+    pauseOnHover: true,
+    slidesToShow: 2,
+    slidesToScroll: 1,
+    arrows: false,
+    responsive: [
+      { breakpoint: 480, settings: { slidesToShow: 1, slidesToScroll: 1 } },
+    ],
+  };
+
   return (
-    <Box style={{ padding: "20px", backgroundColor: "#f2f2f2", borderRadius: "20px" }}>
-      <Slider {...settings}>
-        {clubList.map((club) => (
-          <Box key={club._id} style={{ padding: "10px" }}>
-            <ClubCard clubList={[club]} />
-          </Box>
-        ))}
-      </Slider>
-    </Box>
+    <div className="relative">
+      {/* 좌측 버튼 */}
+      <button
+        onClick={() => sliderRef.current?.slickPrev()}
+        className="absolute -left-3 top-1/2 -translate-y-1/2 z-10 w-8 h-8 bg-white rounded-full shadow-md border border-gray-100 flex items-center justify-center text-gray-500 hover:text-primary-600 hover:border-primary-200 hover:shadow-lg transition-all duration-200"
+        aria-label="이전"
+      >
+        <FiChevronLeft className="w-4 h-4" />
+      </button>
+
+      {/* 슬라이더 */}
+      <div className="mx-4">
+        <Slider ref={sliderRef} {...settings}>
+          {clubList.map((club) => (
+            <div key={club._id} className="px-1.5">
+              <ClubCard club={club} />
+            </div>
+          ))}
+        </Slider>
+      </div>
+
+      {/* 우측 버튼 */}
+      <button
+        onClick={() => sliderRef.current?.slickNext()}
+        className="absolute -right-3 top-1/2 -translate-y-1/2 z-10 w-8 h-8 bg-white rounded-full shadow-md border border-gray-100 flex items-center justify-center text-gray-500 hover:text-primary-600 hover:border-primary-200 hover:shadow-lg transition-all duration-200"
+        aria-label="다음"
+      >
+        <FiChevronRight className="w-4 h-4" />
+      </button>
+    </div>
   );
 };
 

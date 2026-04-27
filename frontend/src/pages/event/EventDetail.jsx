@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { Container, Box, Typography, Snackbar, Alert } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { useSelector } from "react-redux";
 import CKEditor5Editor from "../../components/club/ClubBoardRead";
@@ -8,7 +7,6 @@ import axios from "axios";
 const EventDetail = ({ eventId, onClose }) => {
   const author = useSelector((state) => state.user?.userData?.user?.email || null);
 
-  // 게시물 데이터 가져오기 함수
   const fetchPost = async (eventId) => {
     try {
       const response = await axios.get(`http://localhost:4000/events/${eventId}`);
@@ -19,7 +17,6 @@ const EventDetail = ({ eventId, onClose }) => {
     }
   };
 
-  // React Query로 게시물 데이터 가져오기
   const {
     data: post,
     isLoading,
@@ -35,13 +32,11 @@ const EventDetail = ({ eventId, onClose }) => {
     },
   });
 
-  // 상태 정의
-  const [isAuthor, setIsAuthor] = useState(false); // 작성자 여부 상태
-  const [snackbarOpen, setSnackbarOpen] = useState(false); // 스낵바 열림 상태
-  const [snackbarMessage, setSnackbarMessage] = useState(""); // 스낵바 메시지 상태
-  const [snackbarSeverity, setSnackbarSeverity] = useState("error"); // 스낵바 심각도 상태
+  const [isAuthor, setIsAuthor] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("error");
 
-  // 게시물 데이터와 작성자 확인 처리
   useEffect(() => {
     if (post && post.writer === author) {
       setIsAuthor(true);
@@ -53,68 +48,72 @@ const EventDetail = ({ eventId, onClose }) => {
   const showSnackbar = (message, severity) => {
     setSnackbarMessage(message);
     setSnackbarSeverity(severity);
-    setSnackbarOpen(true); // 스낵바 열기
+    setSnackbarOpen(true);
   };
 
-  const handleSnackbarClose = () => setSnackbarOpen(false); // 스낵바 닫기
+  const handleSnackbarClose = () => setSnackbarOpen(false);
 
-  // 로딩 상태 처리
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>게시물 가져오기 오류: {error.message}</div>;
   if (!post) return <div>게시물을 찾을 수 없습니다</div>;
 
-  // 날짜 포맷 함수
   const formatDateTime = (dateTime) => {
     const date = new Date(dateTime);
     return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
   };
 
   return (
-    <Container sx={{ backgroundColor: "white", paddingTop: "40px", paddingBottom: "40px", maxWidth: "1000px" }}>
+    <div className="bg-white pt-10 pb-10 max-w-[1000px] mx-auto px-4">
       {post && (
         <>
           {/* 상단 정보 */}
-          <Box sx={{ borderBottom: "1px solid #ddd", paddingBottom: "20px", marginBottom: "20px" }}>
-            <Typography variant="h5" gutterBottom sx={{ fontWeight: "bold" }}>
-              {post.title}
-            </Typography>
+          <div className="border-b border-gray-300 pb-5 mb-5">
+            <h2 className="text-xl font-bold mb-3">{post.title}</h2>
 
-            {/* 작성자와 조회수: 왼쪽, 등록 날짜와 종료 날짜: 오른쪽 */}
-            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
-              <Box>
-                <Typography variant="body2" color="textSecondary">
-                  작성자: {post.writer}
-                </Typography>
-                <Typography variant="body2" color="textSecondary">
-                  조회수: {post.views}
-                </Typography>
-              </Box>
-
-              <Box sx={{ textAlign: "right" }}>
-                <Typography variant="body2" color="textSecondary">
-                  등록 날짜: {formatDateTime(post.createdAt)}
-                </Typography>
-                <Typography variant="body2" color="textSecondary">
+            <div className="flex justify-between items-end">
+              <div>
+                <p className="text-sm text-gray-500">작성자: {post.writer}</p>
+                <p className="text-sm text-gray-500">조회수: {post.views}</p>
+              </div>
+              <div className="text-right">
+                <p className="text-sm text-gray-500">등록 날짜: {formatDateTime(post.createdAt)}</p>
+                <p className="text-sm text-gray-500">
                   종료 날짜: {post.endTime ? formatDateTime(post.endTime) : "없음"}
-                </Typography>
-              </Box>
-            </Box>
-          </Box>
+                </p>
+              </div>
+            </div>
+          </div>
 
-          {/* CKEditor 내용 렌더링 */}
-          <Box className="fetched-content" sx={{ paddingTop: "20px" }}>
+          {/* CKEditor 내용 */}
+          <div className="fetched-content pt-5">
             <CKEditor5Editor content={post.content} readOnly={true} />
-          </Box>
+          </div>
         </>
       )}
 
       {/* 스낵바 */}
-      <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleSnackbarClose} anchorOrigin={{ vertical: "top", horizontal: "center" }}>
-        <Alert onClose={handleSnackbarClose} severity={snackbarSeverity}>
-          {snackbarMessage}
-        </Alert>
-      </Snackbar>
-    </Container>
+      {snackbarOpen && (
+        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[2000]">
+          <div
+            className={`flex items-center gap-3 px-5 py-3 rounded-lg shadow-lg min-w-[280px] text-white ${
+              snackbarSeverity === "success"
+                ? "bg-green-600"
+                : snackbarSeverity === "error"
+                ? "bg-red-600"
+                : "bg-yellow-500"
+            }`}
+          >
+            <span className="flex-1 text-sm">{snackbarMessage}</span>
+            <button
+              onClick={handleSnackbarClose}
+              className="hover:text-gray-200 font-bold text-lg leading-none"
+            >
+              ×
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 

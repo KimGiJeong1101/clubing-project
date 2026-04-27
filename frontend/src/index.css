@@ -1,3 +1,111 @@
-/* src/index.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 스크롤바 숨기기 유틸리티 */
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 @import "~slick-carousel/slick/slick.css";
 @import "~slick-carousel/slick/slick-theme.css";
+
+/* ── 폰트 ── */
+@font-face {
+  font-family: "NanumSquareNeoLight";
+  src: url("https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-aLt.woff") format("woff"),
+       url("https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-aLt.ttf") format("truetype");
+}
+@font-face {
+  font-family: "NanumSquareNeo";
+  src: url("https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-bRg.woff") format("woff"),
+       url("https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-bRg.ttf") format("truetype");
+}
+@font-face {
+  font-family: "NanumSquareNeoBold";
+  src: url("https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-cBd.woff") format("woff"),
+       url("https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-cBd.ttf") format("truetype");
+}
+@font-face {
+  font-family: "NanumSquareNeoExtraBold";
+  src: url("https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-dEb.woff") format("woff"),
+       url("https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-dEb.ttf") format("truetype");
+}
+@font-face {
+  font-family: "KCC-Hanbit";
+  src: url("https://fastly.jsdelivr.net/gh/projectnoonnu/2403-2@1.0/KCC-Hanbit.woff2") format("woff2");
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* ── 기본 리셋 ── */
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+  html {
+    font-family: "NanumSquareNeo", sans-serif;
+  }
+  body {
+    @apply bg-white text-gray-900 m-0 p-0;
+  }
+  a {
+    @apply no-underline;
+  }
+}
+
+/* ── Slick 캐러셀 커스텀 ── */
+.slick-prev,
+.slick-next {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  z-index: 1;
+}
+.slick-prev:before,
+.slick-next:before {
+  font-size: 40px;
+  color: #dbc7b5;
+}
+.slick-prev { left: -65px; }
+.slick-next { right: -65px; }
+
+/* ── 공통 유틸 ── */
+@layer components {
+  .btn-primary {
+    @apply bg-primary-600 hover:bg-primary-700 text-white font-nanum font-semibold px-5 py-2.5 rounded-lg transition-colors duration-200 cursor-pointer;
+  }
+  .btn-outline {
+    @apply border border-primary-600 text-primary-600 hover:bg-primary-50 font-nanum font-semibold px-5 py-2.5 rounded-lg transition-colors duration-200 cursor-pointer;
+  }
+  .btn-ghost {
+    @apply text-gray-600 hover:text-gray-900 hover:bg-gray-100 px-3 py-2 rounded-lg transition-colors duration-200 cursor-pointer;
+  }
+  .input-base {
+    @apply w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent transition-all duration-200;
+  }
+  .card {
+    @apply bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-200 overflow-hidden;
+  }
+  .section-title {
+    @apply text-2xl font-nanum-bold text-gray-900 mb-6;
+  }
+  .nav-link {
+    @apply relative text-gray-600 hover:text-gray-900 font-hanbit transition-colors duration-200
+           after:content-[''] after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2
+           after:w-0 after:h-0.5 after:bg-gray-900 after:transition-all after:duration-300
+           hover:after:w-full;
+  }
+  .nav-link-active {
+    @apply text-gray-900 after:w-full;
+  }
+  .badge {
+    @apply inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 text-xs font-bold rounded-full;
+  }
+}

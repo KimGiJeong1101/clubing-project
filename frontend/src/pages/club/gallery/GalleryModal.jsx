@@ -1,205 +1,88 @@
 import React from "react";
-import Modal from "@mui/material/Modal";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import IconButton from "@mui/material/IconButton";
-import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
-import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import { FiChevronLeft, FiChevronRight, FiX, FiUser, FiCalendar } from "react-icons/fi";
 import ImageCarousel from "../../../components/common/ImageCarousel";
 import Reply from "./Reply";
 
 const GalleryModal = ({ open, handleClose, images, writer, title, content, createdAt, updatedAt, handlePrev, handleNext, postId }) => {
-  const postType = "Gallery"; // GalleryModal이기 때문에 postType은 'Gallery'로 설정
+  const postType = "Gallery";
+
+  if (!open) return null;
+
+  const formattedDate = createdAt
+    ? new Date(createdAt).toLocaleDateString("ko-KR", { year: "numeric", month: "long", day: "numeric" })
+    : null;
 
   return (
-    <Modal
-      open={open}
-      onClose={handleClose}
-      aria-labelledby="modal-title"
-      aria-describedby="modal-description"
-      slotProps={{
-        backdrop: {
-          style: {
-            backgroundColor: "rgba(0, 0, 0, 0.8)", // 어두운 배경 설정
-          },
-        },
-      }}
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      style={{ backgroundColor: "rgba(0,0,0,0.85)" }}
     >
-      <Box
-        sx={{
-          position: "absolute",
-          top: "48%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          width: "80%", // 모달 창의 전체 너비
-          height: "500px", // 고정된 높이 설정
-          maxWidth: "100%",
-          bgcolor: "background.paper",
-          boxShadow: 24,
-          p: 2,
-          outline: "none",
-          display: "flex",
-          alignItems: "center",
-          gap: 2,
-          borderRadius: "8px",
-        }}
+      {/* 배경 클릭 시 닫기 */}
+      <div className="absolute inset-0" onClick={handleClose} />
+
+      {/* 이전 버튼 */}
+      <button
+        onClick={(e) => { e.stopPropagation(); handlePrev(); }}
+        className="absolute left-3 sm:left-6 z-20 flex items-center justify-center w-10 h-10 rounded-full bg-black/40 text-white hover:bg-black/60 transition-colors"
       >
-        <IconButton
-          onClick={handlePrev}
-          sx={{
-            position: "absolute",
-            left: "-130px",
-            top: "50%",
-            transform: "translateY(-50%)",
-            zIndex: 1300,
-            color: "white",
-            bgcolor: "rgba(0, 0, 0, 0.5)",
-            "&:hover": {
-              bgcolor: "rgba(0, 0, 0, 0.7)",
-            },
-          }}
-        >
-          <ArrowBackIosIcon />
-        </IconButton>
+        <FiChevronLeft size={22} />
+      </button>
 
-        <Box
-          sx={{
-            width: "65%",
-            height: "100%",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            textAlign: "center",
-            overflow: "hidden",
-          }}
+      {/* 모달 박스 */}
+      <div
+        className="relative z-10 flex flex-col md:flex-row bg-white rounded-2xl shadow-2xl overflow-hidden w-full max-w-[900px] max-h-[85vh]"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* 닫기 버튼 */}
+        <button
+          onClick={handleClose}
+          className="absolute top-3 right-3 z-20 p-1.5 bg-black/20 hover:bg-black/40 text-white rounded-full transition-colors"
         >
+          <FiX size={18} />
+        </button>
+
+        {/* 이미지 캐러셀 영역 */}
+        <div className="w-full md:w-[60%] bg-gray-900 flex items-center justify-center min-h-[240px] md:min-h-0 overflow-hidden">
           <ImageCarousel images={images} />
-        </Box>
+        </div>
 
-        <Box
-          sx={{
-            width: "35%",
-            height: "100%",
-            p: 1,
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center", // 수직 중앙 정렬
-            gap: 2,
-          }}
-        >
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              border: "1px solid rgba(0, 0, 0, 0.23)",
-              borderRadius: "4px",
-              padding: "5px",
-              position: "relative",
-            }}
-          >
-            <Typography
-              variant="caption"
-              sx={{
-                position: "absolute",
-                top: "-10px",
-                left: "10px",
-                backgroundColor: "white",
-                padding: "0 3px",
-                color: "rgba(0, 0, 0, 0.6)",
-                fontSize: "0.6rem",
-              }}
-            >
-              Writer
-            </Typography>
-            <Typography variant="body2" sx={{ fontSize: "0.7rem" }}>
-              {writer}
-            </Typography>{" "}
-            {/* 글씨 크기 조정 */}
-          </Box>
+        {/* 정보 + 댓글 영역 */}
+        <div className="w-full md:w-[40%] flex flex-col overflow-y-auto max-h-[85vh]">
+          {/* 헤더 정보 */}
+          <div className="p-5 border-b border-gray-100">
+            <h3 className="text-base font-nanum-bold text-gray-900 mb-3 pr-6">{title}</h3>
+            <div className="flex flex-col gap-1.5">
+              <div className="flex items-center gap-2 text-xs text-gray-500">
+                <FiUser size={12} className="flex-shrink-0 text-gray-400" />
+                <span className="truncate">{writer}</span>
+              </div>
+              {formattedDate && (
+                <div className="flex items-center gap-2 text-xs text-gray-500">
+                  <FiCalendar size={12} className="flex-shrink-0 text-gray-400" />
+                  <span>{formattedDate}</span>
+                </div>
+              )}
+            </div>
+            {content && (
+              <p className="mt-3 text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">{content}</p>
+            )}
+          </div>
 
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              border: "1px solid rgba(0, 0, 0, 0.23)",
-              borderRadius: "4px",
-              padding: "5px",
-              position: "relative",
-            }}
-          >
-            <Typography
-              variant="caption"
-              sx={{
-                position: "absolute",
-                top: "-10px",
-                left: "10px",
-                backgroundColor: "white",
-                padding: "0 3px",
-                color: "rgba(0, 0, 0, 0.6)",
-                fontSize: "0.6rem",
-              }}
-            >
-              Title
-            </Typography>
-            <Typography variant="body2" sx={{ fontSize: "0.7rem" }}>
-              {title}
-            </Typography>{" "}
-            {/* 글씨 크기 조정 */}
-          </Box>
+          {/* 댓글 영역 */}
+          <div className="flex-1 p-4 overflow-y-auto">
+            <Reply postType={postType} postId={postId} />
+          </div>
+        </div>
+      </div>
 
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              border: "1px solid rgba(0, 0, 0, 0.23)",
-              borderRadius: "4px",
-              padding: "5px",
-              position: "relative",
-            }}
-          >
-            <Typography
-              variant="caption"
-              sx={{
-                position: "absolute",
-                top: "-10px",
-                left: "10px",
-                backgroundColor: "white",
-                padding: "0 3px",
-                color: "rgba(0, 0, 0, 0.6)",
-                fontSize: "0.6rem",
-              }}
-            >
-              Content
-            </Typography>
-            <Typography variant="body2" sx={{ fontSize: "0.7rem" }}>
-              {content}
-            </Typography>{" "}
-            {/* 글씨 크기 조정 */}
-          </Box>
-
-          {/* 댓글 컴포넌트: postType과 postId를 넘겨줌 */}
-          <Reply postType={postType} postId={postId} />
-        </Box>
-
-        <IconButton
-          onClick={handleNext}
-          sx={{
-            position: "absolute",
-            right: "-130px",
-            top: "50%",
-            transform: "translateY(-50%)",
-            zIndex: 1300,
-            color: "white",
-            bgcolor: "rgba(0, 0, 0, 0.5)",
-            "&:hover": {
-              bgcolor: "rgba(0, 0, 0, 0.7)",
-            },
-          }}
-        >
-          <ArrowForwardIosIcon />
-        </IconButton>
-      </Box>
-    </Modal>
+      {/* 다음 버튼 */}
+      <button
+        onClick={(e) => { e.stopPropagation(); handleNext(); }}
+        className="absolute right-3 sm:right-6 z-20 flex items-center justify-center w-10 h-10 rounded-full bg-black/40 text-white hover:bg-black/60 transition-colors"
+      >
+        <FiChevronRight size={22} />
+      </button>
+    </div>
   );
 };
 

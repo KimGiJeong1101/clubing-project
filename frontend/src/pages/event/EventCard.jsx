@@ -1,21 +1,12 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Typography, Snackbar, Alert, Button, TextField } from "@mui/material";
-import { Box } from "@mui/system";
-import Card from "@mui/material/Card";
-import CardActions from "@mui/material/CardActions";
-import CardContent from "@mui/material/CardContent";
-import CardMedia from "@mui/material/CardMedia";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
+import { FiMoreVertical } from "react-icons/fi";
 import EventImageCropper from "./EventImageCropper";
 import { useSelector } from "react-redux";
 import { useMutation } from "@tanstack/react-query";
 import axiosInstance from "../../utils/axios";
-import { LocalizationProvider, MobileDateTimePicker } from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
-import "dayjs/locale/ko"; // 한국어 로케일
+import "dayjs/locale/ko";
 
-// 로케일 설정
 dayjs.locale("ko");
 
 const EventCard = ({ eventData, onClose }) => {
@@ -39,13 +30,11 @@ const EventCard = ({ eventData, onClose }) => {
 
   const writer = useSelector((state) => state.user?.userData?.user?.email);
 
-  // 첫 번째 <img> 태그에서 src 속성을 추출하는 함수
   const extractFirstImageSrc = (htmlContent) => {
     const imgTag = htmlContent.match(/<img[^>]+src="([^">]+)"/);
     return imgTag ? imgTag[1] : "";
   };
 
-  // HTML에서 텍스트만 추출하는 함수
   const extractTextContent = (htmlContent) => {
     const tempDiv = document.createElement("div");
     tempDiv.innerHTML = htmlContent;
@@ -56,10 +45,8 @@ const EventCard = ({ eventData, onClose }) => {
     if (eventData) {
       setTitle(eventData.title || "");
       setCardTitle(eventData.cardTitle || "");
-
       const initialImage = extractFirstImageSrc(eventData.content || "") || eventData.cardImage || "";
       setDisplayImage(initialImage);
-
       setContentText(extractTextContent(eventData.content || ""));
       setEndTime(eventData.endTime ? dayjs(eventData.endTime) : null);
     }
@@ -88,17 +75,8 @@ const EventCard = ({ eventData, onClose }) => {
     }
   };
 
-  const handleImageClick = () => {
-    fileInputRef.current.click();
-  };
-
-  const handleTitleClick = () => {
-    setEditTitle(true);
-  };
-
-  const handleTitleSave = () => {
-    setEditTitle(false);
-  };
+  const handleTitleClick = () => setEditTitle(true);
+  const handleTitleSave = () => setEditTitle(false);
 
   const handleCropComplete = async (croppedImageUrl) => {
     setDisplayImage(croppedImageUrl);
@@ -142,19 +120,18 @@ const EventCard = ({ eventData, onClose }) => {
     }
   };
 
-  // 등록 mutation
   const mutationRegister = useMutation({
     mutationFn: async (dataToSend) => {
       const response = await axiosInstance.post("http://localhost:4000/events/newEvent", dataToSend);
       return response.data;
     },
-    onSuccess: (data) => {
+    onSuccess: () => {
       setSnackbarMessage("이벤트가 성공적으로 등록되었습니다.");
       setSnackbarSeverity("success");
       setSnackbarDuration(1000);
       setSnackbarOpen(true);
     },
-    onError: (error) => {
+    onError: () => {
       setSnackbarMessage("이벤트 등록에 실패했습니다.");
       setSnackbarSeverity("error");
       setSnackbarDuration(6000);
@@ -162,19 +139,18 @@ const EventCard = ({ eventData, onClose }) => {
     },
   });
 
-  // 수정 mutation
   const mutationUpdate = useMutation({
     mutationFn: async (dataToSend) => {
       const response = await axiosInstance.put(`http://localhost:4000/events/${dataToSend.eventId}`, dataToSend);
       return response.data;
     },
-    onSuccess: (data) => {
+    onSuccess: () => {
       setSnackbarMessage("이벤트가 성공적으로 수정되었습니다.");
       setSnackbarSeverity("success");
       setSnackbarDuration(1000);
       setSnackbarOpen(true);
     },
-    onError: (error) => {
+    onError: () => {
       setSnackbarMessage("이벤트 수정에 실패했습니다.");
       setSnackbarSeverity("error");
       setSnackbarDuration(6000);
@@ -185,7 +161,6 @@ const EventCard = ({ eventData, onClose }) => {
   const handleSubmit = async () => {
     try {
       let finalCardImage = "";
-
       if (mainImageFile) {
         finalCardImage = await uploadImageToServer(mainImageFile);
       } else if (displayImage) {
@@ -195,25 +170,24 @@ const EventCard = ({ eventData, onClose }) => {
         finalCardImage = eventData.cardImage;
       }
 
-      // 로그로 eventId 확인 (eventData.eventId로 접근)
       console.log("eventData:", eventData);
       console.log("eventId:", eventData?.eventId);
 
       const dataToSend = {
-        eventId: eventData?.eventId || null, // eventData.eventId로 수정
-        title: title,
+        eventId: eventData?.eventId || null,
+        title,
         content: eventData.content,
         cardImage: finalCardImage,
-        cardTitle: cardTitle,
-        writer: writer,
+        cardTitle,
+        writer,
         endTime: endTime ? endTime.toISOString() : null,
-        isEdit: eventData?.isEdit || false, // isEdit 플래그로 등록/수정 구분
+        isEdit: eventData?.isEdit || false,
       };
 
       if (dataToSend.isEdit) {
-        mutationUpdate.mutate(dataToSend); // 수정 요청
+        mutationUpdate.mutate(dataToSend);
       } else {
-        mutationRegister.mutate(dataToSend); // 등록 요청
+        mutationRegister.mutate(dataToSend);
       }
     } catch (error) {
       setSnackbarMessage("제출 중 오류가 발생했습니다.");
@@ -223,10 +197,8 @@ const EventCard = ({ eventData, onClose }) => {
     }
   };
 
-  const handleSnackbarClose = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
+  const handleSnackbarClose = (reason) => {
+    if (reason === "clickaway") return;
     setSnackbarOpen(false);
     if (snackbarSeverity === "success") {
       onClose();
@@ -234,120 +206,130 @@ const EventCard = ({ eventData, onClose }) => {
   };
 
   return (
-    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="ko">
-      <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", maxWidth: "100%", m: "10px" }}>
-        <Typography variant="h6" gutterBottom>
-          리스트 카드 모델링
-        </Typography>
-        <Box sx={{ display: "flex", justifyContent: "center", width: "100%" }}>
-          <Card sx={{ width: "350px", height: "auto", margin: 0 }}>
-            <CardMedia component="img" alt={title || "이미지 없음"} height="200" image={displayImage || "https://via.placeholder.com/345x140?text=No+Image"} onClick={() => fileInputRef.current.click()} sx={{ cursor: "pointer", objectFit: "cover", width: "100%", height: "200px" }} />
-            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0 10px", m: "10px" }}>
-              <CardContent sx={{ padding: 0, flex: 1 }}>
+      <div className="flex flex-col items-center max-w-full m-[10px]">
+        <h2 className="text-lg font-semibold mb-3">리스트 카드 모델링</h2>
+
+        <div className="flex justify-center w-full">
+          {/* 카드 */}
+          <div className="w-full max-w-[350px] h-auto rounded-xl overflow-hidden shadow">
+            {/* 이미지 */}
+            <img
+              src={displayImage || "https://via.placeholder.com/345x140?text=No+Image"}
+              alt={title || "이미지 없음"}
+              className="w-full h-[200px] object-cover cursor-pointer"
+              onClick={() => fileInputRef.current.click()}
+            />
+
+            {/* 카드 제목 */}
+            <div className="flex justify-between items-center px-[10px] m-[10px]">
+              <div className="flex-1 p-0">
                 {editTitle ? (
-                  <Box sx={{ display: "flex", alignItems: "center" }}>
-                    <TextField value={cardTitle} onChange={(e) => setCardTitle(e.target.value)} label="새로운 제목" variant="outlined" size="small" sx={{ marginRight: 1 }} />
-                    <Button onClick={() => setEditTitle(false)} variant="contained" size="small">
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={cardTitle}
+                      onChange={(e) => setCardTitle(e.target.value)}
+                      placeholder="새로운 제목"
+                      className="input-base text-sm flex-1"
+                    />
+                    <button
+                      onClick={() => setEditTitle(false)}
+                      className="btn-primary text-xs px-2 py-1"
+                    >
                       저장
-                    </Button>
-                  </Box>
+                    </button>
+                  </div>
                 ) : (
-                  <Typography
-                    variant="body2"
-                    color="black"
-                    sx={{
-                      display: "-webkit-box",
-                      overflow: "hidden",
-                      WebkitBoxOrient: "vertical",
-                      WebkitLineClamp: 2,
-                      whiteSpace: "normal",
-                      cursor: "pointer",
-                    }}
+                  <p
+                    className="text-sm text-black line-clamp-2 cursor-pointer"
                     onClick={() => setEditTitle(true)}
                   >
                     {cardTitle || title || "기본 타이틀"}
-                  </Typography>
+                  </p>
                 )}
-              </CardContent>
-              <MoreVertIcon sx={{ fontSize: 28, cursor: "pointer", ml: 1 }} />
-            </Box>
-            <Box sx={{ padding: "0 20px" }}>
-              <Typography fontSize={10}>조회수 : 100</Typography>
-              <Typography fontSize={10}>등록날짜 : {dayjs().format("YYYY-MM-DD HH:mm:ss")}</Typography>
-              <Typography fontSize={10}>종료날짜 : {endTime ? endTime.format("YYYY-MM-DD HH:mm:ss") : "선택되지 않음"}</Typography>
-            </Box>
-            <CardActions>
-              <Button size="small" sx={{ color: "#30231C" }}>
-                공유
-              </Button>
-              <Button size="small" sx={{ color: "#30231C" }}>
-                더 보기
-              </Button>
-            </CardActions>
-          </Card>
-        </Box>
+              </div>
+              <FiMoreVertical size={28} className="cursor-pointer ml-2" />
+            </div>
 
-        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "flex-end", mt: 2, width: "350px" }}>
+            {/* 메타 정보 */}
+            <div className="px-5">
+              <p className="text-[10px]">조회수 : 100</p>
+              <p className="text-[10px]">등록날짜 : {dayjs().format("YYYY-MM-DD HH:mm:ss")}</p>
+              <p className="text-[10px]">
+                종료날짜 : {endTime ? endTime.format("YYYY-MM-DD HH:mm:ss") : "선택되지 않음"}
+              </p>
+            </div>
+
+            {/* 액션 */}
+            <div className="flex gap-1 p-2">
+              <button className="text-sm text-[#30231C] px-2 py-1">공유</button>
+              <button className="text-sm text-[#30231C] px-2 py-1">더 보기</button>
+            </div>
+          </div>
+        </div>
+
+        {/* 종료시일 설정 + 제출 */}
+        <div className="flex items-center justify-end mt-4 w-[350px] gap-2">
           {isDatePickerOpen && (
-            <Box sx={{ marginRight: 1 }}>
-              <MobileDateTimePicker
-                value={endTime}
-                onChange={(newValue) => setEndTime(newValue)}
-                onAccept={() => setIsDatePickerOpen(false)}
-                onClose={() => setIsDatePickerOpen(false)}
-                showToolbar
-                ampm={false}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    size="small"
-                    sx={{
-                      width: "150px", // 너비 조정
-                      fontSize: "12px", // 글자 크기 조정
-                    }}
-                  />
-                )}
-              />
-            </Box>
+            <input
+              type="datetime-local"
+              className="border border-gray-300 rounded px-2 py-1 text-xs w-[180px] focus:outline-none focus:ring-2 focus:ring-[#A67153]"
+              value={endTime ? endTime.format("YYYY-MM-DDTHH:mm") : ""}
+              onChange={(e) => {
+                setEndTime(e.target.value ? dayjs(e.target.value) : null);
+                setIsDatePickerOpen(false);
+              }}
+            />
           )}
-          <Button
-            variant="contained"
+          <button
             onClick={() => setIsDatePickerOpen(true)}
-            sx={{
-              backgroundColor: "#DBC7B5",
-              "&:hover": {
-                backgroundColor: "#A67153",
-              },
-              mr: 1,
-            }}
+            className="bg-primary-100 hover:bg-primary-200 text-primary-800 text-sm px-3 py-2 rounded transition-colors"
           >
             종료시일 설정
-          </Button>
-          <Button
-            variant="contained"
+          </button>
+          <button
             onClick={handleSubmit}
-            sx={{
-              backgroundColor: "#6E3C21",
-              "&:hover": {
-                backgroundColor: "#A67153",
-              },
-            }}
+            className="bg-red-500 hover:bg-red-600 text-white text-sm px-3 py-2 rounded transition-colors"
           >
             제출
-          </Button>
-        </Box>
+          </button>
+        </div>
 
-        <input type="file" accept="image/*" style={{ display: "none" }} ref={fileInputRef} onChange={handleImageUpload} />
+        <input
+          type="file"
+          accept="image/*"
+          className="hidden"
+          ref={fileInputRef}
+          onChange={handleImageUpload}
+        />
 
-        {showCropper && <EventImageCropper src={displayImage} onCropComplete={setDisplayImage} onClose={() => setShowCropper(false)} />}
+        {showCropper && (
+          <EventImageCropper
+            src={displayImage}
+            onCropComplete={setDisplayImage}
+            onClose={() => setShowCropper(false)}
+          />
+        )}
 
-        <Snackbar open={snackbarOpen} autoHideDuration={snackbarDuration} onClose={handleSnackbarClose} anchorOrigin={{ vertical: "bottom", horizontal: "center" }}>
-          <Alert onClose={handleSnackbarClose} severity={snackbarSeverity} sx={{ width: "100%" }}>
-            {snackbarMessage}
-          </Alert>
-        </Snackbar>
-      </Box>
-    </LocalizationProvider>
+        {/* 스낵바 */}
+        {snackbarOpen && (
+          <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[2000]">
+            <div
+              className={`flex items-center gap-3 px-5 py-3 rounded-lg shadow-lg min-w-[280px] text-white ${
+                snackbarSeverity === "success" ? "bg-green-600" : snackbarSeverity === "error" ? "bg-red-600" : "bg-yellow-600"
+              }`}
+            >
+              <span className="flex-1 text-sm">{snackbarMessage}</span>
+              <button
+                onClick={() => handleSnackbarClose()}
+                className="hover:text-gray-200 font-bold text-lg leading-none"
+              >
+                ×
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
   );
 };
 

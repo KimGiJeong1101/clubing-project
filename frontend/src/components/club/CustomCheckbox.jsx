@@ -1,26 +1,16 @@
 import React from "react";
-import { Checkbox, FormControlLabel, styled } from "@mui/material";
 
-// 스타일 정의
-// MUI의 Checkbox 컴포넌트를 기반으로 하는 CustomCheckbox를 생성
-const StyledCheckbox = styled(Checkbox)(({ theme }) => ({
-  color: "#6E3C21", // 체크박스의 기본 색상 설정
-  "&.Mui-checked": {
-    // 체크된 상태의 스타일
-    color: "#6E3C21", // 체크된 상태의 색상 변경
-  },
-}));
-
-// CustomCheckboxComponent 정의
-const CustomCheckbox = ({ label, checked, onChange, ...props }) => {
-  return (
-    <FormControlLabel
-      control={
-        <StyledCheckbox checked={checked} onChange={onChange} {...props} /> // CustomCheckbox에 props 전달
-      }
-      label={label} // FormControlLabel의 label에 props.label 전달
+const CustomCheckbox = ({ label, checked, onChange, className = "", ...props }) => (
+  <label className={`inline-flex items-center gap-2 cursor-pointer ${className}`}>
+    <input
+      type="checkbox"
+      checked={checked}
+      onChange={onChange}
+      className="w-4 h-4 rounded border-gray-300 accent-[#6E3C21] cursor-pointer focus:ring-2 focus:ring-[#6E3C21]/30"
+      {...props}
     />
-  );
-};
+    {label && <span className="text-sm text-gray-700 select-none">{label}</span>}
+  </label>
+);
 
 export default CustomCheckbox;

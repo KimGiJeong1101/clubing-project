@@ -68,7 +68,6 @@ import translations from "ckeditor5/translations/ko.js";
 import "ckeditor5/ckeditor5.css";
 // import "../../assets/styles/ClubBoard.css"; 이 부분 지워도 됨. 파일 비어져 있길래 지웠는데, 임포트 찾을 수 없다고 에러나서 일단 주석
 import "./EditorStyle.css";
-import { TextField, Box } from "@mui/material";
 
 export default function CKEditor5Editor({ onChange, title, setTitle, content, setImage }) {
   const editorContainerRef = useRef(null);
@@ -257,19 +256,24 @@ export default function CKEditor5Editor({ onChange, title, setTitle, content, se
   }, [editorInstance, onChange]);
 
   return (
-    <Box
-      mb={2}
-      sx={{
-        padding: "20px",
-        borderRadius: "15px", // 둥근 모서리
-        border: "3px solid", // 테두리
-        borderColor: "transparent", // 투명한 기본 테두리
-        borderImage: "linear-gradient(45deg, #6a82fb, #fc5c7d) 1", // 그라데이션 테두리
-        boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)", // 그림자 추가
+    <div
+      className="mb-4 p-5 rounded-2xl shadow-md"
+      style={{
+        border: "3px solid transparent",
+        borderImage: "linear-gradient(45deg, #6a82fb, #fc5c7d) 1",
       }}
     >
       {/* 제목 입력 필드 */}
-      <TextField label="제목" variant="outlined" fullWidth margin="normal" value={title} onChange={(e) => setTitle(e.target.value)} />
+      <div className="mb-2 mt-1">
+        <label className="block text-sm font-medium text-gray-700 mb-1">제목</label>
+        <input
+          type="text"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder="제목을 입력해주세요"
+          className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#6a82fb]"
+        />
+      </div>
       <div className="main-container" style={{ width: "100%" }}>
         <div className="editor-container editor-container_document-editor" ref={editorContainerRef}>
           <div className="editor-container__toolbar" ref={editorToolbarRef}></div>
@@ -290,6 +294,6 @@ export default function CKEditor5Editor({ onChange, title, setTitle, content, se
           </div>
         </div>
       </div>
-    </Box>
+    </div>
   );
 }

@@ -1,26 +1,24 @@
 import React, { useState } from "react";
-import CKEditor5Editor from "./EventBoardEditor"; // CKEditor5Editor 컴포넌트
-import IconButton from "@mui/material/IconButton";
-import CloseIcon from "@mui/icons-material/Close";
-import { Box, Button, Snackbar, Alert } from "@mui/material";
+import { FiX } from "react-icons/fi";
+import CKEditor5Editor from "./EventBoardEditor";
 
 export default function EventCreate({ onClose, onNext }) {
-  const [title, setTitle] = useState(""); // 제목 상태
-  const [content, setContent] = useState(""); // 내용 상태
-  const [image, setImage] = useState(""); // 이미지 상태 추가
-  const [openSnackbar, setOpenSnackbar] = useState(false); // 스낵바 상태
-  const [snackbarMessage, setSnackbarMessage] = useState(""); // 스낵바 메시지
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const [image, setImage] = useState("");
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
 
   const handleEditorChange = (data) => {
-    setContent(data); // 에디터 내용 변경
+    setContent(data);
   };
 
   const handleNext = () => {
-    const defaultImageUrl = "https://via.placeholder.com/400?text=No+Image"; // 기본 이미지 URL
-    const finalImage = image || defaultImageUrl; // 이미지가 없으면 기본 이미지 사용
+    const defaultImageUrl = "https://via.placeholder.com/400?text=No+Image";
+    const finalImage = image || defaultImageUrl;
 
     if (title && content) {
-      onNext({ title, content, image: finalImage }); // 이미지도 함께 전달
+      onNext({ title, content, image: finalImage });
     } else {
       setOpenSnackbar(true);
       setSnackbarMessage("제목과 내용을 입력해주세요.");
@@ -32,43 +30,48 @@ export default function EventCreate({ onClose, onNext }) {
   };
 
   return (
-    <Box>
-      <IconButton aria-label="close" onClick={onClose} sx={{ position: "absolute", top: 8, right: 8 }}>
-        <CloseIcon />
-      </IconButton>
-      <h1>이벤트 게시판 작성</h1>
-      <Box
-        sx={{
-          flex: 1,
-          overflow: "auto",
-          marginTop: "1px",
-          paddingRight: "10px",
-        }}
+    <div className="relative">
+      <button
+        aria-label="close"
+        onClick={onClose}
+        className="absolute top-2 right-2 p-1 rounded hover:bg-gray-100 transition-colors"
       >
-        <CKEditor5Editor title={title} setTitle={setTitle} content={content} onChange={handleEditorChange} setImage={setImage} />
-      </Box>
+        <FiX size={20} />
+      </button>
 
-      {/* 하나의 버튼 */}
-      <Button
-        variant="contained"
-        sx={{
-          backgroundColor: "#DBC7B5", // 기본 버튼 색상
-          "&:hover": {
-            backgroundColor: "#A67153", // 호버 시 색상
-          },
-          mt: 2,
-        }}
+      <h1 className="text-2xl font-bold mb-4">이벤트 게시판 작성</h1>
+
+      <div className="flex-1 overflow-auto mt-[1px] pr-[10px]">
+        <CKEditor5Editor
+          title={title}
+          setTitle={setTitle}
+          content={content}
+          onChange={handleEditorChange}
+          setImage={setImage}
+        />
+      </div>
+
+      <button
         onClick={handleNext}
+        className="mt-4 bg-primary-600 hover:bg-primary-700 text-white px-5 py-2.5 rounded-xl font-nanum-bold transition-colors"
       >
         다음
-      </Button>
+      </button>
 
       {/* 스낵바 */}
-      <Snackbar open={openSnackbar} autoHideDuration={4000} onClose={handleCloseSnackbar}>
-        <Alert onClose={handleCloseSnackbar} severity="warning" sx={{ width: "100%" }}>
-          {snackbarMessage}
-        </Alert>
-      </Snackbar>
-    </Box>
+      {openSnackbar && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[2000]">
+          <div className="flex items-center gap-3 bg-yellow-500 text-white px-5 py-3 rounded-lg shadow-lg min-w-[280px]">
+            <span className="flex-1 text-sm">{snackbarMessage}</span>
+            <button
+              onClick={handleCloseSnackbar}
+              className="hover:text-gray-200 font-bold text-lg leading-none"
+            >
+              ×
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }

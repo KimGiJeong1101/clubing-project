@@ -175,7 +175,7 @@ router.get("/room/:clubId", auth, async (req, res) => {
 
 router.get("/:clubId/messages", auth, async (req, res) => {
   const { clubId } = req.params;
-  const { skip = 0, limit = 30 } = req.query;
+  const { skip = 0, limit = 30, before } = req.query;
 
   try {
     // 1. 해당 clubId의 채팅방을 찾기
@@ -194,54 +194,107 @@ router.get("/:clubId/messages", auth, async (req, res) => {
     }
 
     // 3. 참가한 시간 이후의 메시지를 조회
+    const timeFilter = { $gte: participant.timestamp };
+    // before 파라미터가 있으면 타임스탬프 커서 방식으로 조회 (around-mode 이전 메시지 로드)
+    if (before) {
+      timeFilter.$lt = new Date(before);
+    }
+
     const messages = await Message.find({
-      clubId, // 해당 클럽의 메시지
-      timestamp: { $gte: participant.timestamp }, // 참가 시간 이후의 메시지
+      clubId,
+      timestamp: timeFilter,
     })
       .sort({ timestamp: -1 }) // 최신순으로 정렬
-      .skip(parseInt(skip))
+      .skip(before ? 0 : parseInt(skip)) // 커서 방식이면 skip 불필요
       .limit(parseInt(limit));
 
-    res.json(messages); // 조회한 메시지 반환
+    res.json(messages);
   } catch (error) {
     console.error("메시지 조회 중 오류:", error);
     res.status(500).json({ error: "메시지를 불러오는데 실패했습니다." });
   }
 });
 
-// 메시지를 검색하는 API 추가
+// 전체 메시지 검색 (limit 없음 — 모든 매칭 메시지 반환)
 router.get("/:clubId/messages/search", auth, async (req, res) => {
   const { clubId } = req.params;
   const { query } = req.query;
 
+  if (!query || query.trim().length < 2) {
+    return res.status(400).json({ error: "검색어는 2자 이상이어야 합니다." });
+  }
+
   try {
-    // 1. 해당 clubId의 채팅방을 찾기
     const chattingRoom = await ChattingRoom.findOne({ clubId });
     if (!chattingRoom) {
       return res.status(404).json({ error: "채팅방을 찾을 수 없습니다." });
     }
 
-    // 2. 요청한 사용자의 ID로 참가 기록을 확인
     const userId = req.user._id;
     const participant = chattingRoom.participants.find((p) => p.userId.equals(userId));
-
     if (!participant) {
       return res.status(403).json({ message: "이 채팅방에 참가하지 않았습니다." });
     }
 
-    // 3. 검색어를 포함하는 메시지를 조회
+    // limit 없이 전체 검색, 오래된 순(ASC)으로 반환
     const messages = await Message.find({
-      clubId, // 해당 클럽의 메시지
-      content: { $regex: query, $options: "i" }, // 대소문자 구분 없이 검색
-      timestamp: { $gte: participant.timestamp }, // 참가 시간 이후의 메시지
-    })
-      .sort({ timestamp: -1 }) // 최신순으로 정렬
-      .limit(30); // 최근 30개 메시지
+      clubId,
+      content: { $regex: query.trim(), $options: "i" },
+      timestamp: { $gte: participant.timestamp },
+    }).sort({ timestamp: 1 }); // 오래된 메시지부터
 
-    res.json(messages); // 조회한 메시지 반환
+    res.json(messages);
   } catch (error) {
     console.error("메시지 검색 중 오류:", error);
     res.status(500).json({ error: "메시지를 검색하는데 실패했습니다." });
+  }
+});
+
+// 특정 타임스탬프 전후 메시지 로드 (검색 결과 위치 이동용)
+router.get("/:clubId/messages/around", auth, async (req, res) => {
+  const { clubId } = req.params;
+  const { timestamp } = req.query;
+
+  if (!timestamp) {
+    return res.status(400).json({ error: "timestamp 파라미터가 필요합니다." });
+  }
+
+  try {
+    const chattingRoom = await ChattingRoom.findOne({ clubId });
+    if (!chattingRoom) {
+      return res.status(404).json({ error: "채팅방을 찾을 수 없습니다." });
+    }
+
+    const userId = req.user._id;
+    const participant = chattingRoom.participants.find((p) => p.userId.equals(userId));
+    if (!participant) {
+      return res.status(403).json({ message: "이 채팅방에 참가하지 않았습니다." });
+    }
+
+    const targetDate = new Date(timestamp);
+
+    // 타겟 이전 메시지 20개 (포함)
+    const before = await Message.find({
+      clubId,
+      timestamp: { $gte: participant.timestamp, $lte: targetDate },
+    })
+      .sort({ timestamp: -1 })
+      .limit(20);
+
+    // 타겟 이후 메시지 30개 (아래 대화 맥락 확보)
+    const after = await Message.find({
+      clubId,
+      timestamp: { $gt: targetDate },
+    })
+      .sort({ timestamp: 1 })
+      .limit(30);
+
+    // before는 역순이므로 뒤집어서 합치기 (오래된 순)
+    const combined = [...before.reverse(), ...after];
+    res.json(combined);
+  } catch (error) {
+    console.error("주변 메시지 로드 중 오류:", error);
+    res.status(500).json({ error: "메시지를 불러오는데 실패했습니다." });
   }
 });
 

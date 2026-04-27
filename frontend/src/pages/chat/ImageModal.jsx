@@ -1,6 +1,5 @@
 import React from "react";
-import { Modal, Box, IconButton } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
+import { FiX } from "react-icons/fi";
 
 const ImageModal = ({ open, onClose, imageUrl }) => {
   // 모달 열림 상태 로그
@@ -20,56 +19,32 @@ const ImageModal = ({ open, onClose, imageUrl }) => {
     onClose();
   };
 
+  if (!open) return null;
+
   return (
-    <Modal
-      open={open}
-      onClose={handleBackdropClick} // 배경 클릭 시 모달 닫기
-      aria-labelledby="modal-title"
-      aria-describedby="modal-description"
-      sx={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        backdropFilter: "none",
-        boxShadow: "none",
-      }}
+    <div
+      className="fixed inset-0 z-[300] bg-black/50 flex items-center justify-center"
+      onClick={handleBackdropClick}
     >
-      <Box
-        sx={{
-          position: "relative",
-          maxWidth: "90vw",
-          maxHeight: "90vh",
-          backgroundColor: "transparent", // 배경색을 투명으로 설정
-          padding: 0,
-          border: "none", // 경계선 제거
-          boxShadow: "none", // 그림자 제거
-        }}
+      <div
+        className="relative max-w-[90vw] max-h-[90vh] bg-transparent"
+        onClick={(e) => e.stopPropagation()}
       >
         <img
           src={imageUrl}
           alt="Full size"
-          style={{
-            width: "100%",
-            height: "auto",
-            maxHeight: "80vh",
-            objectFit: "contain",
-            border: "none", // 이미지 경계선 제거
-            outline: "none", // 이미지 외곽선 제거
-          }}
+          className="w-full h-auto object-contain"
+          style={{ maxHeight: "80vh", border: "none", outline: "none" }}
         />
-        <IconButton
+        <button
           onClick={handleClose}
-          sx={{
-            position: "absolute",
-            top: 8,
-            right: 8,
-            zIndex: 10,
-          }}
+          className="absolute top-2 right-2 z-10 p-1 bg-white/20 hover:bg-white/40 rounded-full transition-colors"
+          aria-label="닫기"
         >
-          <CloseIcon />
-        </IconButton>
-      </Box>
-    </Modal>
+          <FiX size={24} color="#fff" />
+        </button>
+      </div>
+    </div>
   );
 };
 

@@ -1,657 +1,258 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Box, Button, Container, Grid, Paper, Typography } from "@mui/material";
-import CommentRoundedIcon from "@mui/icons-material/CommentRounded";
-import PeopleRoundedIcon from "@mui/icons-material/PeopleRounded";
-import Avatar from "@mui/material/Avatar";
-import AvatarGroup from "@mui/material/AvatarGroup";
-import { Fab } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
+import { FiPlus, FiSearch, FiX, FiUsers } from "react-icons/fi";
+import {
+  MdFastfood, MdMenuBook, MdNightlife, MdCelebration, MdSportsKabaddi,
+  MdColorLens, MdLocalAtm, MdFavorite, MdLocalAirport, MdPeople, MdAutoStories,
+} from "react-icons/md";
+import { IoBoatOutline } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import BubbleAnimation from "../../components/club/BubbleAnimation.js";
-import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import FastfoodIcon from "@mui/icons-material/Fastfood";
-import MenuBookIcon from "@mui/icons-material/MenuBook";
-import NightlifeIcon from "@mui/icons-material/Nightlife";
-import RowingIcon from "@mui/icons-material/Rowing";
-import CelebrationIcon from "@mui/icons-material/Celebration";
-import SportsKabaddiIcon from "@mui/icons-material/SportsKabaddi";
-import ColorLensIcon from "@mui/icons-material/ColorLens";
-import LocalAtmIcon from "@mui/icons-material/LocalAtm";
-import LoyaltyIcon from "@mui/icons-material/Loyalty";
-import LocalAirportIcon from "@mui/icons-material/LocalAirport";
-import Diversity1Icon from "@mui/icons-material/Diversity1";
-import AutoStoriesIcon from "@mui/icons-material/AutoStories";
-import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
-import { throttle } from "lodash";
-import SearchIcon from "@mui/icons-material/Search";
-import ModeNightIcon from "@mui/icons-material/ModeNight";
 import ClubListCard from "../../components/club/ClubListCard.js";
+import { throttle } from "lodash";
+
+const CATEGORIES = [
+  { color: "#71ABF0", icon: <MdFastfood    className="w-7 h-7" />, text: "푸드·드링크" },
+  { color: "#DC6A5A", icon: <MdMenuBook    className="w-7 h-7" />, text: "자기계발" },
+  { color: "#9363D1", icon: <MdNightlife   className="w-7 h-7" />, text: "취미" },
+  { color: "#6BAED4", icon: <IoBoatOutline className="w-7 h-7" />, text: "액티비티" },
+  { color: "#EE7E8C", icon: <MdCelebration className="w-7 h-7" />, text: "파티" },
+  { color: "#5C6BC0", icon: <MdSportsKabaddi className="w-7 h-7" />, text: "소셜게임" },
+  { color: "#F4A836", icon: <MdColorLens   className="w-7 h-7" />, text: "문화·예술" },
+  { color: "#C25BA1", icon: <MdLocalAtm    className="w-7 h-7" />, text: "N잡·재테크" },
+  { color: "#E8727E", icon: <MdFavorite    className="w-7 h-7" />, text: "연애·사랑" },
+  { color: "#5BAD6F", icon: <MdLocalAirport className="w-7 h-7" />, text: "여행·나들이" },
+  { color: "#7986CB", icon: <MdPeople      className="w-7 h-7" />, text: "동네·또래" },
+  { color: "#8E44AD", icon: <MdAutoStories className="w-7 h-7" />, text: "외국어" },
+];
+
+/* ── 스켈레톤 카드 ── */
+function SkeletonCard() {
+  return (
+    <div className="bg-white rounded-2xl overflow-hidden shadow-sm animate-pulse">
+      <div className="h-52 bg-gray-200" />
+      <div className="p-4 space-y-2">
+        <div className="h-4 bg-gray-200 rounded w-3/4" />
+        <div className="h-3 bg-gray-100 rounded w-1/2" />
+        <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+          <div className="flex gap-1">
+            {[0,1,2].map(i => <div key={i} className="w-7 h-7 rounded-full bg-gray-200" />)}
+          </div>
+          <div className="w-9 h-9 rounded-full bg-gray-200" />
+        </div>
+      </div>
+    </div>
+  );
+}
 
 const Clubs = () => {
-  let [category, setCategory] = useState("");
-  //검색 스위치
+  const [category, setCategory]         = useState("");
   const [searchRegion, setSearchRegion] = useState("");
+  const [scrollCount, setScrollCount]   = useState(1);
+  const [scrollData, setScrollData]     = useState([]);
+  const navigate = useNavigate();
 
   const getClubList = async () => {
-    if (!category) {
-      const response = await fetch(`http://localhost:4000/clubs?searchRegion=${searchRegion}`);
-      const data = await response.json();
-      console.log(`data`);
-      console.log(data);
-      console.log(`data`);
-      if (!data || data.length < 6) {
-        window.removeEventListener("scroll", handleScroll);
-      }
-      return data;
-    } else if (category) {
-      const response = await fetch(`http://localhost:4000/clubs/${category}?searchRegion=${searchRegion}`);
-      const data = await response.json();
-      if (!data || data.length < 6) {
-        window.removeEventListener("scroll", handleScroll);
-      }
-      return data;
-    }
+    const url = category
+      ? `http://localhost:4000/clubs/${category}?searchRegion=${searchRegion}`
+      : `http://localhost:4000/clubs?searchRegion=${searchRegion}`;
+    const res = await fetch(url);
+    return res.json();
   };
-  const {
-    data: clubList = [], // 기본값을 빈 배열로 설정
-    error,
-    isLoading,
-    isError,
-    isFetching, // isFetching 사용
-  } = useQuery({
-    queryKey: ["clubList", category, searchRegion],
-    queryFn: getClubList,
+
+  const { data: clubList = [], isLoading, isError, error } = useQuery({
+    queryKey: ["recommendClubList", category, searchRegion],
+    queryFn:  getClubList,
     keepPreviousData: true,
   });
-  //카테고리 바뀔 떄 마다 리스트를 불러옴 -> 어차피 3개씩 불러와서 빨리빨리 부르는데 헉 생각해보니...
-  const navigate = useNavigate();
-  //무한스크롤 구현
-  const getClubListScroll = async (newScrollCount) => {
-    let response;
-    if (!category) {
-      response = await fetch(`http://localhost:4000/clubs/scroll/${newScrollCount}?searchRegion=${searchRegion}`);
-    } else {
-      response = await fetch(`http://localhost:4000/clubs/scroll/${newScrollCount}/${category}?searchRegion=${searchRegion}`);
-    }
-    const data = await response.json();
-    setScrollData((prevData) => [...prevData, ...data]); // Merge previous and new data
 
-    if (data.length === 6) {
-      window.addEventListener("scroll", handleScroll);
-    } else {
-      window.removeEventListener("scroll", handleScroll);
-    }
+  const getClubListScroll = async (count) => {
+    const url = category
+      ? `http://localhost:4000/clubs/scroll/${count}/${category}?searchRegion=${searchRegion}`
+      : `http://localhost:4000/clubs/scroll/${count}?searchRegion=${searchRegion}`;
+    const res  = await fetch(url);
+    const data = await res.json();
+    setScrollData((p) => [...p, ...data]);
+    if (data.length === 6) window.addEventListener("scroll", handleScroll);
+    else window.removeEventListener("scroll", handleScroll);
   };
-  let [scrollCount, setScrollCount] = useState(1);
-  let [scrollData, setScrollData] = useState([]);
 
-  let handleScroll = useCallback(
+  const handleScroll = useCallback(
     throttle(() => {
-      let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-      let scrollHeight = document.documentElement.scrollHeight;
-      let clientHeight = window.innerHeight;
-
+      const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
       if (scrollTop + clientHeight >= scrollHeight - 10) {
-        setScrollCount((prevCount) => {
-          const newCount = prevCount + 1;
-
-          getClubListScroll(newCount);
-          return newCount;
-        });
+        setScrollCount((p) => { getClubListScroll(p + 1); return p + 1; });
         window.removeEventListener("scroll", handleScroll);
       }
     }, 500),
-    [category, scrollCount, searchRegion],
+    [category, searchRegion],
   );
 
   useEffect(() => {
     window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll); // 클린 업 펑션
-    };
+    return () => window.removeEventListener("scroll", handleScroll);
   }, [category, searchRegion]);
-  //무한스크롤 구현.end
+
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
+    script.async = true;
+    document.body.appendChild(script);
+    return () => document.body.removeChild(script);
+  }, []);
 
   const handleRegionClick = () => {
-    setScrollData([]);
-    setScrollCount(1);
+    setScrollData([]); setScrollCount(1);
     new window.daum.Postcode({
-      oncomplete: function (data) {
-        let addr = ""; // 주소 변수
-
-        // 사용자가 선택한 주소 타입에 따라 해당 주소 값을 가져옴
-        if (data.userSelectedType === "R") {
-          addr = data.roadAddress; // 도로명 주소
-        } else {
-          addr = data.jibunAddress; // 지번 주소
-        }
+      oncomplete: (data) => {
+        const addr = data.userSelectedType === "R" ? data.roadAddress : data.jibunAddress;
         setSearchRegion(addr.split(" ")[1]);
       },
     }).open();
   };
 
-  const handleCategoryClick2 = (item) => {
-    setScrollData([]);
-    setScrollCount(1);
-    setCategory(item.text);
+  const handleCategoryClick = (text) => {
+    setScrollData([]); setScrollCount(1);
+    setCategory((prev) => (prev === text ? "" : text));
   };
 
-  //지도스크립트 useEffect
-  useEffect(() => {
-    // Daum Postcode API 스크립트 로드
-    const script = document.createElement("script");
-    script.src = "//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
-    script.async = true;
-    document.body.appendChild(script);
-
-    return () => {
-      document.body.removeChild(script); // 컴포넌트 언마운트 시 스크립트 정리
-    };
-  }, []);
-
-  if (isLoading && !isFetching) {
-    return <div>로딩 중...</div>; // 최초 로딩 시
-  }
-
-  if (isError) {
-    return <div>Error: {error.message}</div>;
-  }
+  const allClubs = [...clubList, ...scrollData];
 
   return (
-    <Box sx={{ width: "100%", backgroundColor: "#F2F2F2", position: "relative" }}>
-      <Fab
-        onClick={() => {
-          navigate("/clubs/create");
-        }}
-        aria-label="add"
-        style={{
-          backgroundColor: "#A6836F",
-          color: "white",
-          position: "fixed",
-          bottom: "50px",
-          right: "50px",
-        }}
+    <div className="w-full min-h-screen" style={{ background: "#FAF8F5" }}>
+
+      {/* FAB */}
+      <button
+        onClick={() => navigate("/clubs/create")}
+        className="fixed bottom-10 right-10 z-50 w-14 h-14 rounded-full bg-primary-600 hover:bg-primary-700 active:scale-95 text-white shadow-xl flex items-center justify-center transition-all duration-200"
+        aria-label="모임 만들기"
       >
-        <AddIcon />
-      </Fab>
-      <Box
-        sx={{
-          position: "fixed",
-          left: "20px",
-          top: "50%",
-          transform: "translateY(-50%)",
-          display: "flex",
-          flexDirection: "column",
-          gap: "10px",
-        }}
-      ></Box>
-      <Box sx={{ width: "100%", height: "450px", backgroundColor: "white" }}>
-        <Container maxWidth="lg" sx={{ marginTop: "40px", paddingBottom: "40px" }}>
-          <Grid container spacing={3} justifyContent="center">
-            {[
-              // { color: "#68BDAB", icon: <StorefrontIcon sx={{ width: "70px", height: "70px" }} />, text: "전부보기" },
-              { color: "#71ABF0", icon: <FastfoodIcon sx={{ width: "70px", height: "70px" }} />, text: "푸드·드링크" },
-              { color: "#DC6A5A", icon: <MenuBookIcon sx={{ width: "70px", height: "70px" }} />, text: "자기계발" },
-              { color: "#9363D1", icon: <NightlifeIcon sx={{ width: "70px", height: "70px" }} />, text: "취미" },
-              { color: "#D7E56E", icon: <RowingIcon sx={{ width: "70px", height: "70px" }} />, text: "액티비티" },
-              { color: "#EE7E8C", icon: <CelebrationIcon sx={{ width: "70px", height: "70px" }} />, text: "파티" },
-              { color: "#4C5686", icon: <SportsKabaddiIcon sx={{ width: "70px", height: "70px" }} />, text: "소셜게임" },
-              { color: "#F7D16E", icon: <ColorLensIcon sx={{ width: "70px", height: "70px" }} />, text: "문화·예술" },
-              { color: "#C25BA1", icon: <LocalAtmIcon sx={{ width: "70px", height: "70px" }} />, text: "N잡·재테크" },
-              { color: "#DEB650", icon: <LoyaltyIcon sx={{ width: "70px", height: "70px" }} />, text: "연애·사랑" },
-              { color: "#78C17C", icon: <LocalAirportIcon sx={{ width: "70px", height: "70px" }} />, text: "여행·나들이" },
-              { color: "#828ED6", icon: <Diversity1Icon sx={{ width: "70px", height: "70px" }} />, text: "동네·또래" },
-              { color: "#8E44AD", icon: <AutoStoriesIcon sx={{ width: "70px", height: "70px" }} />, text: "외국어" },
-            ].map((item, index) => (
-              <Grid item xs={2} sm={2} lg={2} key={index}>
-                <Box
-                  onClick={() => {
-                    handleCategoryClick2(item);
-                  }}
-                  sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    transition: "transform 0.3s",
-                    "&:hover": {
-                      transform: "scale(1.05)",
-                      cursor: "pointer",
-                    },
-                  }}
+        <FiPlus className="w-6 h-6" />
+      </button>
+
+      {/* ── 페이지 헤더 ── */}
+      <div className="bg-white border-b border-gray-100 shadow-sm">
+        <div className="max-w-6xl mx-auto px-4 md:px-6 py-8">
+          <div className="flex items-end justify-between mb-7">
+            <div>
+              <p className="text-xs text-primary-500 font-nanum-bold tracking-widest uppercase mb-1">CLUBING</p>
+              <h1 className="text-2xl font-nanum-bold text-gray-900">추천 모임</h1>
+              <p className="text-sm text-gray-400 mt-1">당신의 관심사와 지역에 맞는 모임을 추천해드려요</p>
+            </div>
+            <div className="hidden sm:flex items-center gap-1.5 text-sm text-gray-400">
+              <FiUsers className="w-4 h-4" />
+              <span>{allClubs.length}개의 모임</span>
+            </div>
+          </div>
+
+          {/* ── 카테고리 아이콘 그리드 ── */}
+          <div className="grid grid-cols-6 md:grid-cols-12 gap-2 md:gap-3">
+            {CATEGORIES.map((item) => {
+              const isActive = category === item.text;
+              return (
+                <button
+                  key={item.text}
+                  onClick={() => handleCategoryClick(item.text)}
+                  className={`flex flex-col items-center gap-1.5 group transition-transform active:scale-95
+                    ${isActive ? "scale-105" : "hover:scale-105"}`}
                 >
-                  <Box
-                    sx={{
-                      textAlign: "center",
-                      backgroundColor: item.color,
-                      width: "100px",
-                      height: "100px",
-                      borderRadius: "50px",
-                      color: "white",
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      marginBottom: "8px",
-                      transition: "background-color 0.3s",
-                      "&:hover": {
-                        backgroundColor: item.color + "BF", // Slightly darker color on hover
-                      },
-                    }}
+                  <div
+                    className={`w-12 h-12 md:w-14 md:h-14 rounded-2xl flex items-center justify-center text-white transition-all duration-200 shadow-sm
+                      ${isActive ? "shadow-lg ring-2 ring-offset-2 ring-primary-400 scale-105" : "hover:shadow-md"}`}
+                    style={{ backgroundColor: item.color }}
                   >
                     {item.icon}
-                  </Box>
-                  <Box sx={{ textAlign: "center", fontSize: "18px", fontWeight: "550" }}>{item.text}</Box>
-                </Box>
-              </Grid>
-            ))}
-          </Grid>
-          <Typography
-            variant={"h6"}
+                  </div>
+                  <span className={`text-[10px] md:text-xs text-center leading-tight whitespace-nowrap transition-colors
+                    ${isActive ? "text-primary-600 font-nanum-bold" : "text-gray-500 font-nanum"}`}>
+                    {item.text}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* ── 지역 검색 버튼 ── */}
+          <button
             onClick={handleRegionClick}
-            sx={{
-              width: "80%",
-              backgroundColor: "#f2f2f2",
-              padding: "12px 20px",
-              borderRadius: "20px",
-              color: "#A6836F",
-              boxShadow: "0px 2px 10px rgba(0, 0, 0, 0.1)",
-              position: "relative", // 부모 요소가 위치를 기준으로 버튼을 배치
-              marginTop: "50px",
-              marginLeft: "20px",
-              transition: "transform 0.3s ease, box-shadow 0.3s ease", // 부드러운 트랜지션 추가
-              "&:hover": {
-                transform: "scale(1.02)", // 호버 시 크기 확대
-                boxShadow: "0px 4px 15px rgba(0, 0, 0, 0.2)", // 부드러운 그림자 추가
-                cursor: "pointer",
-              },
-            }}
+            className="mt-5 w-full flex items-center justify-between bg-gray-50 hover:bg-primary-50 border border-gray-200 hover:border-primary-200 rounded-2xl px-5 py-3 transition-all duration-200 group"
           >
-            <b>지역으로 클럽 찾기</b> <span style={{ fontSize: "15px", marginLeft: "10px" }}>* 카테고리와 지역을 동시에 선택하여 더 정확한 검색 결과를 확인해보세요.</span>
-            <Box
-              sx={{
-                width: "10%",
-                backgroundColor: "#A6836F",
-                padding: "12px 20px",
-                height: "33px",
-                borderTopRightRadius: "20px",
-                borderBottomRightRadius: "20px",
-                color: "white",
-                boxShadow: "0px 2px 10px rgba(0, 0, 0, 0.1)",
-                position: "absolute", // 부모 요소가 위치를 기준으로 버튼을 배치
-                right: 0,
-                top: 0,
-                textAlign: "center",
-              }}
-            >
-              <SearchIcon sx={{ fontSize: "35px" }} />
-            </Box>
-          </Typography>
-        </Container>
-      </Box>
-      <Container maxWidth="lg" sx={{ marginTop: "40px", paddingBottom: "40px" }}>
-        <Grid container spacing={2} sx={{ display: "flex" }}>
-          {searchRegion && (
-            <div style={{ position: "relative", display: "flex", alignItems: "center", marginBottom: "10px" }}>
-              <Typography
-                variant={"h6"}
-                style={{
-                  backgroundColor: "#fff",
-                  padding: "10px 20px",
-                  borderRadius: "20px",
-                  color: "#A6836F",
-                  boxShadow: "0px 2px 10px rgba(0, 0, 0, 0.1)",
-                  position: "relative", // 부모 요소가 위치를 기준으로 버튼을 배치
-                  opacity: "0.8",
-                }}
-              >
-                <b>"{searchRegion}"</b>로 검색한 결과
-                <Box
-                  onClick={() => setSearchRegion("")}
-                  style={{
-                    position: "absolute", // 절대 위치 설정
-                    top: "-10px", // Typography 오른쪽 위에 배치
-                    right: "-10px",
-                    width: "30px ",
-                    height: "30px ",
-                    backgroundColor: "#A6836F",
-                    borderRadius: "15px", // 완전한 원 모양으로 설정
-                    color: "#ffffff",
-                    fontSize: "12px", // 작은 글씨 크기
-                    opacity: "0.9",
-                    transition: "opacity 0.3s ease",
-                    boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.1)", // 버튼에 작은 그림자 추가
-                    zIndex: "1",
-                    margin: "0",
-                    padding: "0",
-                    textAlign: "center",
-                    alignItems: "center",
-                  }}
-                  onMouseOver={(e) => (e.target.style.cursor = "pointer")}
-                >
-                  <DeleteForeverIcon sx={{ paddingTop: "2px" }} />
-                </Box>
-              </Typography>
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 bg-primary-100 group-hover:bg-primary-200 rounded-xl flex items-center justify-center transition-colors">
+                <FiSearch className="w-4 h-4 text-primary-600" />
+              </div>
+              <div className="text-left">
+                <p className="text-sm font-nanum-bold text-gray-700">지역으로 모임 찾기</p>
+                <p className="text-xs text-gray-400">
+                  {searchRegion ? `현재 지역: ${searchRegion}` : "카테고리와 지역을 함께 선택해보세요"}
+                </p>
+              </div>
             </div>
-          )}
-          {category && (
-            <Box sx={{ position: "relative", display: "flex", alignItems: "center", marginBottom: "10px", marginLeft: "20px" }}>
-              <Typography
-                variant={"h6"}
-                style={{
-                  backgroundColor: "#fff",
-                  padding: "10px 20px",
-                  borderRadius: "20px",
-                  color: "#A6836F",
-                  boxShadow: "0px 2px 10px rgba(0, 0, 0, 0.1)",
-                  position: "relative", // 부모 요소가 위치를 기준으로 버튼을 배치
-                  opacity: "0.8",
-                }}
-              >
+            <span className="text-xs text-primary-500 font-nanum-bold group-hover:underline">선택하기 →</span>
+          </button>
+        </div>
+      </div>
+
+      {/* ── 클럽 목록 ── */}
+      <div className="max-w-6xl mx-auto px-4 md:px-6 py-6 pb-20">
+
+        {/* 활성 필터 */}
+        {(searchRegion || category) && (
+          <div className="flex flex-wrap gap-2 mb-5">
+            {searchRegion && (
+              <span className="inline-flex items-center gap-1.5 bg-white text-primary-700 font-nanum-bold px-4 py-1.5 rounded-full shadow-sm border border-primary-100 text-sm">
+                📍 {searchRegion}
+                <button
+                  onClick={() => { setSearchRegion(""); setScrollData([]); setScrollCount(1); }}
+                  className="hover:text-red-400 transition-colors ml-0.5"
+                >
+                  <FiX className="w-3.5 h-3.5" />
+                </button>
+              </span>
+            )}
+            {category && (
+              <span className="inline-flex items-center gap-1.5 bg-white text-primary-700 font-nanum-bold px-4 py-1.5 rounded-full shadow-sm border border-primary-100 text-sm">
                 {category}
-                <Box
-                  onClick={() => setCategory("")}
-                  style={{
-                    position: "absolute", // 절대 위치 설정
-                    top: "-10px", // Typography 오른쪽 위에 배치
-                    right: "-10px",
-                    width: "30px ",
-                    height: "30px ",
-                    backgroundColor: "#A6836F",
-                    borderRadius: "15px", // 완전한 원 모양으로 설정
-                    color: "#ffffff",
-                    fontSize: "12px", // 작은 글씨 크기
-                    opacity: "0.9",
-                    transition: "opacity 0.3s ease",
-                    boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.1)", // 버튼에 작은 그림자 추가
-                    zIndex: "1",
-                    margin: "0",
-                    padding: "0",
-                    textAlign: "center",
-                    alignItems: "center",
-                  }}
-                  onMouseOver={(e) => (e.target.style.cursor = "pointer")}
+                <button
+                  onClick={() => { setCategory(""); setScrollData([]); setScrollCount(1); }}
+                  className="hover:text-red-400 transition-colors ml-0.5"
                 >
-                  <DeleteForeverIcon sx={{ paddingTop: "2px" }} />
-                </Box>
-              </Typography>
-            </Box>
-          )}
-        </Grid>
+                  <FiX className="w-3.5 h-3.5" />
+                </button>
+              </span>
+            )}
+          </div>
+        )}
 
-        <Grid container spacing={3} sx={{ mb: 3 }}>
-          <ClubListCard clubList={clubList} />
-          {scrollData &&
-            scrollData.map((club) => (
-              <Grid item xs={12} sm={6} md={4} key={club._id} sx={{}}>
-                <Paper
-                  elevation={3}
-                  sx={{
-                    borderRadius: "20px",
-                    overflow: "hidden",
-                    display: "flex",
-                    flexDirection: "column",
-                    height: "100%",
-                    backgroundColor: "white",
-                    boxShadow: "none", // 그림자 제거
-                  }}
-                >
-                  <Box
-                    sx={{
-                      width: "100%",
-                      height: "300px",
-                      overflow: "hidden",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      position: "relative",
-                      backgroundColor: "#f0f0f0",
-                    }}
-                  >
-                    <img
-                      src={`http://localhost:4000/` + club.img}
-                      alt={club.title}
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover",
-                        borderRadius: "20px 20px 0 0",
-                      }}
-                    />
-                    <Box
-                      sx={{
-                        position: "absolute",
-                        top: 0,
-                        right: 0,
-                        backgroundColor: "#f2f2f2",
-                        width: "150px",
-                        height: "40px",
-                        paddingBottom: "18px",
-                        borderBottom: "15px solid #f2f2f2",
-                        borderLeft: "15px solid #f2f2f2",
-                        borderBottomLeftRadius: "20px",
-                      }}
-                    >
-                      <Box
-                        sx={{
-                          display: "flex",
-                          marginTop: "5px",
-                          marginLeft: "5px",
-                          justifyContent: "center",
-                          alignItems: "center",
-                          width: "130px",
-                          height: "50px",
-                          color: "#A6836F",
-                          fontWeight: "bold",
-                          borderRadius: "20px",
-                          backgroundColor: "white",
-                        }}
-                      >
-                        {club.mainCategory}
-                      </Box>
-                    </Box>
-                    {/* 지옥의 둥굴게 말기.... */}
-                    <ModeNightIcon
-                      sx={{
-                        position: "absolute",
-                        top: 49,
-                        right: -24,
-                        color: "#f2f2f2",
-                        zIndex: 3,
-                        fontSize: "50px",
-                        transform: "rotate(-45deg)",
-                      }}
-                    />
-                    <ModeNightIcon
-                      sx={{
-                        position: "absolute",
-                        top: -23,
-                        right: 141,
-                        color: "#f2f2f2",
-                        zIndex: 3,
-                        fontSize: "50px",
-                        transform: "rotate(-45deg)",
-                      }}
-                    />
-                  </Box>
-                  <Box
-                    sx={{
-                      padding: "16px",
-                      display: "flex",
-                      flexDirection: "column",
-                      height: "200px",
-                      position: "relative",
-                    }}
-                  >
-                    <Typography
-                      variant="h5"
-                      sx={{
-                        fontWeight: "700",
-                        fontSize: "20px",
-                        color: "#383535",
-                        marginBottom: "8px",
-                        textOverflow: "ellipsis",
-                        overflow: "hidden",
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      {club.title}
-                    </Typography>
-                    <Typography
-                      variant="h6"
-                      sx={{
-                        fontWeight: "500",
-                        fontSize: "18px",
-                        color: "#777777",
-                        marginBottom: "8px",
-                        textOverflow: "ellipsis",
-                        overflow: "hidden",
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      {club.subTitle}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        color: "#9F9E9D",
-                        marginBottom: "8px",
-                      }}
-                    >
-                      {club.region.district}
-                    </Typography>
-                    <Box sx={{ display: "flex", alignItems: "center" }}>
-                      <CommentRoundedIcon sx={{ color: "#BF5B16", fontSize: "18px" }} />
-                      <Typography variant="body2" sx={{ color: "#BF5B16", marginLeft: "5px" }}>
-                        5분 전 대화
-                      </Typography>
-                    </Box>
-                    <Box
-                      sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        marginTop: "auto",
-                        borderTop: "1px solid #e0e0e0",
-                        paddingTop: "8px",
-                        paddingBottom: "8px",
-                      }}
-                    >
-                      <AvatarGroup max={4}>
-                        {club.members.map((member, idx) => (
-                          <Avatar key={idx} alt={`Member ${idx + 1}`} src={member.img} sx={{ width: 32, height: 32 }} />
-                        ))}
-                      </AvatarGroup>
-                      <Box
-                        sx={{
-                          display: "flex",
-                          alignItems: "center",
-                          marginLeft: "8px",
-                          fontSize: "16px",
-                          color: "#666666",
-                        }}
-                      >
-                        <PeopleRoundedIcon sx={{ fontSize: "18px" }} />
-                        <span style={{ marginLeft: "5px" }}>
-                          {club.members.length}/{club.maxMember}
-                        </span>
-                      </Box>
-                    </Box>
-
-                    <Box
-                      sx={{
-                        position: "absolute",
-                        bottom: -5,
-                        right: 0,
-                        backgroundColor: "#f2f2f2",
-                        width: "65px",
-                        height: "60px",
-                        paddingTop: "10px",
-                        borderBottom: "15px solid #f2f2f2",
-                        borderLeft: "15px solid #f2f2f2",
-                        borderTopLeftRadius: "20px",
-                      }}
-                      onClick={() => navigate(`/clubs/main?clubNumber=${club._id}`)}
-                    >
-                      <Box
-                        sx={{
-                          display: "flex",
-                          marginTop: "5px",
-                          marginRight: "5px",
-                          justifyContent: "center",
-                          alignItems: "center",
-                          width: "50px",
-                          height: "50px",
-                          color: "white",
-                          fontWeight: "bold",
-                          borderRadius: "25px",
-                          backgroundColor: "#A6836F",
-                          transition: "all 0.3s ease", // 모든 속성에 대해 부드럽게 변환
-                          "&:hover": {
-                            transform: "scale(1.2)", // 호버 시 크기 확대
-                            color: "#f2f2f2", // 색상 변경
-                            backgroundColor: "#3f51b5", // 배경색 변경
-                            boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.2)", // 그림자 추가
-                            cursor: "pointer",
-                          },
-                        }}
-                      >
-                        <ArrowForwardIcon sx={{ color: "white" }} />
-                      </Box>
-                    </Box>
-                    <Box
-                      sx={{
-                        position: "absolute",
-                        bottom: -0,
-                        right: 80,
-                        backgroundColor: "white",
-                        width: "20px",
-                        height: "20px",
-                        zIndex: 3,
-                        borderBottomRightRadius: "50px", // 둥근 모서리 적용
-                      }}
-                    ></Box>
-                    <Box
-                      sx={{
-                        position: "absolute",
-                        bottom: -0,
-                        right: 80,
-                        backgroundColor: "#f2f2f2",
-                        width: "20px",
-                        height: "20px",
-                        zIndex: 2,
-                      }}
-                    ></Box>
-
-                    <Box
-                      sx={{
-                        position: "absolute",
-                        bottom: 78,
-                        right: 0,
-                        backgroundColor: "white",
-                        width: "20px",
-                        height: "20px",
-                        zIndex: 3,
-                        borderBottomRightRadius: "50px", // 둥근 모서리 적용
-                      }}
-                    ></Box>
-                    <Box
-                      sx={{
-                        position: "absolute",
-                        bottom: 78,
-                        right: 0,
-                        backgroundColor: "#f2f2f2",
-                        width: "20px",
-                        height: "20px",
-                        zIndex: 2,
-                      }}
-                    ></Box>
-                  </Box>
-                </Paper>
-              </Grid>
-            ))}
-        </Grid>
-      </Container>
-      <BubbleAnimation /> {/* BubbleAnimation을 상위 요소로 추가 */}
-    </Box>
+        {isLoading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {Array(6).fill(0).map((_, i) => <SkeletonCard key={i} />)}
+          </div>
+        ) : isError ? (
+          <div className="flex flex-col items-center py-20 text-center">
+            <span className="text-3xl mb-3">⚠️</span>
+            <p className="text-gray-500 text-sm">모임을 불러오는 중 오류가 발생했어요</p>
+          </div>
+        ) : allClubs.length === 0 ? (
+          <div className="flex flex-col items-center py-20 text-center">
+            <span className="text-4xl mb-4">🏕️</span>
+            <p className="font-nanum-bold text-gray-700 mb-1">추천 모임이 없어요</p>
+            <p className="text-sm text-gray-400">다른 카테고리나 지역으로 검색해보세요</p>
+            {(category || searchRegion) && (
+              <button
+                onClick={() => { setCategory(""); setSearchRegion(""); setScrollData([]); setScrollCount(1); }}
+                className="mt-4 px-5 py-2 bg-primary-50 hover:bg-primary-100 text-primary-700 text-sm font-nanum-bold rounded-xl transition-colors"
+              >
+                필터 초기화
+              </button>
+            )}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            <ClubListCard clubList={allClubs} />
+          </div>
+        )}
+      </div>
+    </div>
   );
 };
 

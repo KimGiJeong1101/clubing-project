@@ -69,8 +69,6 @@ import {
 } from "ckeditor5";
 import translations from "ckeditor5/translations/ko.js";
 import "ckeditor5/ckeditor5.css";
-// import "../../assets/styles/ClubBoard.css"; 이 부분 지워도 됨. 파일 비어져 있길래 지웠는데, 임포트 찾을 수 없다고 에러나서 일단 주석
-import { TextField, MenuItem, FormControl, InputLabel, Select, Box } from "@mui/material";
 
 const categories = ["자유글", "관심사공유", "모임후기", "가입인사", "공지사항(전체알림)"]; // 카테고리 옵션
 
@@ -258,18 +256,34 @@ export default function CKEditor5Editor({ post, onChange, title, setTitle, categ
   }, [editorInstance, onChange]);
 
   return (
-    <Box mb={2}>
-      <TextField label="Title" variant="outlined" fullWidth margin="normal" value={post.title} onChange={(e) => setTitle(e.target.value)} />
-      <FormControl fullWidth margin="normal">
-        <InputLabel>Category</InputLabel>
-        <Select value={post.category} onChange={(e) => setCategory(e.target.value)} label="Category">
+    <div className="mb-4">
+      {/* Title input */}
+      <div className="mb-4">
+        <input
+          type="text"
+          placeholder="Title"
+          value={post.title}
+          onChange={(e) => setTitle(e.target.value)}
+          className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#DBC7B5]"
+        />
+      </div>
+
+      {/* Category select */}
+      <div className="mb-4">
+        <select
+          value={post.category}
+          onChange={(e) => setCategory(e.target.value)}
+          className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#DBC7B5] bg-white"
+        >
+          <option value="">Category 선택</option>
           {categories.map((cat) => (
-            <MenuItem key={cat} value={cat}>
+            <option key={cat} value={cat}>
               {cat}
-            </MenuItem>
+            </option>
           ))}
-        </Select>
-      </FormControl>
+        </select>
+      </div>
+
       <div className="main-container">
         <div className="editor-container editor-container_document-editor" ref={editorContainerRef}>
           <div className="editor-container__toolbar" ref={editorToolbarRef}></div>
@@ -309,6 +323,6 @@ export default function CKEditor5Editor({ post, onChange, title, setTitle, categ
           </div>
         </div>
       </div>
-    </Box>
+    </div>
   );
 }

@@ -1,38 +1,42 @@
 import { useState, useEffect } from "react";
-import { Snackbar, Alert } from "@mui/material";
 
-const CustomSnackbarWithTimer = ({ open, message, severity = "success", onClose, duration = 5000, anchorOrigin = { vertical: "bottom", horizontal: "left" } }) => {
-  const [remainingTime, setRemainingTime] = useState(duration / 1000); // 남은 시간을 초로 표시
+const severityStyles = {
+  success: "bg-green-500 text-white",
+  error:   "bg-red-500 text-white",
+  warning: "bg-yellow-400 text-gray-900",
+  info:    "bg-blue-500 text-white",
+};
+
+const CustomSnackbarWithTimer = ({
+  open,
+  message,
+  severity = "success",
+  onClose,
+  duration = 5000,
+}) => {
+  const [remaining, setRemaining] = useState(Math.round(duration / 1000));
 
   useEffect(() => {
-    if (open) {
-      const interval = setInterval(() => {
-        setRemainingTime((prevTime) => {
-          if (prevTime <= 1) {
-            clearInterval(interval);
-            return 0;
-          }
-          return prevTime - 1;
-        });
-      }, 1000);
-
-      return () => clearInterval(interval); // 컴포넌트가 unmount 될 때 타이머 클리어
-    } else {
-      setRemainingTime(duration / 1000); // 스낵바가 닫힐 때 남은 시간을 초기화
-    }
+    if (!open) { setRemaining(Math.round(duration / 1000)); return; }
+    const interval = setInterval(() => {
+      setRemaining((p) => {
+        if (p <= 1) { clearInterval(interval); onClose?.(); return 0; }
+        return p - 1;
+      });
+    }, 1000);
+    return () => clearInterval(interval);
   }, [open, duration]);
 
+  if (!open) return null;
+
   return (
-    <Snackbar
-      open={open}
-      autoHideDuration={duration}
-      onClose={onClose}
-      anchorOrigin={anchorOrigin} // 위치 설정
-    >
-      <Alert onClose={onClose} severity={severity} sx={{ width: "100%" }}>
-        {message} (남은 시간: {remainingTime}초)
-      </Alert>
-    </Snackbar>
+    <div className="fixed bottom-6 left-6 z-[500] animate-[fadeIn_0.3s_ease]">
+      <div className={`flex items-center gap-3 px-5 py-3 rounded-xl shadow-xl text-sm font-nanum ${severityStyles[severity] || severityStyles.success}`}>
+        <span>{message}</span>
+        <span className="opacity-70 text-xs">({remaining}초)</span>
+        <button onClick={onClose} className="ml-1 opacity-70 hover:opacity-100 transition-opacity text-lg leading-none">×</button>
+      </div>
+    </div>
   );
 };
 

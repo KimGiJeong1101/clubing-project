@@ -58,3 +58,42 @@ export const OlderMessageGet = createAsyncThunk("chat/OlderMessageGet", async ({
     return thunkAPI.rejectWithValue(error.response.data || error.message);
   }
 });
+
+// 채팅방 전체 메시지 검색 (백엔드에서 모든 메시지 대상으로 검색)
+export const searchMessages = createAsyncThunk("chat/searchMessages", async ({ clubId, query }, thunkAPI) => {
+  try {
+    const response = await axiosInstance.get(
+      `/clubs/chatrooms/${clubId}/messages/search?query=${encodeURIComponent(query)}`,
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error searching messages:", error);
+    return thunkAPI.rejectWithValue(error.response?.data || error.message);
+  }
+});
+
+// around-mode 에서 위로 스크롤 시 특정 타임스탬프 이전 메시지 로드 (커서 방식)
+export const loadMessagesBefore = createAsyncThunk("chat/loadMessagesBefore", async ({ clubId, before }, thunkAPI) => {
+  try {
+    const response = await axiosInstance.get(
+      `/clubs/chatrooms/${clubId}/messages?before=${encodeURIComponent(before)}&limit=30`,
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error loading messages before timestamp:", error);
+    return thunkAPI.rejectWithValue(error.response?.data || error.message);
+  }
+});
+
+// 특정 타임스탬프 전후 메시지 로드 (검색 결과 위치 이동용)
+export const loadMessagesAround = createAsyncThunk("chat/loadMessagesAround", async ({ clubId, timestamp }, thunkAPI) => {
+  try {
+    const response = await axiosInstance.get(
+      `/clubs/chatrooms/${clubId}/messages/around?timestamp=${encodeURIComponent(timestamp)}`,
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error loading messages around timestamp:", error);
+    return thunkAPI.rejectWithValue(error.response?.data || error.message);
+  }
+});

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { TextField, MenuItem, FormControl, InputLabel, Select, Checkbox, FormControlLabel, Button, FormGroup, Box, IconButton } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
+import { FiX } from "react-icons/fi";
 
 const VoteCreationForm = ({ options, setOptions, allowMultiple, setAllowMultiple, anonymous, setAnonymous, endTime, setEndTime, title, setTitle, category, setCategory }) => {
   const categories = ["자유글", "관심사공유", "모임후기", "가입인사", "공지사항(전체알림)", "투표"];
@@ -54,49 +53,88 @@ const VoteCreationForm = ({ options, setOptions, allowMultiple, setAllowMultiple
   }, [endTime, setEndTime]);
 
   return (
-    <Box sx={{ padding: 2 }}>
-      <TextField label="투표 제목" variant="outlined" fullWidth margin="normal" value={title} onChange={(e) => setTitle(e.target.value)} />
-      <FormControl fullWidth margin="normal">
-        <InputLabel>Category</InputLabel>
-        <Select value={category} onChange={(e) => setCategory(e.target.value)} label="Category">
-          {categories.map((cat) => (
-            <MenuItem key={cat} value={cat}>
-              {cat}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
+    <div className="p-4">
+      {/* 투표 제목 */}
+      <div className="mb-4">
+        <input
+          type="text"
+          placeholder="투표 제목"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#DBC7B5]"
+        />
+      </div>
 
+      {/* Category select */}
+      <div className="mb-4">
+        <select
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+          className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#DBC7B5] bg-white"
+        >
+          <option value="">Category 선택</option>
+          {categories.map((cat) => (
+            <option key={cat} value={cat}>
+              {cat}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* 투표 옵션 목록 */}
       {options.map((option, index) => (
-        <Box key={index} sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-          <TextField label={`투표 항목 ${index + 1}`} variant="outlined" fullWidth margin="normal" value={option} onChange={(e) => handleOptionChange(index, e.target.value)} />
+        <div key={index} className="flex items-center mb-2 gap-2">
+          <input
+            type="text"
+            placeholder={`투표 항목 ${index + 1}`}
+            value={option}
+            onChange={(e) => handleOptionChange(index, e.target.value)}
+            className="flex-1 border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#DBC7B5]"
+          />
           {options.length > 2 && (
-            <IconButton onClick={() => removeOption(index)} sx={{ ml: 1 }}>
-              <CloseIcon />
-            </IconButton>
+            <button
+              onClick={() => removeOption(index)}
+              className="p-1 rounded hover:bg-gray-100 text-gray-500"
+            >
+              <FiX size={18} />
+            </button>
           )}
-        </Box>
+        </div>
       ))}
 
-      <Button
-        variant="contained"
+      {/* 항목 추가 버튼 */}
+      <button
         onClick={addOption}
-        sx={{
-          backgroundColor: "#DBC7B5",
-          color: "#000",
-          "&:hover": {
-            backgroundColor: "#A67153",
-          },
-        }}
+        className="mt-2 px-4 py-2 rounded-xl text-sm font-nanum-bold bg-primary-50 text-primary-700 hover:bg-primary-100 transition-colors border border-primary-100"
       >
         항목 추가
-      </Button>
-      <FormGroup>
-        <FormControlLabel control={<Checkbox checked={anonymous} onChange={(e) => setAnonymous(e.target.checked)} />} label="익명 투표" />
-      </FormGroup>
+      </button>
 
-      <TextField label="투표 종료 시간" type="datetime-local" InputLabelProps={{ shrink: true }} fullWidth margin="normal" value={endTime} onChange={(e) => setEndTime(e.target.value)} inputProps={{ min: getTodayDateTime() }} />
-    </Box>
+      {/* 익명 투표 체크박스 */}
+      <div className="mt-4">
+        <label className="flex items-center gap-2 cursor-pointer text-sm">
+          <input
+            type="checkbox"
+            checked={anonymous}
+            onChange={(e) => setAnonymous(e.target.checked)}
+            className="w-4 h-4 accent-[#A67153]"
+          />
+          익명 투표
+        </label>
+      </div>
+
+      {/* 투표 종료 시간 */}
+      <div className="mt-4">
+        <label className="block text-xs text-gray-500 mb-1">투표 종료 시간</label>
+        <input
+          type="datetime-local"
+          value={endTime}
+          onChange={(e) => setEndTime(e.target.value)}
+          min={getTodayDateTime()}
+          className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#DBC7B5]"
+        />
+      </div>
+    </div>
   );
 };
 

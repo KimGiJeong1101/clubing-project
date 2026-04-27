@@ -1,120 +1,94 @@
 import React, { useRef, useState, useEffect, useCallback } from "react";
 import ImageEditor from "@toast-ui/react-image-editor";
 import "tui-image-editor/dist/tui-image-editor.css";
-import { Button, Box, Grid, Snackbar, Alert, TextField } from "@mui/material";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import { useSelector } from "react-redux";
 import "./CustomImageEditor.css";
+import { FiUpload, FiX } from "react-icons/fi";
 
-// 커스텀 테마 설정: TOAST UI Image Editor의 스타일을 정의
 const myTheme = {
-  "common.bi.image": "", // BI 이미지 비활성화
-  "common.bisize.width": "0px", // BI 이미지 크기 설정
+  "common.bi.image": "",
+  "common.bisize.width": "0px",
   "common.bisize.height": "0px",
-  "common.backgroundImage": "none", // 배경 이미지 제거
-  "common.backgroundColor": "#fff", // 배경 색상을 흰색으로 설정
-  "common.border": "1px solid #c1c1c1", // 경계선 설정
+  "common.backgroundImage": "none",
+  "common.backgroundColor": "#fff",
+  "common.border": "1px solid #e5e7eb",
 };
 
 const GalleryCreate = ({ onRegisterComplete, initialData = {} }) => {
-  const editorRef = useRef(null); // TOAST UI Image Editor 인스턴스에 접근하기 위한 ref 설정
-  const [title, setTitle] = useState(initialData.title || ""); // 제목 상태 관리, 초기값이 있으면 사용
-  const [content, setContent] = useState(initialData.content || ""); // 내용 상태 관리
-  const [selectedImages, setSelectedImages] = useState(initialData.images ? initialData.images.map((url) => ({ url, name: null })) : []); // 선택된 이미지 관리, 초기 데이터가 있으면 사용
-  const [currentImageIndex, setCurrentImageIndex] = useState(null); // 현재 편집 중인 이미지 인덱스 관리
-  const fileInputRef = useRef(null); // 파일 입력 요소에 접근하기 위한 ref 설정
+  const editorRef = useRef(null);
+  const [title, setTitle] = useState(initialData.title || "");
+  const [content, setContent] = useState(initialData.content || "");
+  const [selectedImages, setSelectedImages] = useState(
+    initialData.images ? initialData.images.map((url) => ({ url, name: null })) : [],
+  );
+  const [currentImageIndex, setCurrentImageIndex] = useState(null);
+  const fileInputRef = useRef(null);
 
-  // Snackbar 관련 상태 관리
-  const [snackbarOpen, setSnackbarOpen] = useState(false); // 스낵바 열기/닫기 상태 관리
-  const [snackbarMessage, setSnackbarMessage] = useState(""); // 스낵바에 표시할 메시지 관리
-  const [snackbarSeverity, setSnackbarSeverity] = useState("error"); // 스낵바 메시지의 심각도 관리 (성공/실패)
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("error");
 
-  const userEmail = useSelector((state) => state.user?.userData?.user?.email || null); // Redux에서 현재 사용자 이메일을 가져옴
+  const userEmail = useSelector((state) => state.user?.userData?.user?.email || null);
 
-  // Snackbar 닫기 함수
-  const handleSnackbarClose = () => {
-    setSnackbarOpen(false); // 스낵바 닫기
-  };
+  const handleSnackbarClose = () => setSnackbarOpen(false);
 
-  // 이미지를 로드하는 함수: 선택된 이미지의 URL을 기반으로 이미지 에디터에 로드
   const loadImage = useCallback(
     async (index) => {
-      const editorInstance = editorRef.current.getInstance(); // TOAST UI Image Editor 인스턴스 가져오기
-      const selectedImage = selectedImages[index]; // 현재 선택된 이미지 가져오기
-      if (selectedImage && selectedImage.url) {
-        // 이미지가 존재하는 경우
+      const editorInstance = editorRef.current?.getInstance();
+      if (!editorInstance) return;
+      const selectedImage = selectedImages[index];
+      if (selectedImage?.url) {
         try {
-          await editorInstance.loadImageFromURL(selectedImage.url, "selectedImage"); // URL을 통해 이미지 로드
-          editorInstance.clearUndoStack(); // Undo 스택 초기화
-          editorInstance.ui.activeMenuEvent(); // UI 메뉴 활성화
-        } catch (error) {
-          // 에러 발생 시 스낵바로 에러 메시지 표시
-        }
+          await editorInstance.loadImageFromURL(selectedImage.url, "selectedImage");
+          editorInstance.clearUndoStack();
+          editorInstance.ui.activeMenuEvent();
+        } catch (_) {}
       }
     },
     [selectedImages],
   );
 
-  // currentImageIndex가 변경될 때마다 해당 이미지를 로드
   useEffect(() => {
-    if (currentImageIndex !== null) {
-      loadImage(currentImageIndex); // 선택된 이미지를 에디터에 로드
-    }
+    if (currentImageIndex !== null) loadImage(currentImageIndex);
   }, [currentImageIndex, loadImage]);
 
-  // 파일이 업로드되면 이미지 목록에 추가하는 함수
   const handleImageUpload = (event) => {
-    const files = event.target.files; // 업로드된 파일들을 가져옴
+    const files = event.target.files;
     const imagesArray = Array.from(files)
       .slice(0, 8)
-      .map((file) => ({
-        url: URL.createObjectURL(file), // 각 파일에 대해 객체 URL 생성
-        name: file.name, // 파일 이름 저장
-      }));
+      .map((file) => ({ url: URL.createObjectURL(file), name: file.name }));
     setSelectedImages((prev) => {
-      const updatedImages = prev.slice(); // 기존 이미지를 복사
+      const updated = [...prev];
       imagesArray.forEach((img, idx) => {
-        if (updatedImages[idx]) {
-          updatedImages[idx] = img; // 기존 이미지를 덮어씌움
-        } else {
-          updatedImages.push(img); // 새 이미지를 추가
-        }
+        if (updated[idx]) updated[idx] = img;
+        else updated.push(img);
       });
-      return updatedImages;
+      return updated;
     });
-    setCurrentImageIndex(0); // 첫 번째 이미지를 선택하여 로드
+    setCurrentImageIndex(0);
   };
 
-  // 이미지 슬롯을 클릭했을 때 해당 이미지를 에디터에 로드하는 함수
   const handleBoxClick = async (index) => {
-    const editorInstance = editorRef.current.getInstance();
+    const editorInstance = editorRef.current?.getInstance();
+    if (!editorInstance) return;
     if (currentImageIndex !== null && selectedImages[currentImageIndex]?.url) {
-      // 현재 편집 중인 이미지가 존재하는 경우
       try {
-        const dataURL = editorInstance.toDataURL(); // 현재 이미지를 Data URL로 변환
-        console.log("selectedImages : ", selectedImages);
-        console.log("currentImageIndex : " + currentImageIndex);
-        setSelectedImages(
-          (prev) => prev.map((img, idx) => (idx === currentImageIndex ? { ...img, url: dataURL } : img)), // 이미지 업데이트
+        const dataURL = editorInstance.toDataURL();
+        setSelectedImages((prev) =>
+          prev.map((img, idx) => (idx === currentImageIndex ? { ...img, url: dataURL } : img)),
         );
-      } catch (error) {
-        // 에러 발생 시 스낵바로 에러 메시지 표시
-        setSnackbarMessage("이미지 슬롯 변경에러");
-        setSnackbarSeverity("error");
-        setSnackbarOpen(true);
-      }
+      } catch (_) {}
     }
-    setCurrentImageIndex(index); // 선택한 이미지를 현재 이미지로 설정
-    const selectedImage = selectedImages[index]; // 선택된 이미지 가져오기
-    if (selectedImage && selectedImage.url) {
-      // 이미지가 존재하는 경우
+    setCurrentImageIndex(index);
+    const selectedImage = selectedImages[index];
+    if (selectedImage?.url) {
       try {
-        await editorInstance.loadImageFromURL(selectedImage.url, "selectedImage"); // URL을 통해 이미지 로드
-        editorInstance.clearUndoStack(); // Undo 스택 초기화
-        editorInstance.ui.activeMenuEvent(); // UI 메뉴 활성화
-      } catch (error) {
-        // 에러 발생 시 스낵바로 에러 메시지 표시
-        setSnackbarMessage("Error loading image. Please try again with a valid image.");
+        await editorInstance.loadImageFromURL(selectedImage.url, "selectedImage");
+        editorInstance.clearUndoStack();
+        editorInstance.ui.activeMenuEvent();
+      } catch (_) {
+        setSnackbarMessage("이미지 로드 중 오류가 발생했습니다.");
         setSnackbarSeverity("error");
         setSnackbarOpen(true);
       }
@@ -122,218 +96,205 @@ const GalleryCreate = ({ onRegisterComplete, initialData = {} }) => {
   };
 
   const handleSaveAll = async () => {
-    console.log("selectedImages", selectedImages);
-    const editorInstance = editorRef.current.getInstance();
-
-    // 모든 이미지를 한 번씩 "클릭"한 것처럼 처리
-    for (let i = 0; i < selectedImages.length; i++) {
-      const image = selectedImages[i];
-      if (image?.url) {
-        try {
-          // 각 이미지를 에디터에 로드
-          await editorInstance.loadImageFromURL(image.url, "selectedImage");
-          editorInstance.clearUndoStack(); // Undo 스택 초기화
-          editorInstance.ui.activeMenuEvent(); // UI 메뉴 활성화
-
-          // Data URL로 변환하여 해당 이미지를 업데이트
-          const dataURL = editorInstance.toDataURL();
-          setSelectedImages((prev) => prev.map((img, idx) => (idx === i ? { ...img, url: dataURL } : img)));
-        } catch (error) {
-          console.error("Error processing image:", error);
+    const editorInstance = editorRef.current?.getInstance();
+    if (editorInstance) {
+      for (let i = 0; i < selectedImages.length; i++) {
+        const image = selectedImages[i];
+        if (image?.url) {
+          try {
+            await editorInstance.loadImageFromURL(image.url, "selectedImage");
+            editorInstance.clearUndoStack();
+            editorInstance.ui.activeMenuEvent();
+            const dataURL = editorInstance.toDataURL();
+            setSelectedImages((prev) =>
+              prev.map((img, idx) => (idx === i ? { ...img, url: dataURL } : img)),
+            );
+          } catch (_) {}
         }
       }
     }
 
-    // 위의 로직으로 모든 이미지가 "클릭"된 것처럼 처리되었으므로
-    // 이제 저장 로직 실행
     const formData = new FormData();
     let hasNewFiles = false;
 
-    // 모든 이미지를 FormData에 추가
     for (const image of selectedImages) {
       if (image.url && !image.url.startsWith("http")) {
         hasNewFiles = true;
         try {
-          const blob = await fetch(image.url).then((res) => res.blob());
+          const blob = await fetch(image.url).then((r) => r.blob());
           formData.append("files", blob, image.name || "image.jpg");
-        } catch (error) {
-          console.error("Error converting image to blob.", error);
-          return;
-        }
+        } catch (_) { return; }
       }
     }
 
-    // 기타 데이터 추가
     formData.append("writer", userEmail);
     formData.append("title", title);
     formData.append("content", content);
 
-    // 만약 새 파일이 없다면 순서만 바뀐 이미지를 전송
     if (!hasNewFiles) {
-      const sortedImagesData = JSON.stringify(selectedImages);
-      formData.append("sortedImages", sortedImagesData);
+      formData.append("sortedImages", JSON.stringify(selectedImages));
     }
 
-    // 서버로 요청 전송
     onRegisterComplete(formData);
   };
 
-  // 드래그 앤 드롭을 통해 이미지 순서를 변경하는 함수
   const onDragEnd = (result) => {
-    if (!result.destination) return; // 목적지가 없으면 아무 작업도 하지 않음
-
-    const reorderedImages = Array.from(selectedImages); // 배열 복사
-    const [movedImage] = reorderedImages.splice(result.source.index, 1); // 드래그한 항목을 기존 위치에서 제거
-    reorderedImages.splice(result.destination.index, 0, movedImage); // 새로운 위치에 삽입
-
-    setSelectedImages(reorderedImages); // 재배열된 배열로 상태 업데이트
-    setCurrentImageIndex(result.destination.index); // 새로운 위치의 이미지를 현재 이미지로 설정
+    if (!result.destination) return;
+    const reordered = Array.from(selectedImages);
+    const [moved] = reordered.splice(result.source.index, 1);
+    reordered.splice(result.destination.index, 0, moved);
+    setSelectedImages(reordered);
+    setCurrentImageIndex(result.destination.index);
   };
 
-  // 이미지 슬롯 배열: 선택된 이미지의 수가 8개보다 적을 경우 빈 슬롯을 추가
   const imageBoxes = [...selectedImages];
-  while (imageBoxes.length < 8) {
-    // 8개의 슬롯이 채워질 때까지 빈 슬롯 추가
-    imageBoxes.push({ url: null, name: null });
-  }
+  while (imageBoxes.length < 8) imageBoxes.push({ url: null, name: null });
 
   return (
-    <div style={{ textAlign: "center", position: "relative" }}>
-      <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", padding: 0 }}>
-        {/* 이미지 에디터 */}
-        <Box sx={{ flex: "1 1 auto", width: "60%", height: "600px", marginRight: "10px" }}>
+    <div className="p-4 sm:p-6">
+      {/* 이미지 선택 버튼 */}
+      <input
+        type="file"
+        accept="image/*"
+        multiple
+        onChange={handleImageUpload}
+        ref={fileInputRef}
+        className="hidden"
+      />
+      <button
+        onClick={() => fileInputRef.current.click()}
+        className="w-full flex items-center justify-center gap-2 px-4 py-3 mb-5 border-2 border-dashed border-primary-300 rounded-xl text-primary-600 hover:bg-primary-50 transition-colors text-sm font-nanum"
+      >
+        <FiUpload size={16} />
+        클릭하여 이미지 선택 (최대 8장)
+      </button>
+
+      {/* 에디터 + 사이드바 */}
+      <div className="flex flex-col lg:flex-row gap-5">
+        {/* TOAST UI Image Editor */}
+        <div className="w-full lg:w-[60%]">
           <ImageEditor
-            ref={editorRef} // ImageEditor 인스턴스 참조 설정
+            ref={editorRef}
             includeUI={{
-              theme: myTheme, // 커스텀 테마 적용
-              menu: ["crop", "flip", "rotate", "draw", "shape", "icon", "text", "mask", "filter"], // 사용 가능한 메뉴 설정
-              initMenu: "", // 초기 메뉴 비활성화
-              uiSize: {
-                width: "100%", // UI의 너비 설정
-                height: "600px", // UI의 높이 설정
-              },
-              menuBarPosition: "left", // 메뉴 바 위치 설정
+              theme: myTheme,
+              menu: ["crop", "flip", "rotate", "draw", "shape", "icon", "text", "mask", "filter"],
+              initMenu: "",
+              uiSize: { width: "100%", height: "460px" },
+              menuBarPosition: "left",
             }}
-            cssMaxHeight={500} // 에디터의 최대 높이 설정
-            cssMaxWidth={700} // 에디터의 최대 너비 설정
-            selectionStyle={{
-              cornerSize: 20, // 선택 박스의 모서리 크기 설정
-              rotatingPointOffset: 70, // 회전 포인트 오프셋 설정
-            }}
-            usageStatistics={false} // 통계 사용 비활성화
-            onError={(error) => {
-              // 에러 발생 시 처리
-              setSnackbarMessage("Error loading image. Please try again.");
+            cssMaxHeight={420}
+            cssMaxWidth={700}
+            selectionStyle={{ cornerSize: 20, rotatingPointOffset: 70 }}
+            usageStatistics={false}
+            onError={() => {
+              setSnackbarMessage("이미지 로드 오류. 다시 시도해주세요.");
               setSnackbarSeverity("error");
               setSnackbarOpen(true);
             }}
           />
-        </Box>
+        </div>
 
-        {/* 이미지와 입력 필드를 포함하는 사이드 바 */}
-        <Box sx={{ flex: "0 1 auto", display: "flex", flexDirection: "column", justifyContent: "flex-start", height: "600px", gap: 2, marginTop: 5 }}>
-          {/* 이미지 선택 버튼 */}
-          <input
-            type="file"
-            accept="image/*"
-            multiple
-            onChange={handleImageUpload} // 이미지 업로드 처리
-            ref={fileInputRef}
-            style={{ display: "none" }} // 파일 입력 필드를 숨김
-          />
-          <Button
-            variant="contained"
-            onClick={() => fileInputRef.current.click()} // 버튼 클릭 시 파일 입력 창 열기
-            sx={{
-              top: -20,
-              right: 0,
-              margin: "0px",
-              backgroundColor: "#DBC7B5", // 버튼 기본 색상
-              "&:hover": {
-                backgroundColor: "#A67153", // 버튼 호버 색상
-              },
-            }}
-          >
-            눌러서 이미지를 선택해주세요
-          </Button>
-
-          {/* 드래그 앤 드롭 컨텍스트 */}
-          <DragDropContext onDragEnd={onDragEnd}>
-            <Droppable droppableId="images" direction="horizontal">
-              {(provided) => (
-                <Grid container spacing={0.5} sx={{ width: "500px" }} {...provided.droppableProps} ref={provided.innerRef}>
-                  {imageBoxes.map((image, index) => (
-                    <Draggable key={index} draggableId={`image-${index}`} index={index}>
-                      {(provided, snapshot) => (
-                        <Grid item xs={3} ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
-                          <Box
-                            component="div"
-                            onClick={() => image.url && handleBoxClick(index)} // 클릭 시 이미지 로드
-                            sx={{
-                              position: "relative",
-                              width: "100%",
-                              height: 100,
-                              border: currentImageIndex === index ? "2px solid blue" : "1px solid gray", // 선택된 이미지는 파란색 경계선
-                              cursor: "pointer",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              backgroundColor: snapshot.isDragging ? "#e0e0e0" : "#f0f0f0", // 드래깅 중일 때 배경색 변경
-                              marginBottom: 1,
-                              visibility: snapshot.isDragging ? "hidden" : "visible", // 드래깅 중일 때 보이지 않게 설정
-                            }}
+        {/* 사이드바 */}
+        <div className="w-full lg:w-[40%] flex flex-col gap-4">
+          {/* 이미지 썸네일 그리드 (드래그로 순서 변경) */}
+          <div>
+            <p className="text-xs text-gray-400 mb-2">드래그하여 순서 변경 · 클릭하여 편집</p>
+            <DragDropContext onDragEnd={onDragEnd}>
+              <Droppable droppableId="images" direction="horizontal">
+                {(provided) => (
+                  <div
+                    className="grid grid-cols-4 gap-1.5"
+                    {...provided.droppableProps}
+                    ref={provided.innerRef}
+                  >
+                    {imageBoxes.map((image, index) => (
+                      <Draggable key={index} draggableId={`image-${index}`} index={index}>
+                        {(provided, snapshot) => (
+                          <div
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
                           >
-                            {image.url && ( // 이미지가 존재하는 경우 이미지를 표시
-                              <Box
-                                component="img"
-                                src={image.url}
-                                alt={`Selected ${index}`}
-                                sx={{
-                                  width: "100%",
-                                  height: "100%",
-                                  objectFit: "cover", // 이미지 크기 맞춤
-                                }}
-                              />
-                            )}
-                          </Box>
-                        </Grid>
-                      )}
-                    </Draggable>
-                  ))}
-                  {provided.placeholder}
-                </Grid>
-              )}
-            </Droppable>
-          </DragDropContext>
+                            <div
+                              onClick={() => image.url && handleBoxClick(index)}
+                              className={`relative w-full aspect-square rounded-lg overflow-hidden flex items-center justify-center transition-all
+                                ${currentImageIndex === index
+                                  ? "ring-2 ring-primary-500 ring-offset-1"
+                                  : "ring-1 ring-gray-200"}
+                                ${snapshot.isDragging ? "opacity-50 scale-95" : ""}
+                                ${image.url ? "cursor-pointer hover:opacity-90" : "bg-gray-50 cursor-default"}
+                              `}
+                            >
+                              {image.url ? (
+                                <img
+                                  src={image.url}
+                                  alt={`이미지 ${index + 1}`}
+                                  className="w-full h-full object-cover"
+                                />
+                              ) : (
+                                <span className="text-[10px] text-gray-300 select-none">{index + 1}</span>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                      </Draggable>
+                    ))}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            </DragDropContext>
+          </div>
 
-          {/* 제목과 내용 입력 필드 */}
-          <TextField label="제목" variant="outlined" fullWidth value={title} onChange={(e) => setTitle(e.target.value)} sx={{ marginTop: "16px" }} />
+          {/* 제목 */}
+          <div>
+            <label className="block text-sm text-gray-600 mb-1.5">제목</label>
+            <input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary-400 focus:ring-1 focus:ring-primary-100 transition-all"
+              placeholder="제목을 입력해주세요"
+            />
+          </div>
 
-          <TextField label="내용" variant="outlined" multiline rows={4} fullWidth value={content} onChange={(e) => setContent(e.target.value)} sx={{ marginTop: "16px" }} />
+          {/* 내용 */}
+          <div>
+            <label className="block text-sm text-gray-600 mb-1.5">내용</label>
+            <textarea
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              rows={4}
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary-400 focus:ring-1 focus:ring-primary-100 resize-none transition-all"
+              placeholder="내용을 입력해주세요"
+            />
+          </div>
 
           {/* 저장 버튼 */}
-          <Button
-            variant="contained"
+          <button
             onClick={handleSaveAll}
-            sx={{
-              marginTop: "0px",
-              backgroundColor: "#DBC7B5", // 버튼 기본 색상
-              "&:hover": {
-                backgroundColor: "#A67153", // 버튼 호버 색상
-              },
-            }}
+            className="w-full py-2.5 bg-primary-600 text-white rounded-xl hover:bg-primary-700 active:scale-95 transition-all text-sm font-nanum-bold shadow-sm"
           >
-            저 장
-          </Button>
-        </Box>
-      </Box>
+            저장
+          </button>
+        </div>
+      </div>
 
-      {/* Snackbar Component */}
-      <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleSnackbarClose}>
-        <Alert onClose={handleSnackbarClose} severity={snackbarSeverity} sx={{ width: "100%" }}>
-          {snackbarMessage}
-        </Alert>
-      </Snackbar>
+      {/* Snackbar */}
+      {snackbarOpen && (
+        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50">
+          <div
+            className={`flex items-center gap-2 px-4 py-3 rounded-lg shadow-lg text-white text-sm ${
+              snackbarSeverity === "error" ? "bg-red-500" : "bg-green-500"
+            }`}
+          >
+            <span>{snackbarMessage}</span>
+            <button onClick={handleSnackbarClose} className="ml-1 hover:opacity-75">
+              <FiX size={14} />
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

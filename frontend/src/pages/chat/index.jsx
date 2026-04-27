@@ -1,8 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Container, Paper } from "@mui/material";
-import { useParams, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { getChatByClubid, firstMessageGet, OlderMessageGet } from "../../store/actions/chatActions";
+import {
+  getChatByClubid,
+  firstMessageGet,
+  OlderMessageGet,
+  loadMessagesBefore,
+  searchMessages,
+  loadMessagesAround,
+} from "../../store/actions/chatActions";
 import io from "socket.io-client";
 import ChatHeader from "./ChatHeader";
 import MessageList from "./MessageList";
@@ -13,14 +19,9 @@ import SearchInput from "./SearchInput";
 import axiosInstance from "../../utils/axios";
 
 const ChatPage = () => {
-  console.log("ChatPage 컴포넌트 렌더링됨");
-
-  // useLocation 사용하여 URL 쿼리 파라미터 추출
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const clubNumber = searchParams.get("clubNumber");
-
-  console.log("쿼리 파라미터 clubNumber:", clubNumber);
 
   const dispatch = useDispatch();
   const [title, setTitle] = useState("");
@@ -28,7 +29,6 @@ const ChatPage = () => {
   const userId = userData._id;
 
   const [messages, setMessages] = useState([]);
-  const [filteredMessages, setFilteredMessages] = useState([]); // 필터링된 메시지 상태 추가
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [skip, setSkip] = useState(0);
@@ -38,119 +38,153 @@ const ChatPage = () => {
   const [imageFiles, setImageFiles] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [newMessageReceived, setNewMessageReceived] = useState(false); // 새로운 메시지가 왔는지 확인하는 상태 추가
+  const [newMessageReceived, setNewMessageReceived] = useState(false);
 
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
-  const [snackbarSeverity, setSnackbarSeverity] = useState("error"); // 기본값은 오류
+  const [snackbarSeverity, setSnackbarSeverity] = useState("error");
 
-  // 여기서 상태 추가: showSearchInput 상태
   const [showSearchInput, setShowSearchInput] = useState(false);
-  const searchInputRef = useRef(null); // ref 생성
+  const searchInputRef = useRef(null);
 
-  const [searchTerm, setSearchTerm] = useState(""); // 검색어 상태 추가
+  const [searchTerm, setSearchTerm] = useState("");
+  const [currentMatchIndex, setCurrentMatchIndex] = useState(0);
 
-  const handleSnackbarClose = () => {
-    setSnackbarOpen(false);
-  };
+  // 백엔드 검색 결과 (DESC 정렬: index 0 = 가장 최신)
+  const [searchResults, setSearchResults] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
 
-  // 클럽 데이터 가져오기
+  // around-mode: loadMessagesAround 로 messages 를 교체한 상태
+  // → 위로 스크롤 시 skip 방식 대신 타임스탬프 커서 방식 사용
+  const [isAroundMode, setIsAroundMode] = useState(false);
+
+  // MessageList 초기 스크롤 리셋 키
+  const [messageListResetKey, setMessageListResetKey] = useState(0);
+
+  const matchCount = searchResults.length;
+  const currentMatchId = searchResults[currentMatchIndex]?._id ?? null;
+
+  // messages ref: handleScroll 등 클로저에서 최신 messages 참조용
+  const messagesRef = useRef(messages);
+  useEffect(() => { messagesRef.current = messages; }, [messages]);
+
+  const handleSnackbarClose = () => setSnackbarOpen(false);
+
+  // 클럽 데이터 및 초기 메시지 가져오기
   useEffect(() => {
-    console.log("useEffect 호출됨");
-    console.log("현재 clubNumber 값:", clubNumber);
-
-    if (!clubNumber) {
-      console.error("Club number is not defined");
-      return;
-    }
+    if (!clubNumber) return;
 
     const fetchData = async () => {
       try {
-        console.log("fetchData 함수 호출됨");
-        console.log("dispatch 호출 전, 클럽 번호:", clubNumber);
         const actionResult = await dispatch(getChatByClubid(clubNumber));
-        console.log("dispatch 후, 결과:", actionResult);
-        const clubDetail = actionResult.payload;
+        setTitle(actionResult.payload.club.title);
 
-        console.log(clubDetail.club.title);
-        setTitle(clubDetail.club.title);
-
-        // 초기 메시지 가져오기
-        const initialMessagesAction = await dispatch(firstMessageGet(clubNumber));
-        // 배열의 복사본을 만들어서 reverse() 적용
-        const initialMessages = [...initialMessagesAction.payload].reverse();
+        const initialAction = await dispatch(firstMessageGet(clubNumber));
+        const initialMessages = [...initialAction.payload].reverse();
         setMessages(initialMessages);
         setSkip(initialMessages.length);
+        setIsAroundMode(false);
       } catch (error) {
         console.error("Error fetching data:", error);
-        // 에러 발생 시 스낵바 열기
-        setSnackbarMessage("해당 모임에 가입하셔야 채팅방을 이용할 수 있습니다."); // 원하는 에러 메시지
-        setSnackbarSeverity("error"); // 오류로 설정
-        setSnackbarOpen(true); // 스낵바 열기
+        setSnackbarMessage("해당 모임에 가입하셔야 채팅방을 이용할 수 있습니다.");
+        setSnackbarSeverity("error");
+        setSnackbarOpen(true);
       }
     };
 
     fetchData();
   }, [clubNumber, dispatch]);
 
-  console.log("유즈이펙트전에");
-
+  // 소켓 연결
+  // message 리스너를 connect 밖에서 한 번만 등록 → 재연결 시 리스너 중복 방지
   useEffect(() => {
     const baseURL = axiosInstance.defaults.baseURL;
-    // 소켓 클라이언트 초기화
-    const newSocket = io(baseURL); // 서버 주소로 소켓을 초기화. "http://localhost:4000"은 서버의 주소.
-    // 위에 io 옆에 `${axiosInstance}` 했는데 안되더라. 이유는 저 부분은 스트링?? 주소?? 만 들어갈수 있는데,
-    // axiosInstance는 객체라서. 위에서처럼 변수 선언하고 변수를 쓰거나 아니면 직접 const newSocket = io(`${axiosInstance.defaults.baseURL}`); 이렇게 써주면 됨
-    setSocket(newSocket); // 새로 만든 소켓을 상태로 설정하여, 다른 컴포넌트에서도 접근할 수 있게 함.
+    const newSocket = io(baseURL);
+    setSocket(newSocket);
 
-    // 소켓 연결이 완료되었을 때 실행되는 콜백
     newSocket.on("connect", () => {
-      // 소켓이 서버와 연결되었을 때 실행되는 이벤트 리스너.
-      console.log("소켓 연결됨"); // 소켓이 성공적으로 연결되었을 때 콘솔에 메시지를 출력.
+      console.log("소켓 연결됨");
+      newSocket.emit("joinRoom", { clubId: clubNumber });
+    });
 
-      // 방에 입장
-      newSocket.emit("joinRoom", { clubId: clubNumber }); // 서버에 "joinRoom" 이벤트를 발생시키며, 방에 입장.
-      // 예: clubNumber가 "12345"라면, 클라이언트는 서버에 방 "12345"에 들어가겠다고 요청.
-
-      // 메시지를 수신했을 때 실행되는 콜백
-      newSocket.on("message", (msg) => {
-        // 서버에서 "message" 이벤트를 통해 메시지를 받았을 때 실행되는 콜백 함수.
-        // 받은 메시지를 상태에 추가
-        setMessages((prevMessages) => [...prevMessages, msg]); // 이전에 받았던 메시지들(prevMessages)에 새로운 메시지(msg)를 추가.
-        // 예: 이전에 5개의 메시지가 있었으면, 6번째 메시지를 추가하는 식으로 상태 업데이트.
-
-        // `clubNumber` 값을 확인
-        console.log("진짜...." + clubNumber); // 현재 클럽 번호를 콘솔에 출력 (디버깅용). 예: "진짜....12345" 같은 형태로 출력.
+    newSocket.on("message", (msg) => {
+      setMessages((prev) => {
+        if (prev.some((m) => m._id === msg._id)) return prev; // 중복 방지
+        return [...prev, msg];
       });
     });
 
     newSocket.on("error", (error) => {
-      setSnackbarMessage(error.message); // 에러 메시지 설정
-      setSnackbarSeverity("error"); // 오류로 설정
-      setSnackbarOpen(true); // 스낵바 열기
+      setSnackbarMessage(error.message);
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
     });
 
-    // 소켓 클린업
     return () => {
-      if (newSocket) {
-        newSocket.off("message"); // 소켓에서 "message" 이벤트 리스너를 제거해 메시지를 더 이상 받지 않도록 함.
-        newSocket.close(); // 소켓 연결을 종료. 컴포넌트가 언마운트될 때 실행됨.
-      }
+      newSocket.off("connect");
+      newSocket.off("message");
+      newSocket.off("error");
+      newSocket.close();
     };
-  }, [clubNumber, userId]); // 의존성 배열: clubNumber나 userId가 변경될 때마다 이 useEffect가 실행됨.
+  }, [clubNumber, userId]);
 
-  // 메시지 필터링
+  // 검색어 변경 시 인덱스 초기화 + 빈 검색어면 결과 초기화
   useEffect(() => {
-    if (searchTerm) {
-      const lowerCaseSearchTerm = searchTerm.toLowerCase();
-      const filtered = messages.filter((msg) => msg.content.toLowerCase().includes(lowerCaseSearchTerm));
-      setFilteredMessages(filtered);
-    } else {
-      setFilteredMessages(messages);
+    setCurrentMatchIndex(0);
+    if (!searchTerm.trim()) {
+      setSearchResults([]);
     }
-  }, [searchTerm, messages]);
+  }, [searchTerm]);
 
-  // 이전 메시지 가져오기 (스크롤 시)
+  // 검색어 디바운스 → 백엔드 전체 검색 (400ms)
+  // 결과를 DESC 역순으로 저장 → index 0 이 가장 최신 메시지
+  useEffect(() => {
+    if (!searchTerm.trim() || searchTerm.trim().length < 2) return;
+
+    const timer = setTimeout(async () => {
+      setIsSearching(true);
+      try {
+        const result = await dispatch(searchMessages({ clubId: clubNumber, query: searchTerm.trim() }));
+        if (result.payload) {
+          const reversed = [...result.payload].reverse();
+          setSearchResults(reversed);
+          setCurrentMatchIndex(0);
+        }
+      } catch (err) {
+        console.error("Search error:", err);
+      } finally {
+        setIsSearching(false);
+      }
+    }, 400);
+
+    return () => clearTimeout(timer);
+  }, [searchTerm, clubNumber, dispatch]);
+
+  // 현재 매칭 메시지가 로드된 messages 에 없으면 주변 메시지를 불러와 교체
+  useEffect(() => {
+    if (!currentMatchId) return;
+
+    const isInMessages = messagesRef.current.some((m) => m._id === currentMatchId);
+    if (isInMessages) return;
+
+    const targetMsg = searchResults.find((m) => m._id === currentMatchId);
+    if (!targetMsg) return;
+
+    dispatch(loadMessagesAround({ clubId: clubNumber, timestamp: targetMsg.timestamp }))
+      .then((result) => {
+        if (result.payload && result.payload.length > 0) {
+          setMessages(result.payload);
+          // around-mode 활성화: 타임스탬프 커서 방식으로 이전 메시지 로드
+          setIsAroundMode(true);
+          setHasMore(true);   // 위로 스크롤 가능하게 유지
+          setSkip(0);         // skip 방식 사용 안 하므로 초기화
+        }
+      })
+      .catch((err) => console.error("loadMessagesAround error:", err));
+  }, [currentMatchId]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // 이전 메시지 가져오기 (위로 스크롤 시)
+  // around-mode: 타임스탬프 커서 방식 / 일반 모드: skip 방식
   const handleScroll = async (event) => {
     const container = event.target;
     const { scrollTop, scrollHeight, clientHeight } = container;
@@ -159,13 +193,32 @@ const ChatPage = () => {
       setLoading(true);
       const currentHeight = scrollHeight;
       try {
-        const olderMessagesAction = await dispatch(OlderMessageGet({ clubId: clubNumber, skip }));
-        const olderMessages = olderMessagesAction.payload;
-        if (olderMessages.length === 0) {
+        let olderMessages;
+
+        if (isAroundMode) {
+          // around-mode: 현재 메시지 중 가장 오래된 것의 timestamp 를 커서로 사용
+          const oldest = messagesRef.current[0];
+          if (!oldest) { setLoading(false); return; }
+          const result = await dispatch(loadMessagesBefore({ clubId: clubNumber, before: oldest.timestamp }));
+          olderMessages = result.payload;
+        } else {
+          // 일반 모드: skip 기반
+          const result = await dispatch(OlderMessageGet({ clubId: clubNumber, skip }));
+          olderMessages = result.payload;
+        }
+
+        if (!olderMessages || olderMessages.length === 0) {
           setHasMore(false);
         } else {
-          setMessages((prevMessages) => [...olderMessages.reverse(), ...prevMessages]);
-          setSkip((prevSkip) => prevSkip + olderMessages.length);
+          setMessages((prev) => {
+            const existingIds = new Set(prev.map((m) => m._id));
+            const newMsgs = olderMessages.reverse().filter((m) => !existingIds.has(m._id));
+            return [...newMsgs, ...prev];
+          });
+
+          if (!isAroundMode) {
+            setSkip((s) => s + olderMessages.length);
+          }
 
           setTimeout(() => {
             container.scrollTop = container.scrollHeight - currentHeight;
@@ -182,37 +235,23 @@ const ChatPage = () => {
   };
 
   const handleSendMessage = () => {
-    // 변수의 상태 확인
-    console.log("소켓 상태:", socket);
-    console.log("메시지 내용:", message.trim());
-    console.log("이미지 파일:", imageFiles);
-    console.log("클럽 번호:", clubNumber);
-    console.log("유저 ID:", userId);
-
-    // 메시지 전송 처리
     if (socket && (message.trim() || imageFiles.length > 0)) {
-      const newMessage = {
-        clubId: clubNumber, // 메시지 전송에 필요한 데이터
+      socket.emit("message", {
+        clubId: clubNumber,
         senderId: userId,
         content: message.trim(),
         images: imageFiles,
-      };
-
-      // 메시지 전송
-      socket.emit("message", newMessage);
+      });
       setMessage("");
       setImageFiles([]);
-      setNewMessageReceived(true); // 메시지 전송 시에도 포커싱 처리
+      setNewMessageReceived(true);
     } else {
-      // 메시지 내용이 없거나 유효하지 않을 경우 스낵바 띄우기
-      setSnackbarMessage("메시지 내용이 필요합니다."); // 원하는 에러 메시지
-      setSnackbarSeverity("error"); // 오류로 설정
-      setSnackbarOpen(true); // 스낵바 열기
-      console.error("메시지 내용이 필요합니다.");
+      setSnackbarMessage("메시지 내용이 필요합니다.");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
     }
   };
 
-  // 엔터 키 입력 처리
   const handleKeyPress = (event) => {
     if (event.key === "Enter") {
       event.preventDefault();
@@ -220,25 +259,18 @@ const ChatPage = () => {
     }
   };
 
-  // 이미지 업로드
   const handleFileUpload = async (files) => {
     const formData = new FormData();
-    files.forEach((file) => {
-      formData.append("files", file);
-    });
+    files.forEach((file) => formData.append("files", file));
 
     try {
       const res = await axiosInstance.post("/clubs/chatimage/upload", formData);
-      const imageUrls = res.data.urls;
-
-      const newMessage = {
+      socket.emit("message", {
         clubId: clubNumber,
         senderId: userId,
         content: "",
-        images: imageUrls,
-      };
-
-      socket.emit("message", newMessage);
+        images: res.data.urls,
+      });
     } catch (error) {
       console.error("File upload failed:", error);
     }
@@ -254,29 +286,51 @@ const ChatPage = () => {
     setSelectedImage(null);
   };
 
-  const handleSearch = (searchTerm) => {
-    console.log("검색어:", searchTerm);
-    setSearchTerm(searchTerm); // 검색어 상태 업데이트
+  // 검색 종료 → 최신 메시지 리로드 & around-mode 해제
+  const handleCloseSearch = async () => {
+    setShowSearchInput(false);
+    setSearchTerm("");
+    setSearchResults([]);
+    setCurrentMatchIndex(0);
+
+    try {
+      const action = await dispatch(firstMessageGet(clubNumber));
+      const msgs = [...action.payload].reverse();
+      setMessages(msgs);
+      setSkip(msgs.length);
+      setHasMore(true);
+      setIsAroundMode(false);
+      setMessageListResetKey((k) => k + 1); // 초기 스크롤 플래그 리셋 → 맨 아래로
+    } catch (err) {
+      console.error("handleCloseSearch reload error:", err);
+      setHasMore(true);
+      setIsAroundMode(false);
+    }
   };
+
+  // DESC 정렬 기준 (index 0 = 최신)
+  // ↑ = 오래된 메시지로 이동 = index 증가
+  // ↓ = 최신 메시지로 이동 = index 감소
+  const handlePrevMatch = () =>
+    setCurrentMatchIndex((p) => Math.min(matchCount - 1, p + 1));
+
+  const handleNextMatch = () =>
+    setCurrentMatchIndex((p) => Math.max(0, p - 1));
 
   useEffect(() => {
     if (showSearchInput && searchInputRef.current) {
-      searchInputRef.current.focus(); // 텍스트 필드가 보일 때 포커스
+      searchInputRef.current.focus();
     }
   }, [showSearchInput]);
 
   return (
-    <Container
-      maxWidth="md"
-      sx={{
-        marginBottom: 27,
-        backgroundColor: "#ffffff",
-        borderRadius: 7,
-        paddingBottom: 7,
-        paddingTop: 7,
-        height: "118vh",
-        display: "flex",
-        flexDirection: "column",
+    <div
+      className="mx-auto flex flex-col bg-[#EAE8E3] rounded-2xl shadow-sm overflow-hidden"
+      style={{
+        maxWidth: "900px",
+        marginBottom: "80px",
+        height: "calc(100vh - 140px)",
+        minHeight: "500px",
       }}
     >
       <ChatHeader title={title} onFileUpload={handleFileUpload} setShowSearchInput={setShowSearchInput} />
@@ -284,37 +338,47 @@ const ChatPage = () => {
       {showSearchInput && (
         <SearchInput
           searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm} // 검색어 상태 변경 함수 전달
-          onSearch={handleSearch} // onSearch prop 전달
-          inputRef={searchInputRef} // ref 전달
+          setSearchTerm={(term) => { setSearchTerm(term); setCurrentMatchIndex(0); }}
+          onClose={handleCloseSearch}
+          matchCount={matchCount}
+          currentMatchIndex={currentMatchIndex}
+          onPrev={handlePrevMatch}
+          onNext={handleNextMatch}
+          inputRef={searchInputRef}
+          isSearching={isSearching}
         />
       )}
 
-      <Paper
-        elevation={0}
-        sx={{
-          padding: 2,
-          height: "calc(100% - 95px)",
-          display: "flex",
-          flexDirection: "column",
-          marginBottom: 0,
-          backgroundColor: "#D5D3CB",
-          borderRadius: "0px 0px 0px 0px",
-        }}
-      >
-        <MessageList messages={filteredMessages} userId={userId} handleScroll={handleScroll} isAtBottom={isAtBottom} onImageClick={handleImageClick} newMessageReceived={newMessageReceived} />
-      </Paper>
-      <MessageInput message={message} setMessage={setMessage} handleSendMessage={handleSendMessage} handleKeyPress={handleKeyPress} />
+      <div className="flex flex-col flex-1 overflow-hidden">
+        <MessageList
+          messages={messages}
+          userId={userId}
+          handleScroll={handleScroll}
+          isAtBottom={isAtBottom}
+          newMessageReceived={newMessageReceived}
+          searchTerm={searchTerm}
+          currentMatchId={currentMatchId}
+          resetKey={messageListResetKey}
+        />
+      </div>
+
+      <MessageInput
+        message={message}
+        setMessage={setMessage}
+        handleSendMessage={handleSendMessage}
+        handleKeyPress={handleKeyPress}
+      />
+
       <ImageModal open={isModalOpen} onClose={handleCloseModal} imageUrl={selectedImage} />
-      {/* 커스텀 스낵바 컴포넌트 추가 */}
+
       <CustomSnackbarWithTimer
         open={snackbarOpen}
         message={snackbarMessage}
         severity={snackbarSeverity}
         onClose={handleSnackbarClose}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }} // 원하는 위치로 변경
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
       />
-    </Container>
+    </div>
   );
 };
 

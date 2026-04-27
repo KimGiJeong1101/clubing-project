@@ -1,6 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { registerUser, loginUser, authUser, logoutUser, myPage, updateUser, kakaoLoginUser } from "../actions/userActions";
-import { Snackbar, Alert } from "@mui/material";
 
 const initialState = {
   userData: {

@@ -1,25 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useSelector } from "react-redux";
-import { Box, TextField, List, ListItem, ListItemText, Container, Typography, Button, Dialog, DialogTitle, DialogContent, DialogActions, styled } from "@mui/material";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useParams, useLocation } from "react-router-dom";
 import Reply from "./Reply"; // 댓글 컴포넌트 추가
-
-const StyledListItem = styled(ListItem)(({ theme }) => ({
-  display: "flex",
-  alignItems: "center",
-  borderRadius: "4px",
-  padding: theme.spacing(1),
-  marginBottom: theme.spacing(1),
-  border: `1px solid ${theme.palette.divider}`,
-  backgroundColor: theme.palette.background.paper,
-  transition: "background-color 0.3s",
-  "&:hover": {
-    backgroundColor: theme.palette.action.hover,
-  },
-  boxSizing: "border-box",
-}));
 
 const ReadVote = ({ voteId, onDelete }) => {
   const { id } = useParams(); // URL 파라미터에서 게시물 ID 가져오기
@@ -153,79 +137,141 @@ const ReadVote = ({ voteId, onDelete }) => {
   console.log("vote:", vote);
 
   return (
-    <Container>
-      <Typography variant="h4" component="h1" gutterBottom>
-        투표 내용
-      </Typography>
+    <div className="max-w-4xl mx-auto px-4">
+      <h1 className="text-3xl font-bold mb-4">투표 내용</h1>
       {vote && (
         <>
-          <Box sx={{ padding: 2 }}>
-            <TextField label="투표 제목" variant="outlined" fullWidth margin="normal" value={vote.title} readOnly />
+          <div className="p-4">
+            {/* 투표 제목 (읽기 전용) */}
+            <div className="mb-4">
+              <label className="block text-xs text-gray-500 mb-1">투표 제목</label>
+              <input
+                type="text"
+                value={vote.title}
+                readOnly
+                className="w-full border border-gray-300 rounded px-3 py-2 text-sm bg-gray-50 cursor-default"
+              />
+            </div>
+
+            {/* 투표 옵션 목록 (투표 전, 종료 전) */}
             {!hasVoted && !isVoteEnded && (
-              <List>
+              <ul className="space-y-2 mb-4">
                 {vote.options.map((option, index) => {
                   const count = summary.find((item) => item.option === option)?.count || 0;
                   return (
-                    <StyledListItem key={index} onClick={() => handleOptionClick(option)}>
-                      <ListItemText primary={option} />
-                      {/* <ListItemText secondary={`선택 수: ${count}`} /> */}
-                    </StyledListItem>
+                    <li
+                      key={index}
+                      onClick={() => handleOptionClick(option)}
+                      className={`flex items-center border rounded px-3 py-2 cursor-pointer transition-colors ${
+                        selectedOption === option
+                          ? "border-[#A67153] bg-[#f5ede6]"
+                          : "border-gray-200 bg-white hover:bg-gray-50"
+                      }`}
+                    >
+                      <span className="text-sm">{option}</span>
+                    </li>
                   );
                 })}
-              </List>
+              </ul>
             )}
-            <Box my={2}>
+
+            {/* 버튼 영역 */}
+            <div className="flex flex-wrap gap-2 my-4">
               {!isVoteEnded ? (
                 <>
                   {!hasVoted ? (
-                    <Button variant="contained" color="primary" onClick={handleVote} disabled={!selectedOption} mr={2}>
+                    <button
+                      onClick={handleVote}
+                      disabled={!selectedOption}
+                      className="px-4 py-2 rounded text-sm font-medium bg-primary-100 text-primary-800 hover:bg-primary-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
                       투표하기
-                    </Button>
+                    </button>
                   ) : (
-                    <Button variant="contained" color="primary" onClick={handleRemoveVote} mr={2}>
+                    <button
+                      onClick={handleRemoveVote}
+                      className="px-4 py-2 rounded text-sm font-medium bg-primary-100 text-primary-800 hover:bg-primary-200 transition-colors"
+                    >
                       투표 취소하기
-                    </Button>
+                    </button>
                   )}
                 </>
               ) : (
-                <Button variant="contained" color="primary" onClick={handleSummaryOpen} mr={2}>
+                <button
+                  onClick={handleSummaryOpen}
+                  className="px-4 py-2 rounded text-sm font-medium bg-primary-100 text-primary-800 hover:bg-primary-200 transition-colors"
+                >
                   투표 결과 보기
-                </Button>
+                </button>
               )}
               {isAuthor && (
-                <Button variant="contained" color="error" onClick={handleDelete} mr={2}>
+                <button
+                  onClick={handleDelete}
+                  className="px-4 py-2 rounded text-sm font-medium bg-red-500 text-white hover:bg-red-600 transition-colors"
+                >
                   투표 삭제
-                </Button>
+                </button>
               )}
-            </Box>
-            <TextField label="투표 종료 시간" type="datetime-local" InputLabelProps={{ shrink: true }} fullWidth margin="normal" value={formatToLocalDatetime(vote.endTime)} readOnly />
-            <Box sx={{ padding: 2 }}>
+            </div>
+
+            {/* 투표 종료 시간 (읽기 전용) */}
+            <div className="mb-4">
+              <label className="block text-xs text-gray-500 mb-1">투표 종료 시간</label>
+              <input
+                type="datetime-local"
+                value={formatToLocalDatetime(vote.endTime)}
+                readOnly
+                className="w-full border border-gray-300 rounded px-3 py-2 text-sm bg-gray-50 cursor-default"
+              />
+            </div>
+
+            {/* 댓글 컴포넌트 */}
+            <div className="p-2">
               <Reply postType={postType} postId={id} />
-            </Box>
-          </Box>
+            </div>
+          </div>
         </>
       )}
-      <Dialog open={openSummary} onClose={handleSummaryClose} fullWidth maxWidth="md">
-        <DialogTitle>투표 결과</DialogTitle>
-        <DialogContent>
-          <List>
-            {summary.map((item, index) => (
-              <ListItem key={index}>
-                <ListItemText primary={item.option} />
-                <ListItemText secondary={`선택 수: ${item.count}`} />
-                {/* `anonymous`가 true일 때 `투표한 사람` 부분 숨기기 */}
-                {!vote.anonymous && <ListItemText secondary={`투표한 사람: ${item.emails}`} />}
-              </ListItem>
-            ))}
-          </List>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleSummaryClose} color="primary">
-            닫기
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </Container>
+
+      {/* 투표 결과 모달 */}
+      {openSummary && (
+        <div
+          className="fixed inset-0 z-[300] bg-black/50 flex items-center justify-center p-4"
+          onClick={handleSummaryClose}
+        >
+          <div
+            className="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="px-6 py-4 border-b border-gray-200">
+              <h2 className="text-lg font-semibold">투표 결과</h2>
+            </div>
+            <div className="p-6">
+              <ul className="space-y-3">
+                {summary.map((item, index) => (
+                  <li key={index} className="flex flex-col border-b pb-2 last:border-0">
+                    <span className="font-medium text-sm">{item.option}</span>
+                    <span className="text-xs text-gray-500">선택 수: {item.count}</span>
+                    {/* anonymous가 true일 때 투표한 사람 부분 숨기기 */}
+                    {!vote.anonymous && (
+                      <span className="text-xs text-gray-400">투표한 사람: {item.emails}</span>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="px-6 py-4 border-t border-gray-200 flex justify-end">
+              <button
+                onClick={handleSummaryClose}
+                className="px-4 py-2 rounded text-sm font-medium text-gray-600 hover:bg-gray-100 transition-colors"
+              >
+                닫기
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 

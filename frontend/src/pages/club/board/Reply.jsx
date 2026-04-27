@@ -1,14 +1,10 @@
-import React, { useState } from "react";
-import { Typography, TextField, IconButton, CircularProgress, Snackbar, Alert, Avatar, Button, Menu, MenuItem } from "@mui/material";
-import { Box } from "@mui/system";
-import SendIcon from "@mui/icons-material/Send";
-import InputAdornment from "@mui/material/InputAdornment";
+import React, { useState, useRef, useEffect } from "react";
+import { FiSend, FiMoreHorizontal } from "react-icons/fi";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axiosInstance from "../../../utils/axios";
 import moment from "moment";
 import "moment/locale/ko"; // 한국어 locale 불러오기
 import { useSelector } from "react-redux";
-import MoreIcon from "@mui/icons-material/More";
 
 // moment의 locale을 한국어로 설정
 moment.locale("ko");
@@ -26,12 +22,26 @@ const Reply = ({ postType, postId }) => {
   const [snackbarSeverity, setSnackbarSeverity] = useState("success"); // 'success', 'error'
 
   // Menu 상태 관리
-  const [anchorEl, setAnchorEl] = useState(null);
+  const [menuOpenId, setMenuOpenId] = useState(null); // 열린 메뉴 ID (댓글 또는 대댓글 _id)
   const [selectedReply, setSelectedReply] = useState(null); // 선택한 댓글 저장
   const [selectedChildReply, setSelectedChildReply] = useState(null); // 선택한 대댓글 저장
+  const menuRef = useRef(null);
 
   const queryClient = useQueryClient();
   const userNickName = useSelector((state) => state.user?.userData?.user?.nickName);
+
+  // 메뉴 외부 클릭 시 닫기
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setMenuOpenId(null);
+        setSelectedReply(null);
+        setSelectedChildReply(null);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   // 댓글 및 대댓글 목록 가져오기
   const {
@@ -150,33 +160,35 @@ const Reply = ({ postType, postId }) => {
     setSnackbarOpen(false);
   };
 
-  // MoreIcon 버튼 클릭 시 메뉴 열기
-  const handleMenuOpen = (event, reply, isChild = false) => {
-    setAnchorEl(event.currentTarget);
+  // More 버튼 클릭 시 메뉴 열기
+  const handleMenuOpen = (id, reply, isChild = false) => {
+    setMenuOpenId(id);
     if (isChild) {
-      setSelectedChildReply(reply); // 선택한 대댓글 저장
+      setSelectedChildReply(reply);
+      setSelectedReply(null);
     } else {
-      setSelectedReply(reply); // 선택한 댓글 저장
+      setSelectedReply(reply);
+      setSelectedChildReply(null);
     }
   };
 
   // 메뉴 닫기
   const handleMenuClose = () => {
-    setAnchorEl(null);
-    setSelectedReply(null); // 선택된 댓글 초기화
-    setSelectedChildReply(null); // 선택된 대댓글 초기화
+    setMenuOpenId(null);
+    setSelectedReply(null);
+    setSelectedChildReply(null);
   };
 
   const handleDeleteReply = () => {
     if (selectedReply) {
       deleteMutation.mutate({
-        replyId: selectedReply._id, // 삭제할 댓글의 ID
-        writer: userNickName, // 현재 로그인한 사용자의 닉네임
+        replyId: selectedReply._id,
+        writer: userNickName,
       });
     } else if (selectedChildReply) {
       deleteMutation.mutate({
-        replyId: selectedChildReply._id, // 삭제할 대댓글의 ID
-        writer: userNickName, // 현재 로그인한 사용자의 닉네임
+        replyId: selectedChildReply._id,
+        writer: userNickName,
       });
     }
     handleMenuClose();
@@ -185,11 +197,11 @@ const Reply = ({ postType, postId }) => {
   // 댓글 수정 시작 (수정 모드로 전환)
   const handleEditReply = () => {
     if (selectedReply && selectedReply.writerNickName === userNickName) {
-      setEditMode(selectedReply._id); // 수정하려는 댓글의 ID 저장
-      setEditComment(selectedReply.comment); // 기존 댓글을 수정 필드에 표시
+      setEditMode(selectedReply._id);
+      setEditComment(selectedReply.comment);
     } else if (selectedChildReply && selectedChildReply.writerNickName === userNickName) {
-      setEditChildMode(selectedChildReply._id); // 수정하려는 대댓글의 ID 저장
-      setEditChildComment(selectedChildReply.comment); // 기존 대댓글을 수정 필드에 표시
+      setEditChildMode(selectedChildReply._id);
+      setEditChildComment(selectedChildReply.comment);
     }
     handleMenuClose();
   };
@@ -198,7 +210,7 @@ const Reply = ({ postType, postId }) => {
   const handleEditSubmit = () => {
     if (editComment.trim() === "") return;
     editMutation.mutate({
-      replyId: editMode, // 수정할 댓글의 ID
+      replyId: editMode,
       writer: userNickName,
       comment: editComment,
     });
@@ -208,7 +220,7 @@ const Reply = ({ postType, postId }) => {
   const handleEditChildSubmit = () => {
     if (editChildComment.trim() === "") return;
     editMutation.mutate({
-      replyId: editChildMode, // 수정할 대댓글의 ID
+      replyId: editChildMode,
       writer: userNickName,
       comment: editChildComment,
     });
@@ -218,233 +230,205 @@ const Reply = ({ postType, postId }) => {
   console.log("postId", postId);
 
   return (
-    <Box
-      sx={{
-        height: "200px",
-        maxHeight: "400px",
-        p: 0.5,
-        border: "1px solid grey",
-        borderRadius: "8px",
-        flexGrow: 1,
-        display: "flex",
-        flexDirection: "column",
-      }}
-    >
-      <Box
-        sx={{
-          flexGrow: 1,
-          overflowY: "auto",
-          mb: 1,
-          position: "relative",
-        }}
-      >
+    <div className="h-[200px] max-h-[400px] p-1 border border-gray-400 rounded-lg flex flex-col flex-grow">
+      {/* 댓글 목록 */}
+      <div className="flex-1 overflow-y-auto mb-2 relative">
         {isLoading ? (
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              height: "100%",
-            }}
-          >
-            <CircularProgress />
-          </Box>
+          <div className="flex justify-center items-center h-full">
+            <div className="w-6 h-6 border-2 border-gray-300 border-t-[#A67153] rounded-full animate-spin"></div>
+          </div>
         ) : isError ? (
-          <Typography color="error">{`Error: ${error.message}`}</Typography>
+          <p className="text-red-500 text-sm">Error: {error.message}</p>
         ) : Array.isArray(replies) && replies.length > 0 ? (
           replies.map((reply, index) => (
-            <Box key={index} sx={{ marginBottom: "2px" }}>
-              <Box sx={{ display: "flex", alignItems: "flex-start" }}>
-                <Avatar src={reply.writerProfileImage || "default-profile.png"} alt={reply.writerNickName || "Unknown"} sx={{ width: 40, height: 40, marginRight: "16px" }} />
-                <Box sx={{ flexGrow: 1 }}>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                    }}
-                  >
-                    {/* 닉네임과 아이콘을 같은 라인에 배치 */}
-                    <Box sx={{ display: "flex", alignItems: "center" }}>
-                      <Typography variant="body1" sx={{ fontWeight: "bold" }}>
-                        {reply.writerNickName || "Unknown"}
-                      </Typography>
-                      <IconButton
-                        onClick={(event) => handleMenuOpen(event, reply)}
-                        size="small"
-                        sx={{ ml: 1 }} // 닉네임과 아이콘 간격 조정
+            <div key={index} className="mb-0.5">
+              <div className="flex items-start">
+                {/* 아바타 */}
+                <img
+                  src={reply.writerProfileImage || "default-profile.png"}
+                  alt={reply.writerNickName || "Unknown"}
+                  className="w-10 h-10 rounded-full object-cover mr-4 flex-shrink-0"
+                />
+                <div className="flex-1">
+                  <div className="flex justify-between items-center">
+                    {/* 닉네임 + more 버튼 */}
+                    <div className="flex items-center relative" ref={menuOpenId === reply._id ? menuRef : null}>
+                      <span className="font-bold text-sm">{reply.writerNickName || "Unknown"}</span>
+                      <button
+                        onClick={() => handleMenuOpen(reply._id, reply)}
+                        className="ml-1 p-1 rounded hover:bg-gray-100 text-gray-500"
                       >
-                        <MoreIcon />
-                      </IconButton>
-                    </Box>
-                    <Typography variant="caption" sx={{ color: "gray" }}>
-                      {moment(reply.createdAt).fromNow()}
-                    </Typography>
-                  </Box>
+                        <FiMoreHorizontal size={16} />
+                      </button>
+                      {/* 드롭다운 메뉴 */}
+                      {menuOpenId === reply._id && selectedReply && (
+                        <div className="absolute left-0 top-7 z-50 bg-white border border-gray-200 rounded shadow-md min-w-[100px]">
+                          <button
+                            onClick={handleEditReply}
+                            className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-50"
+                          >
+                            수정하기
+                          </button>
+                          <button
+                            onClick={handleDeleteReply}
+                            className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-50 text-red-500"
+                          >
+                            삭제하기
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                    <span className="text-xs text-gray-400">{moment(reply.createdAt).fromNow()}</span>
+                  </div>
 
                   {editMode === reply._id ? (
-                    // 수정 모드일 때는 수정 가능한 텍스트 필드 보여줌
-                    <Box sx={{ display: "flex", alignItems: "center", marginTop: "8px" }}>
-                      <TextField
-                        fullWidth
-                        variant="outlined"
+                    <div className="flex items-center mt-2">
+                      <textarea
+                        className="flex-1 border border-gray-300 rounded px-2 py-1 text-sm resize-none min-h-[32px] focus:outline-none focus:ring-1 focus:ring-primary-200"
                         value={editComment}
                         onChange={(e) => setEditComment(e.target.value)}
-                        multiline
-                        minRows={1}
-                        maxRows={4}
-                        sx={{
-                          "& .MuiInputBase-root": { paddingTop: "0px", paddingBottom: "0px", minHeight: "32px" },
-                          "& .MuiOutlinedInput-input": { paddingTop: "4px", paddingBottom: "4px" },
-                          "& .MuiOutlinedInput-root": { minHeight: "32px" },
-                        }}
+                        rows={1}
                       />
-                      <IconButton color="primary" onClick={handleEditSubmit}>
-                        <SendIcon />
-                      </IconButton>
-                    </Box>
+                      <button onClick={handleEditSubmit} className="ml-1 p-1 text-blue-500 hover:text-blue-700">
+                        <FiSend size={16} />
+                      </button>
+                    </div>
                   ) : (
-                    <Typography variant="body2" sx={{ wordBreak: "break-word", whiteSpace: "pre-wrap" }}>
-                      {reply.comment}
-                    </Typography>
+                    <p className="text-sm break-words whitespace-pre-wrap">{reply.comment}</p>
                   )}
 
                   {/* 대댓글 목록 */}
                   {reply.replies && reply.replies.length > 0 && (
-                    <Box sx={{ marginLeft: "0px", marginTop: "8px" }}>
+                    <div className="mt-2">
                       {reply.replies.map((childReply, childIndex) => (
-                        <Box key={childIndex} sx={{ display: "flex", alignItems: "flex-start", marginBottom: "8px" }}>
-                          <Avatar src={childReply.writerProfileImage || "default-profile.png"} alt={childReply.writerNickName || "Unknown"} sx={{ width: 30, height: 30, marginRight: "12px" }} />
-                          <Box sx={{ flexGrow: 1 }}>
-                            <Box
-                              sx={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                                alignItems: "center",
-                              }}
-                            >
-                              {/* 대댓글의 닉네임과 아이콘 배치 */}
-                              <Box sx={{ display: "flex", alignItems: "center" }}>
-                                <Typography variant="body2" sx={{ fontWeight: "bold" }}>
-                                  {childReply.writerNickName || "Unknown"}
-                                </Typography>
-                                <IconButton onClick={(event) => handleMenuOpen(event, childReply, true)} size="small" sx={{ ml: 1 }}>
-                                  <MoreIcon />
-                                </IconButton>
-                              </Box>
-                              <Typography variant="caption" sx={{ color: "gray" }}>
-                                {moment(childReply.createdAt).fromNow()}
-                              </Typography>
-                            </Box>
+                        <div key={childIndex} className="flex items-start mb-2">
+                          <img
+                            src={childReply.writerProfileImage || "default-profile.png"}
+                            alt={childReply.writerNickName || "Unknown"}
+                            className="w-7 h-7 rounded-full object-cover mr-3 flex-shrink-0"
+                          />
+                          <div className="flex-1">
+                            <div className="flex justify-between items-center">
+                              <div
+                                className="flex items-center relative"
+                                ref={menuOpenId === childReply._id ? menuRef : null}
+                              >
+                                <span className="font-bold text-xs">{childReply.writerNickName || "Unknown"}</span>
+                                <button
+                                  onClick={() => handleMenuOpen(childReply._id, childReply, true)}
+                                  className="ml-1 p-0.5 rounded hover:bg-gray-100 text-gray-500"
+                                >
+                                  <FiMoreHorizontal size={14} />
+                                </button>
+                                {/* 드롭다운 메뉴 */}
+                                {menuOpenId === childReply._id && selectedChildReply && (
+                                  <div className="absolute left-0 top-6 z-50 bg-white border border-gray-200 rounded shadow-md min-w-[100px]">
+                                    <button
+                                      onClick={handleEditReply}
+                                      className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-50"
+                                    >
+                                      수정하기
+                                    </button>
+                                    <button
+                                      onClick={handleDeleteReply}
+                                      className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-50 text-red-500"
+                                    >
+                                      삭제하기
+                                    </button>
+                                  </div>
+                                )}
+                              </div>
+                              <span className="text-xs text-gray-400">{moment(childReply.createdAt).fromNow()}</span>
+                            </div>
 
                             {editChildMode === childReply._id ? (
-                              // 대댓글 수정 모드일 때는 수정 가능한 텍스트 필드 보여줌
-                              <Box sx={{ display: "flex", alignItems: "center", marginTop: "8px" }}>
-                                <TextField
-                                  fullWidth
-                                  variant="outlined"
+                              <div className="flex items-center mt-2">
+                                <textarea
+                                  className="flex-1 border border-gray-300 rounded px-2 py-1 text-sm resize-none min-h-[32px] focus:outline-none focus:ring-1 focus:ring-primary-200"
                                   value={editChildComment}
                                   onChange={(e) => setEditChildComment(e.target.value)}
-                                  multiline
-                                  minRows={1}
-                                  maxRows={4}
-                                  sx={{
-                                    "& .MuiInputBase-root": { paddingTop: "0px", paddingBottom: "0px", minHeight: "32px" },
-                                    "& .MuiOutlinedInput-input": { paddingTop: "4px", paddingBottom: "4px" },
-                                    "& .MuiOutlinedInput-root": { minHeight: "32px" },
-                                  }}
+                                  rows={1}
                                 />
-                                <IconButton color="primary" onClick={handleEditChildSubmit}>
-                                  <SendIcon />
-                                </IconButton>
-                              </Box>
+                                <button onClick={handleEditChildSubmit} className="ml-1 p-1 text-blue-500 hover:text-blue-700">
+                                  <FiSend size={16} />
+                                </button>
+                              </div>
                             ) : (
-                              <Typography variant="body2" sx={{ wordBreak: "break-word", whiteSpace: "pre-wrap" }}>
-                                {childReply.comment}
-                              </Typography>
+                              <p className="text-xs break-words whitespace-pre-wrap">{childReply.comment}</p>
                             )}
-                          </Box>
-                        </Box>
+                          </div>
+                        </div>
                       ))}
-                    </Box>
+                    </div>
                   )}
 
-                  <Button variant="text" sx={{ marginTop: "2px" }} onClick={() => setActiveReplyIndex(index)}>
+                  <button
+                    onClick={() => setActiveReplyIndex(index)}
+                    className="text-xs text-blue-500 hover:underline mt-0.5"
+                  >
                     답글
-                  </Button>
+                  </button>
 
                   {activeReplyIndex === index && (
-                    <Box sx={{ display: "flex", alignItems: "center", marginTop: "8px" }}>
-                      <TextField
-                        fullWidth
-                        variant="outlined"
+                    <div className="flex items-center mt-2">
+                      <textarea
+                        className="flex-1 border border-gray-300 rounded px-2 py-1 text-sm resize-none min-h-[32px] focus:outline-none focus:ring-1 focus:ring-primary-200"
                         placeholder="답글을 입력하세요"
                         value={replyContent}
                         onChange={handleReplyChange}
-                        multiline
-                        minRows={1}
-                        maxRows={4}
-                        sx={{
-                          "& .MuiInputBase-root": { paddingTop: "0px", paddingBottom: "0px", minHeight: "32px" }, // 댓글 입력 칸과 동일한 스타일 적용
-                          "& .MuiOutlinedInput-input": { paddingTop: "4px", paddingBottom: "4px" },
-                          "& .MuiOutlinedInput-root": { minHeight: "32px" },
-                        }}
+                        rows={1}
                       />
-                      <IconButton color="primary" onClick={() => handleReplySubmit(reply._id)}>
-                        <SendIcon />
-                      </IconButton>
-                    </Box>
+                      <button
+                        onClick={() => handleReplySubmit(reply._id)}
+                        className="ml-1 p-1 text-blue-500 hover:text-blue-700"
+                      >
+                        <FiSend size={16} />
+                      </button>
+                    </div>
                   )}
-                </Box>
-              </Box>
-            </Box>
+                </div>
+              </div>
+            </div>
           ))
         ) : (
-          <Typography>No comments available</Typography>
+          <p className="text-sm text-gray-500">No comments available</p>
         )}
-      </Box>
+      </div>
 
-      {/* 댓글의 MoreIcon 클릭 시 열리는 메뉴 */}
-      <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
-        <MenuItem onClick={handleEditReply}>수정하기</MenuItem>
-        <MenuItem onClick={handleDeleteReply}>삭제하기</MenuItem>
-      </Menu>
-
-      <Box sx={{ display: "flex", alignItems: "center" }}>
-        <TextField
-          fullWidth
-          variant="outlined"
+      {/* 댓글 입력 */}
+      <div className="flex items-center">
+        <textarea
+          className="flex-1 border border-gray-300 rounded px-2 py-1 text-sm resize-none min-h-[32px] max-h-[160px] focus:outline-none focus:ring-1 focus:ring-primary-200 mb-1"
           placeholder="댓글을 입력하세요"
           value={comment}
           onChange={handleCommentChange}
           onKeyDown={handleKeyDown}
-          multiline
-          minRows={1}
-          maxRows={10}
-          sx={{
-            mb: 1,
-            "& .MuiInputBase-root": { paddingTop: "0px", paddingBottom: "0px", minHeight: "32px" },
-            "& .MuiOutlinedInput-input": { paddingTop: "4px", paddingBottom: "4px" },
-            "& .MuiOutlinedInput-root": { minHeight: "32px" },
-          }}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton color="primary" onClick={handleCommentSubmit} sx={{ padding: "4px" }}>
-                  <SendIcon fontSize="small" />
-                </IconButton>
-              </InputAdornment>
-            ),
-          }}
+          rows={1}
         />
-      </Box>
+        <button
+          onClick={handleCommentSubmit}
+          className="ml-1 p-1 text-blue-500 hover:text-blue-700"
+        >
+          <FiSend size={16} />
+        </button>
+      </div>
 
-      <Snackbar open={snackbarOpen} autoHideDuration={4000} onClose={handleSnackbarClose} anchorOrigin={{ vertical: "bottom", horizontal: "center" }}>
-        <Alert onClose={handleSnackbarClose} severity={snackbarSeverity} sx={{ width: "100%" }}>
-          {snackbarMessage}
-        </Alert>
-      </Snackbar>
-    </Box>
+      {/* 스낵바 */}
+      {snackbarOpen && (
+        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-[400]">
+          <div
+            className={`flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg text-sm font-medium text-white ${
+              snackbarSeverity === "error" ? "bg-red-500" : "bg-green-500"
+            }`}
+          >
+            <span>{snackbarMessage}</span>
+            <button onClick={handleSnackbarClose} className="ml-2 hover:opacity-80">
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 

@@ -1,183 +1,58 @@
-import React, { useState } from "react";
-import { Box, Grid, Paper, Typography } from "@mui/material";
-import CommentRoundedIcon from "@mui/icons-material/CommentRounded";
-import PeopleRoundedIcon from "@mui/icons-material/PeopleRounded";
-import Avatar from "@mui/material/Avatar";
-import AvatarGroup from "@mui/material/AvatarGroup";
-import club from "../../data/Club.js";
+import React from "react";
+import { FiUsers, FiMapPin } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 const ClubCard2 = ({ clubList }) => {
-  const [list, setList] = useState(club);
-  const user = useSelector((state) => state.user?.userData?.user || {});
-  console.log(user.email);
-
   const navigate = useNavigate();
+  const user = useSelector((state) => state.user?.userData?.user || {});
 
   return (
-    <Box>
-      <Grid container spacing={3}>
-        {clubList.map((club, index) => (
-          <Grid
-            item
-            md={11}
-            key={club._id}
-            sx={{
-              transition: "transform 0.3s ease",
-              "&:hover": {
-                transform: "scale(1.03)",
-              },
-            }}
-          >
-            <Paper
-              elevation={3}
-              sx={{
-                borderRadius: "12px",
-                overflow: "hidden",
-                display: "flex",
-                flexDirection: "column",
-                width: "480px",
-                height: "205px",
-                cursor: "pointer",
-                transition: "box-shadow 0.3s ease",
-                backgroundColor: "white",
-                position: "relative", // Paper의 상대적인 위치 기준 설정
-                "&:hover": {
-                  transform: "scale(1.03)",
-                },
-              }}
-              onClick={() => navigate(`/clubs/main?clubNumber=${club._id}`)}
-            >
-              {/* 클럽 */}
-              <Grid container spacing={3}>
-                <Grid item xs={5}>
-                  <Box sx={{ display: "flexed", position: "relative" }}>
-                    <img
-                      src={`http://localhost:4000/` + club.img}
-                      alt={club.title}
-                      style={{
-                        width: "190px",
-                        height: "180px",
-                        objectFit: "cover",
-                        borderRadius: "12px",
-                        marginLeft: "10px",
-                        marginTop: "10px",
-                        border: "1px solid #F2F2F2", // 테두리 추가
-                      }}
-                    />
-                  </Box>
-                </Grid>
-                <Grid item xs={7}>
-                  <Box
-                    sx={{
-                      padding: "16px",
-                      display: "flex",
-                      flexDirection: "column",
-                      height: "182px",
-                    }}
-                  >
-                    {/* 클럽 제목 */}
-                    <Typography
-                      variant="h5"
-                      sx={{
-                        fontWeight: "700",
-                        fontSize: "20px",
-                        color: "#383535",
-                        marginBottom: "8px",
-                        textOverflow: "ellipsis",
-                        overflow: "hidden",
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      {club.title}
-                    </Typography>
-                    {/* 클럽 제목.end */}
-                    <Typography
-                      variant="h6"
-                      sx={{
-                        fontWeight: "500",
-                        fontSize: "18px",
-                        color: "#777777",
-                        marginBottom: "8px",
-                        textOverflow: "ellipsis",
-                        overflow: "hidden",
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      {club.subTitle}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        color: "#9F9E9D",
-                        marginBottom: "8px",
-                      }}
-                    >
-                      {club.region.district}
-                    </Typography>
-                    <Box sx={{ display: "flex", alignItems: "center" }}>
-                      <CommentRoundedIcon sx={{ color: "#BF5B16", fontSize: "18px" }} />
-                      <Typography variant="body2" sx={{ color: "#BF5B16", marginLeft: "5px" }}>
-                        {list[index].chat}
-                      </Typography>
-                    </Box>
-                    <Box
-                      sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        marginTop: "auto",
-                        borderTop: "1px solid #e0e0e0",
-                        paddingTop: "8px",
-                        paddingBottom: "8px",
-                      }}
-                    >
-                      <AvatarGroup max={4}>
-                        {club.members.map((member, idx) => (
-                          <Avatar key={idx} alt={`Member ${idx + 1}`} src={member.img} sx={{ width: 32, height: 32 }} />
-                        ))}
-                      </AvatarGroup>
-                      <Box
-                        sx={{
-                          display: "flex",
-                          alignItems: "center",
-                          marginLeft: "8px",
-                          fontSize: "14px",
-                          color: "#666666",
-                        }}
-                      >
-                        <PeopleRoundedIcon sx={{ fontSize: "18px" }} />
-                        <span style={{ marginLeft: "5px" }}>
-                          {club.members.length}/{club.maxMember}
-                        </span>
-                      </Box>
-                    </Box>
-                    {/* 내가 만든 모임 표시 */}
-                    {club.admin === user.email && (
-                      <Typography
-                        variant="caption"
-                        sx={{
-                          position: "absolute",
-                          top: "8px",
-                          right: "8px",
-                          backgroundColor: "#BF5B16",
-                          color: "white",
-                          padding: "2px 8px",
-                          borderRadius: "4px",
-                          zIndex: 1, // Typography를 가장 위에 표시
-                        }}
-                      >
-                        내가 만든 모임
-                      </Typography>
-                    )}
-                  </Box>
-                </Grid>
-              </Grid>
-            </Paper>
-          </Grid>
-        ))}
-      </Grid>
-    </Box>
+    <div className="space-y-3">
+      {clubList.map((item) => (
+        <div
+          key={item._id}
+          className="group relative bg-white rounded-2xl shadow-sm hover:shadow-lg overflow-hidden flex cursor-pointer transition-all duration-300 h-[120px] border border-gray-100"
+          onClick={() => navigate(`/clubs/main?clubNumber=${item._id}`)}
+        >
+          {/* 내가 만든 모임 뱃지 */}
+          {item.admin === user.email && (
+            <span className="absolute top-2 right-2 z-10 bg-primary-600 text-white text-[10px] font-nanum-bold px-2 py-0.5 rounded-full shadow-sm">
+              내가 만든 모임
+            </span>
+          )}
+
+          {/* 이미지 */}
+          <div className="flex-shrink-0 w-[110px] overflow-hidden">
+            <img
+              src={`http://localhost:4000/${item.img}`}
+              alt={item.title}
+              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+          </div>
+
+          {/* 내용 */}
+          <div className="flex flex-col flex-1 px-3.5 py-3 min-w-0 justify-between">
+            <div>
+              <h3 className="text-sm font-nanum-bold text-gray-900 truncate mb-0.5">{item.title}</h3>
+              <p className="text-xs text-gray-500 truncate">{item.subTitle}</p>
+            </div>
+            <div className="flex items-center justify-between">
+              {item.region?.district && (
+                <div className="flex items-center gap-1 text-xs text-gray-400">
+                  <FiMapPin className="w-3 h-3 flex-shrink-0" />
+                  <span className="truncate">{item.region.district}</span>
+                </div>
+              )}
+              <div className="flex items-center gap-1 text-xs text-gray-500 ml-auto">
+                <FiUsers className="w-3 h-3" />
+                <span>{item.members?.length}/{item.maxMember}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
   );
 };
 

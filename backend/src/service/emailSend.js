@@ -7,7 +7,7 @@ const smtpTransport = nodemailer.createTransport({
   pool: true,
   maxConnection: 10,
   maxMessages: 10, // 최대 10개의 메시지
-  service: "never",
+  service: "naver",
   host: "smtp.naver.com",
   port: 587,
   secure: false,

@@ -1,89 +1,89 @@
 import React, { useEffect, useState } from "react";
-import { Box, CircularProgress, Typography } from "@mui/material"; // Typography 추가
 import { useSelector } from "react-redux";
 import axiosInstance from "../../../../utils/axios";
 import ClubCarousel4 from "../../../../components/club/ClubCarousel4";
 
 // 사용자 정보 가져오기
-
 const fetchUserByEmail = async (email) => {
   try {
-    console.log(`Fetching user data for email: ${email}`);
     const response = await axiosInstance.get(`/users/email/${email}`);
-    console.log(`User data fetched:`, response.data);
     return response.data;
   } catch (error) {
-    console.error("Error fetching user data:", error);
-    return { _id: "", name: "Unknown", profilePic: "", nickName: "" }; // 기본값 설정
+    return { _id: "", name: "Unknown", profilePic: "", nickName: "" };
+  }
+};
+
+// 채팅방 최근 메시지 1건 가져오기 (실패 시 null 반환)
+const fetchLatestMessage = async (clubId) => {
+  try {
+    const response = await axiosInstance.get(`/clubs/chatrooms/${clubId}/messages?limit=1`);
+    return response.data[0] || null; // DESC 정렬이므로 index 0 = 최신
+  } catch {
+    return null;
   }
 };
 
 const MyChatList = () => {
   const user = useSelector((state) => state.user?.userData?.user || {});
-  const [clubs, setClubs] = useState([]); // 클럽 데이터를 저장할 상태
-  const [loading, setLoading] = useState(true); // 로딩 상태
-  const [error, setError] = useState(null); // 에러 상태 추가
+  const [clubs, setClubs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    // 사용자 클럽 데이터를 가져오는 API 요청
     const fetchUserClubs = async () => {
       try {
-        console.log("Fetching user clubs for user:", user);
-        // 유저의 클럽 데이터를 가져오기 위한 API 호출
         const response = await axiosInstance.get("/users/myPage");
-        console.log("User clubs data fetched:", response.data);
         const userClubs = response.data.user.clubs;
 
-        // 클럽 목록을 가져오기 위한 API 호출
         const clubResponses = await Promise.all(
-          userClubs.map((clubId) => {
-            console.log(`Fetching club data for clubId: ${clubId}`);
-            return axiosInstance.get(`/clubs/read/${clubId}`);
-          }),
+          userClubs.map((clubId) => axiosInstance.get(`/clubs/read/${clubId}`)),
         );
         let clubsData = clubResponses.map((response) => response.data);
-        console.log("Club data fetched:", clubsData);
 
-        // 각 클럽 멤버들의 프로필 정보를 불러오는 과정
+        // 멤버 정보 + 최근 메시지 병렬 fetch
         clubsData = await Promise.all(
           clubsData.map(async (club) => {
-            console.log(`Fetching members info for club: ${club.title}`);
-            const memberInfo = await Promise.all(club.members.map((memberId) => fetchUserByEmail(memberId)));
-            console.log(`Members info fetched for club: ${club.title}`, memberInfo);
-            return { ...club, memberInfo }; // 멤버 프로필 정보를 club 데이터에 추가
+            const [memberInfo, latestMessage] = await Promise.all([
+              Promise.all(club.members.map((memberId) => fetchUserByEmail(memberId))),
+              fetchLatestMessage(club._id),
+            ]);
+            return { ...club, memberInfo, latestMessage };
           }),
         );
 
-        console.log("Final clubs data with member info:", clubsData);
-        setClubs(clubsData); // 클럽 데이터 상태 업데이트
-        setLoading(false); // 로딩 완료
+        setClubs(clubsData);
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching clubs:", error);
-        setError("클럽 데이터를 불러오는 데 실패했습니다."); // 에러 메시지 상태 업데이트
-        setLoading(false); // 에러 발생 시 로딩 종료
+        setError("클럽 데이터를 불러오는 데 실패했습니다.");
+        setLoading(false);
       }
     };
 
     fetchUserClubs();
-  }, [user.email]); // 의존성 배열에 user.email 추가
+  }, [user.email]);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center py-16">
+        <div className="w-8 h-8 border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center py-16 text-gray-400">
+        <p className="text-3xl mb-2">⚠️</p>
+        <p className="text-sm">{error}</p>
+      </div>
+    );
+  }
 
   return (
-    <Box>
-      {loading ? (
-        <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
-          <CircularProgress />
-        </Box>
-      ) : error ? ( // 에러가 있는 경우
-        <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
-          <Typography variant="h6" color="error">
-            {error}
-          </Typography>{" "}
-          {/* 에러 메시지 표시 */}
-        </Box>
-      ) : (
-        <ClubCarousel4 clubList={clubs} /> // 클럽 리스트를 ClubCarousel2 컴포넌트에 전달
-      )}
-    </Box>
+    <div>
+      <ClubCarousel4 clubList={clubs} />
+    </div>
   );
 };
 

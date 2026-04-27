@@ -1,14 +1,11 @@
-import React, { useRef, useEffect, useState } from "react";
-import { Grid, Typography, Box, Modal, IconButton } from "@mui/material";
-import axios from "axios";
+import React, { useRef, useEffect, useState, useCallback } from "react";
 import { useSelector } from "react-redux";
-import Slider from "react-slick";
-import CloseIcon from "@mui/icons-material/Close";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
+import { FiX, FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import axiosInstance from "../../utils/axios";
 
-// 시간 형식 변환 함수
+/* ─────────────────────────────────────────
+   유틸 함수
+───────────────────────────────────────── */
 const formatTime = (timestamp) => {
   const date = new Date(timestamp);
   const hours = date.getHours();
@@ -19,371 +16,463 @@ const formatTime = (timestamp) => {
   return `${ampm} ${adjustedHours}:${formattedMinutes}`;
 };
 
-// 메시지 날짜별 그룹화
-const groupMessagesByDate = (messages) => {
-  return messages.reduce((acc, msg) => {
+const groupMessagesByDate = (messages) =>
+  messages.reduce((acc, msg) => {
     const date = new Date(msg.timestamp).toLocaleDateString();
-    if (!acc[date]) {
-      acc[date] = [];
-    }
+    if (!acc[date]) acc[date] = [];
     acc[date].push(msg);
     return acc;
   }, {});
-};
 
-// 사용자 정보 가져오기
 const fetchUserById = async (userId) => {
   try {
     const response = await axiosInstance.get(`/users/${userId}`);
     return response.data;
-  } catch (error) {
-    console.error("Error fetching user data:", error);
-    return { name: "Unknown", profilePic: "" }; // 프로필 사진 기본값 추가
+  } catch {
+    return { name: "Unknown", profilePic: "" };
   }
 };
 
-// 이모지 체크 함수
-const isEmoji = (char) => {
-  const emojiRegex = /[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F780}-\u{1F7FF}\u{1F800}-\u{1F8FF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F004}-\u{1F0CF}]/u;
-  return emojiRegex.test(char);
-};
+const emojiRegex =
+  /[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F780}-\u{1F7FF}\u{1F800}-\u{1F8FF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F004}-\u{1F0CF}]/u;
 
-// 이모지로만 이루어진지 체크
 const isOnlyEmoji = (text) => {
-  const cleanedText = text.replace(/\s/g, ""); // 공백 제거
-  return [...cleanedText].every(isEmoji); // 모든 문자가 이모지인지 확인
+  const cleaned = text.replace(/\s/g, "");
+  return cleaned.length > 0 && [...cleaned].every((c) => emojiRegex.test(c));
 };
 
-// 이모지 개수 카운트
-const countEmojis = (text) => {
-  return [...text].filter(isEmoji).length;
+const countEmojis = (text) => [...text].filter((c) => emojiRegex.test(c)).length;
+
+const isUrl = (text) => /(https?:\/\/[^\s]+)|(www\.[^\s]+)/.test(text);
+
+/* ─────────────────────────────────────────
+   텍스트 하이라이트 컴포넌트
+───────────────────────────────────────── */
+const HighlightText = ({ text, searchTerm, isCurrent }) => {
+  if (!searchTerm?.trim() || !text) return <>{text}</>;
+  const escaped = searchTerm.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const parts = text.split(new RegExp(`(${escaped})`, "gi"));
+  return (
+    <>
+      {parts.map((part, i) =>
+        i % 2 === 1 ? (
+          <mark
+            key={i}
+            className={`rounded-sm not-italic px-0.5 ${
+              isCurrent ? "bg-yellow-400 text-gray-900" : "bg-yellow-200 text-gray-800"
+            }`}
+          >
+            {part}
+          </mark>
+        ) : (
+          part
+        ),
+      )}
+    </>
+  );
 };
 
-// 이미지 크기 반환 함수
-const getImageSize = (count) => {
-  switch (count) {
-    case 1:
-      return { width: 150, height: 150 }; // 이미지가 한 장일 때
-    case 2:
-      return { width: 125, height: 125 }; // 이미지가 두 장일 때
-    case 3:
-      return { width: 105, height: 105 }; // 이미지가 세 장일 때
-    case 4:
-      return { width: 100, height: 100 }; // 이미지가 네 장일 때
-    default:
-      return { width: 100, height: 100 }; // 이미지가 네 장 이상일 때
+/* ─────────────────────────────────────────
+   커스텀 이미지 뷰어 (react-slick 대체)
+───────────────────────────────────────── */
+const ImageViewer = ({ images, startIndex, onClose }) => {
+  const [current, setCurrent] = useState(startIndex);
+
+  useEffect(() => {
+    const handleKey = (e) => {
+      if (e.key === "Escape") onClose();
+      if (e.key === "ArrowLeft") setCurrent((p) => Math.max(0, p - 1));
+      if (e.key === "ArrowRight") setCurrent((p) => Math.min(images.length - 1, p + 1));
+    };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [images.length, onClose]);
+
+  const prev = () => setCurrent((p) => Math.max(0, p - 1));
+  const next = () => setCurrent((p) => Math.min(images.length - 1, p + 1));
+
+  return (
+    <div
+      className="fixed inset-0 z-[400] flex flex-col items-center justify-center"
+      style={{ backgroundColor: "rgba(0,0,0,0.93)" }}
+      onClick={onClose}
+    >
+      {/* 닫기 버튼 */}
+      <button
+        onClick={onClose}
+        className="absolute top-4 right-4 z-10 w-9 h-9 flex items-center justify-center rounded-full bg-white text-gray-800 hover:bg-gray-100 shadow-lg transition-colors"
+        aria-label="닫기"
+      >
+        <FiX size={18} />
+      </button>
+
+      {/* 이미지 영역 */}
+      <div
+        className="relative flex items-center justify-center w-full px-14 sm:px-20"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* 이전 화살표 */}
+        <button
+          onClick={prev}
+          disabled={current === 0}
+          className={`absolute left-2 sm:left-4 w-10 h-10 flex items-center justify-center rounded-full bg-white text-gray-800 shadow-xl hover:bg-gray-100 transition-all ${
+            current === 0 ? "opacity-0 pointer-events-none" : "opacity-100"
+          }`}
+        >
+          <FiChevronLeft size={22} strokeWidth={2.5} />
+        </button>
+
+        {/* 이미지 */}
+        <img
+          key={current}
+          src={images[current].original}
+          alt={`이미지 ${current + 1}`}
+          className="max-w-full object-contain rounded-2xl shadow-2xl"
+          style={{ maxHeight: "80vh" }}
+        />
+
+        {/* 다음 화살표 */}
+        <button
+          onClick={next}
+          disabled={current === images.length - 1}
+          className={`absolute right-2 sm:right-4 w-10 h-10 flex items-center justify-center rounded-full bg-white text-gray-800 shadow-xl hover:bg-gray-100 transition-all ${
+            current === images.length - 1 ? "opacity-0 pointer-events-none" : "opacity-100"
+          }`}
+        >
+          <FiChevronRight size={22} strokeWidth={2.5} />
+        </button>
+      </div>
+
+      {/* 페이지 인디케이터 + 카운터 */}
+      <div
+        className="flex flex-col items-center gap-2 mt-5"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {images.length > 1 && (
+          <div className="flex items-center gap-1.5">
+            {images.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setCurrent(i)}
+                className={`rounded-full transition-all duration-200 ${
+                  i === current
+                    ? "w-5 h-2 bg-white"
+                    : "w-2 h-2 bg-white/35 hover:bg-white/60"
+                }`}
+              />
+            ))}
+          </div>
+        )}
+        {images.length > 1 && (
+          <span className="text-white/50 text-xs">
+            {current + 1} / {images.length}
+          </span>
+        )}
+      </div>
+    </div>
+  );
+};
+
+/* ─────────────────────────────────────────
+   이미지 그리드 (메시지 내 사진)
+───────────────────────────────────────── */
+const MessageImageGrid = ({ images, onImageClick }) => {
+  const count = images.length;
+
+  if (count === 1) {
+    return (
+      <div
+        className="max-w-[200px] sm:max-w-[240px] rounded-xl overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
+        onClick={() => onImageClick(images, 0)}
+      >
+        <img
+          src={images[0].thumbnail}
+          alt="이미지"
+          className="w-full h-auto max-h-[200px] object-cover block"
+        />
+      </div>
+    );
   }
+
+  return (
+    <div
+      className={`grid gap-1 cursor-pointer max-w-[200px] sm:max-w-[240px] ${
+        count === 2 ? "grid-cols-2" : "grid-cols-2"
+      }`}
+    >
+      {images.map((img, i) => (
+        <div
+          key={i}
+          className={`overflow-hidden hover:opacity-90 transition-opacity ${
+            count === 3 && i === 0 ? "col-span-2 rounded-t-xl" : ""
+          } ${
+            count === 3 && i > 0
+              ? i === 1 ? "rounded-bl-xl" : "rounded-br-xl"
+              : ""
+          } ${count === 2 ? (i === 0 ? "rounded-l-xl" : "rounded-r-xl") : ""} ${
+            count === 4
+              ? [
+                  "rounded-tl-xl",
+                  "rounded-tr-xl",
+                  "rounded-bl-xl",
+                  "rounded-br-xl",
+                ][i] ?? ""
+              : ""
+          }`}
+          onClick={() => onImageClick(images, i)}
+        >
+          <img
+            src={img.thumbnail}
+            alt={`이미지 ${i + 1}`}
+            className="w-full aspect-square object-cover block"
+          />
+        </div>
+      ))}
+    </div>
+  );
 };
 
-const isUrl = (text) => {
-  const urlRegex = /(https?:\/\/[^\s]+)|(www\.[^\s]+)/;
-  return urlRegex.test(text);
-};
-
-const MessageList = ({ messages, userId, handleScroll, isAtBottom, newMessageReceived }) => {
+/* ─────────────────────────────────────────
+   MessageList
+───────────────────────────────────────── */
+const MessageList = ({
+  messages,
+  userId,
+  handleScroll,
+  isAtBottom,
+  newMessageReceived,
+  searchTerm = "",
+  currentMatchId = null,
+  resetKey = 0,          // 이 값이 바뀌면 초기 스크롤 플래그를 리셋
+}) => {
   const containerRef = useRef(null);
   const [userProfiles, setUserProfiles] = useState({});
-  const [open, setOpen] = useState(false);
-  const [currentImages, setCurrentImages] = useState([]);
-  const [initialIndex, setInitialIndex] = useState(0);
 
-  // 현재 로그인된 사용자 데이터
+  // 이미지 뷰어 상태
+  const [viewerOpen, setViewerOpen] = useState(false);
+  const [viewerImages, setViewerImages] = useState([]);
+  const [viewerIndex, setViewerIndex] = useState(0);
+
+  // 검색 매칭 메시지 ref 맵
+  const matchRefMap = useRef({});
+
   const userData = useSelector((state) => state.user.userData.user);
-  const username = userData.name;
 
-  // 이미지 클릭 핸들러
-  const handleImageClick = (images, index) => {
-    setCurrentImages(images);
-    setInitialIndex(index);
-    setOpen(true);
-  };
+  /* 이미지 클릭 → 뷰어 열기 */
+  const handleImageClick = useCallback((images, index) => {
+    setViewerImages(images);
+    setViewerIndex(index);
+    setViewerOpen(true);
+  }, []);
 
-  // 모달 닫기 핸들러
-  const handleClose = () => {
-    setOpen(false);
-    setCurrentImages([]);
-    setInitialIndex(0);
-  };
+  const handleViewerClose = useCallback(() => {
+    setViewerOpen(false);
+  }, []);
 
-  // 사용자 정보를 비동기적으로 가져오는 함수
+  /* 현재 검색 매칭 메시지로 스크롤
+     messages 도 의존성에 포함 → 주변 메시지 로드 후에도 스크롤 실행됨 */
+  useEffect(() => {
+    if (currentMatchId && matchRefMap.current[currentMatchId]) {
+      matchRefMap.current[currentMatchId].scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }
+  }, [currentMatchId, messages]);
+
+  /* 사용자 프로필 로드 */
   useEffect(() => {
     const fetchUsers = async () => {
-      const uniqueUserIds = [...new Set(messages.map((msg) => msg.sender)), userId];
-      const userData = await Promise.all(uniqueUserIds.map(fetchUserById));
-
-      const userMap = uniqueUserIds.reduce((acc, id, index) => {
-        acc[id] = userData[index];
+      const uniqueIds = [...new Set(messages.map((msg) => msg.sender)), userId];
+      const profiles = await Promise.all(uniqueIds.map(fetchUserById));
+      const map = uniqueIds.reduce((acc, id, i) => {
+        acc[id] = profiles[i];
         return acc;
       }, {});
-
-      setUserProfiles(userMap);
+      setUserProfiles(map);
     };
-
     fetchUsers();
   }, [messages, userId]);
 
-  // 스크롤 위치 업데이트
+  /* 새 메시지 수신 시 맨 아래로 스크롤 (사용자가 하단에 있을 때만) */
   useEffect(() => {
-    if (isAtBottom && newMessageReceived) {
-      const container = containerRef.current;
-      if (container) {
-        container.scrollTop = container.scrollHeight;
-      }
+    if (isAtBottom && newMessageReceived && containerRef.current) {
+      containerRef.current.scrollTop = containerRef.current.scrollHeight;
     }
   }, [messages, isAtBottom, newMessageReceived]);
 
-  // 날짜별로 그룹화된 메시지
-  const groupedMessages = groupMessagesByDate(messages);
-
-  // 가장 최근 메시지의 ref
-  const latestMessageRef = useRef(null);
-
-  // 메시지를 전송한 후 최신 메시지로 스크롤
-  const scrollToLatestMessage = () => {
-    const container = containerRef.current;
-    if (latestMessageRef.current && container) {
-      container.scrollTo({
-        top: latestMessageRef.current.offsetTop,
-        behavior: "auto",
-      });
-    }
-  };
+  /* 초기 로드 시 한 번만 맨 아래로 스크롤
+     - 이전 메시지 추가(위에 prepend) 시에는 발화 안 함 → 스크롤 유지
+     - resetKey 가 바뀌면 플래그를 리셋 → 재로드 시 다시 맨 아래로 */
+  const initialScrollDone = useRef(false);
+  useEffect(() => {
+    initialScrollDone.current = false;
+  }, [resetKey]);
 
   useEffect(() => {
-    scrollToLatestMessage();
-  }, [messages]);
+    if (currentMatchId) return;                        // 검색 스크롤이 담당
+    if (initialScrollDone.current) return;             // 이미 한 번 스크롤 완료
+    if (messages.length > 0 && containerRef.current) {
+      containerRef.current.scrollTop = containerRef.current.scrollHeight;
+      initialScrollDone.current = true;
+    }
+  }, [messages, currentMatchId]);
+
+  const groupedMessages = groupMessagesByDate(messages);
 
   return (
-    <Box
-      className="custom-scrollbar" // 스크롤바 커스터마이징 클래스 추가
-      sx={{
-        flexGrow: 1,
-        overflowY: "auto",
-        backgroundColor: "#D5D3CB",
-        padding: 2,
-        position: "relative",
-      }}
-      ref={containerRef}
-      onScroll={handleScroll}
-    >
-      {Object.keys(groupedMessages).map((date, dateIndex) => (
-        <Box key={dateIndex} sx={{ marginBottom: 2 }}>
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center", // 수평 가운데 정렬
-              marginBottom: 1,
-            }}
-          >
-            <Box
-              sx={{
-                backgroundColor: "#212121",
-                opacity: 0.4,
-                borderRadius: "15px",
-                height: 28,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                width: "45%",
-                margin: "6px 0",
-              }}
-            >
-              <Typography variant="caption" sx={{ color: "#ffffff", margin: 0, opacity: 1 }}>
-                {date}
-              </Typography>
-            </Box>
-          </Box>
-          {groupedMessages[date].map((msg, index) => (
-            <Grid container key={msg._id || index} sx={{ marginBottom: 1 }} justifyContent={msg.sender === userId ? "flex-end" : "flex-start"} alignItems="flex-start">
-              <Box
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  maxWidth: "80%",
-                  wordWrap: "break-word",
-                  position: "relative",
-                }}
-              >
-                {/* 사용자 이름과 프로필 사진을 메시지 위에 배치 */}
-                {msg.sender !== userId && (
-                  <Box sx={{ display: "flex", alignItems: "flex-end", marginBottom: "4px" }}>
-                    <img
-                      src={userProfiles[msg.sender]?.profilePic || ""} // 프로필 사진 표시
-                      alt="Profile"
-                      style={{
-                        width: 35,
-                        height: 35,
-                        borderRadius: "50%",
-                        marginRight: "6px",
-                      }}
-                    />
-                    <Typography
-                      variant="caption"
-                      sx={{
-                        fontSize: "0.85rem",
-                        color: "#000000",
-                      }}
-                    >
-                      {userProfiles[msg.sender]?.nickName || "Unknown"}
-                    </Typography>
-                  </Box>
-                )}
-
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "flex-end", // 시간 표시를 하단에 정렬
-                    flexDirection: msg.sender === userId ? "row-reverse" : "row",
-                  }}
-                >
-                  <Box
-                    sx={{
-                      display: "flex",
-                      flexDirection: "column",
-                      flex: 1, // 채팅 내용이 가능한 한 많은 공간을 차지하도록 설정
-                      backgroundColor: msg.sender === userId ? "rgba(186, 153, 135, 0.8)" : "#F2F2F2",
-                      color: msg.sender === userId ? "#202020" : "#202020",
-                      borderRadius: "10px",
-                      padding: "6px 9px 6px 9px", // 상단, 우측, 하단, 좌측
-                      marginLeft: msg.sender === userId ? "0px" : "22px",
-                    }}
-                  >
-                    {/* 이모지 크기 조건에 따른 처리 */}
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        fontSize: isOnlyEmoji(msg.content) && countEmojis(msg.content) === 1 ? "2.5rem" : "1rem",
-                      }}
-                    >
-                      {isUrl(msg.content) ? (
-                        <a
-                          href={msg.content.startsWith("http") ? msg.content : `http://${msg.content}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          style={{
-                            color: "#1976d2",
-                            textDecoration: "underline", // 밑줄 추가
-                            textUnderlineOffset: "4px", // 밑줄과 글자 간격 설정
-                            textDecorationThickness: "1px", // 밑줄 두께 조정 (선택 사항)
-                          }}
-                        >
-                          {msg.content}
-                        </a>
-                      ) : (
-                        msg.content
-                      )}
-                    </Typography>
-
-                    {msg.images && (
-                      <Box sx={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
-                        {msg.images.map((image, i) => {
-                          const { width, height } = getImageSize(msg.images.length); // 이미지 개수에 따른 크기 결정
-                          return (
-                            <Box key={i} sx={{ flex: `0 0 ${width}px`, height: `${height}px` }}>
-                              <img
-                                src={image.thumbnail}
-                                alt={`image-${i}`}
-                                onClick={() => handleImageClick(msg.images, i)}
-                                style={{
-                                  width: "100%", // 박스에 맞게 너비 설정
-                                  height: "100%", // 박스에 맞게 높이 설정
-                                  objectFit: "cover", // 비율 유지하면서 박스에 맞게 조정
-                                  cursor: "pointer",
-                                  borderRadius: "8px",
-                                }}
-                              />
-                            </Box>
-                          );
-                        })}
-                      </Box>
-                    )}
-                  </Box>
-
-                  {/* 시간 표시를 채팅 내용과 다른 공간에 배치 */}
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "flex-end", // 시간 표시를 하단에 정렬
-                      ...(msg.sender === userId ? { marginRight: "8px" } : { marginLeft: "8px" }),
-                    }}
-                  >
-                    <Typography
-                      variant="caption"
-                      sx={{
-                        fontSize: "0.75rem",
-                        color: "#000000",
-                        whiteSpace: "nowrap", // 공백을 무시하고 한 줄로 표시
-                      }}
-                    >
-                      {formatTime(msg.timestamp)}
-                    </Typography>
-                  </Box>
-                </Box>
-              </Box>
-            </Grid>
-          ))}
-          {/* 가장 최근 메시지를 참조하는 요소 */}
-          <div ref={latestMessageRef} />
-        </Box>
-      ))}
-
-      {/* 이미지 모달 */}
-      <Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="modal-title"
-        aria-describedby="modal-description"
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          backdropFilter: "none",
-          boxShadow: "none",
-        }}
+    <>
+      <div
+        className="custom-scrollbar flex-1 overflow-y-auto px-3 py-4 space-y-4"
+        ref={containerRef}
+        onScroll={handleScroll}
       >
-        <Box
-          sx={{
-            position: "relative",
-            maxWidth: "90vw",
-            maxHeight: "90vh",
-            backgroundColor: "transparent",
-            padding: 0,
-            border: "none",
-            boxShadow: "none",
-          }}
-        >
-          <Slider initialSlide={initialIndex} infinite={false}>
-            {currentImages.map((image, i) => (
-              <Box key={i} sx={{ position: "relative", display: "flex", justifyContent: "center" }}>
-                <img
-                  src={image.original}
-                  alt={`Full size ${i}`}
-                  style={{
-                    width: "100%",
-                    height: "auto",
-                    maxHeight: "80vh",
-                    objectFit: "contain",
-                    border: "none",
-                    outline: "none",
-                  }}
-                />
-              </Box>
-            ))}
-          </Slider>
-          <IconButton
-            onClick={handleClose}
-            sx={{
-              position: "absolute",
-              top: 8,
-              right: 8,
-              zIndex: 10,
-            }}
-          >
-            <CloseIcon />
-          </IconButton>
-        </Box>
-      </Modal>
-    </Box>
+        {Object.keys(groupedMessages).map((date, dateIndex) => (
+          <div key={dateIndex}>
+            {/* 날짜 구분선 */}
+            <div className="flex justify-center mb-4">
+              <span className="inline-flex items-center px-3 py-1 rounded-full bg-black/20 text-white text-xs">
+                {date}
+              </span>
+            </div>
+
+            <div className="space-y-2">
+              {groupedMessages[date].map((msg, index) => {
+                const isMine = msg.sender === userId;
+                const profile = userProfiles[msg.sender];
+                const hasText = msg.content && msg.content.trim().length > 0;
+                const hasImages = msg.images && msg.images.length > 0;
+                const emojiCount = hasText ? countEmojis(msg.content) : 0;
+                // 이모지 1개일 때만 특별 처리 (2개 이상은 일반 텍스트와 동일)
+                const onlyEmoji = hasText && isOnlyEmoji(msg.content) && emojiCount === 1;
+                const emojiFontSize = "2.2rem";
+
+                const isSearchMatch =
+                  searchTerm.trim() &&
+                  msg.content &&
+                  msg.content.toLowerCase().includes(searchTerm.toLowerCase());
+                const isCurrent = msg._id === currentMatchId;
+
+                return (
+                  <div
+                    key={msg._id || index}
+                    ref={isSearchMatch ? (el) => { if (el) matchRefMap.current[msg._id] = el; } : null}
+                    className={`flex items-end gap-2 ${isMine ? "justify-end" : "justify-start"}`}
+                  >
+                    {/* 상대방 프로필 사진 */}
+                    {!isMine && (
+                      <div className="flex-shrink-0 self-start mt-1">
+                        <img
+                          src={profile?.profilePic || ""}
+                          alt=""
+                          className="w-8 h-8 rounded-full object-cover border border-gray-200"
+                        />
+                      </div>
+                    )}
+
+                    <div
+                      className={`flex flex-col max-w-[70%] sm:max-w-[60%] ${
+                        isMine ? "items-end" : "items-start"
+                      }`}
+                    >
+                      {/* 상대방 이름 */}
+                      {!isMine && (
+                        <span className="text-xs text-gray-500 mb-1 ml-1">
+                          {profile?.nickName || "Unknown"}
+                        </span>
+                      )}
+
+                      {/* 텍스트 말풍선 */}
+                      {hasText && (
+                        <div
+                          className={`flex items-end gap-1.5 ${isMine ? "flex-row-reverse" : "flex-row"}`}
+                        >
+                          <div
+                            className={`break-words transition-all ${
+                              onlyEmoji && isMine
+                                ? `px-5 py-3.5 bg-primary-200 text-gray-800 rounded-2xl rounded-tr-md ${isCurrent ? "ring-2 ring-yellow-400" : ""}`
+                                : onlyEmoji && !isMine
+                                ? `px-5 py-3.5 bg-white text-gray-800 rounded-2xl rounded-tl-md border border-gray-200 shadow-sm ${isCurrent ? "ring-2 ring-yellow-400" : ""}`
+                                : isMine
+                                ? `px-3.5 py-2.5 bg-primary-200 text-gray-800 rounded-2xl rounded-tr-md ${isCurrent ? "ring-2 ring-yellow-400" : ""}`
+                                : `px-3.5 py-2.5 bg-white text-gray-800 rounded-2xl rounded-tl-md border border-gray-200 shadow-sm ${isCurrent ? "ring-2 ring-yellow-400" : ""}`
+                            }`}
+                          >
+                            <span
+                              style={{
+                                fontSize: onlyEmoji ? emojiFontSize : "0.875rem",
+                                lineHeight: onlyEmoji ? 1.2 : 1.5,
+                              }}
+                            >
+                              {isUrl(msg.content) ? (
+                                <a
+                                  href={
+                                    msg.content.startsWith("http")
+                                      ? msg.content
+                                      : `http://${msg.content}`
+                                  }
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-blue-500 underline underline-offset-2"
+                                >
+                                  {msg.content}
+                                </a>
+                              ) : (
+                                <HighlightText
+                                  text={msg.content}
+                                  searchTerm={searchTerm}
+                                  isCurrent={isCurrent}
+                                />
+                              )}
+                            </span>
+                          </div>
+                          {/* 타임스탬프 */}
+                          <span className="text-[0.62rem] text-gray-400 whitespace-nowrap mb-0.5 flex-shrink-0">
+                            {formatTime(msg.timestamp)}
+                          </span>
+                        </div>
+                      )}
+
+                      {/* 이미지 그리드 */}
+                      {hasImages && (
+                        <div
+                          className={`flex items-end gap-1.5 mt-0.5 ${
+                            isMine ? "flex-row-reverse" : "flex-row"
+                          }`}
+                        >
+                          <MessageImageGrid
+                            images={msg.images}
+                            onImageClick={handleImageClick}
+                          />
+                          {/* 텍스트 없을 때만 타임스탬프 표시 */}
+                          {!hasText && (
+                            <span className="text-[0.62rem] text-gray-400 whitespace-nowrap mb-0.5 flex-shrink-0">
+                              {formatTime(msg.timestamp)}
+                            </span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* 내 메시지는 오른쪽에 여백 없음 (프로필 없음) */}
+                  </div>
+                );
+              })}
+            </div>
+
+          </div>
+        ))}
+      </div>
+
+      {/* 커스텀 이미지 뷰어 */}
+      {viewerOpen && (
+        <ImageViewer
+          images={viewerImages}
+          startIndex={viewerIndex}
+          onClose={handleViewerClose}
+        />
+      )}
+    </>
   );
 };
 

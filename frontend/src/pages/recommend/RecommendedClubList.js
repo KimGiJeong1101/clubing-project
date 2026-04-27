@@ -1,10 +1,9 @@
 import React from "react";
-import { Box, Container, Grid, Typography, Tooltip, IconButton } from "@mui/material";
+import { FiInfo } from "react-icons/fi";
 import ClubListCard from "../../components/club/ClubListCard.js";
 import { useSelector } from "react-redux";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import axios from "axios";
-import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 
 const fetchClubs = async ({ pageParam = 1, email }) => {
   const response = await axios.get(`http://localhost:4000/clubs/recommend/scroll/${pageParam}`, {
@@ -30,11 +29,8 @@ const ClubsList = () => {
     keepPreviousData: true,
   });
 
-  // 무한 스크롤 구현
   const loadMore = () => {
-    if (hasNextPage) {
-      fetchNextPage();
-    }
+    if (hasNextPage) fetchNextPage();
   };
 
   React.useEffect(() => {
@@ -43,56 +39,42 @@ const ClubsList = () => {
         loadMore();
       }
     };
-
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, [hasNextPage, loadMore]);
 
-  if (isLoading) {
-    return <div>로딩 중...</div>;
-  }
-
-  if (isError) {
-    return <div>Error: {error.message}</div>;
-  }
+  if (isLoading) return <div>로딩 중...</div>;
+  if (isError) return <div>Error: {error.message}</div>;
 
   const tooltipText = email
-    ? `선택한 지역 및 관심사 기준으로 추천해드립니다.  
-       지역 및 관심사 변경은
-       마이페이지-회원정보-정보수정 에서 가능합니다.`
+    ? `선택한 지역 및 관심사 기준으로 추천해드립니다. 지역 및 관심사 변경은 마이페이지-회원정보-정보수정 에서 가능합니다.`
     : `선택한 지역 및 관심사 기준으로 추천해드립니다. 로그인 시 정확한 추천 정보를 받을 수 있습니다.`;
 
   return (
-    <Box sx={{ width: "100%", paddingTop: "20px", backgroundColor: "#F2F2F2", position: "relative" }}>
-      <Container maxWidth="lg" sx={{ paddingBottom: "40px" }}>
-        <Box sx={{ display: "flex", alignItems: "center", mb: 4 }}>
-          <Typography variant="h5">지역기반 추천</Typography>
-          <Tooltip
-            title={tooltipText}
-            arrow
-            sx={{
-              "& .MuiTooltip-tooltip": {
-                backgroundColor: "rgba(0, 0, 0, 0.5)", // 흐린 회색 배경
-                color: "white",
-                fontSize: "0.75rem",
-                borderRadius: "4px",
-              },
-            }}
-          >
-            <IconButton sx={{ color: "gray", fontSize: "1.5rem" }}>
-              <InfoOutlinedIcon />
-            </IconButton>
-          </Tooltip>
-        </Box>
+    <div className="w-full pt-5 bg-[#F2F2F2] relative">
+      <div className="max-w-screen-lg mx-auto pb-10 px-4">
+        {/* 헤더 */}
+        <div className="flex items-center mb-8">
+          <h2 className="text-xl font-semibold">지역기반 추천</h2>
+          {/* 툴팁 (hover 방식) */}
+          <div className="relative group ml-1">
+            <button className="text-gray-500 p-1 rounded-full hover:bg-gray-100 transition-colors">
+              <FiInfo size={22} />
+            </button>
+            <div className="absolute left-1/2 -translate-x-1/2 top-8 z-50 hidden group-hover:block bg-black/70 text-white text-xs rounded px-3 py-2 w-64 whitespace-pre-line">
+              {tooltipText}
+            </div>
+          </div>
+        </div>
 
-        <Grid container spacing={2} sx={{ display: "flex" }}>
-          <ClubListCard clubList={clubList.pages.flat()} />
-        </Grid>
+        {/* 클럽 목록 */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          <ClubListCard clubList={clubList.pages ? clubList.pages.flat() : []} />
+        </div>
 
-        {/* 로딩 인디케이터 (옵션) */}
         {isLoading && <div>더 로딩 중...</div>}
-      </Container>
-    </Box>
+      </div>
+    </div>
   );
 };
 

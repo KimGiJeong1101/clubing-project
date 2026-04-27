@@ -1,27 +1,19 @@
 import React, { useState } from "react";
 import Draggable from "react-draggable";
-import { Box, Button, Typography, Chip, IconButton } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
+import { FiX } from "react-icons/fi";
 import CustomButton from "../../../../components/club/CustomButton";
 import CustomButton2 from "../../../../components/club/CustomButton2";
 
 const JobPopup = ({ jobCategories, onSelect, onClose, selectedJobs }) => {
-  // 현재 선택된 직무 상태 관리
   const [localSelectedJobs, setLocalSelectedJobs] = useState(selectedJobs);
   const [error, setError] = useState("");
 
-  // 직무 선택/해제 핸들러
   const handleSelect = (job) => {
-    // 직무가 이미 선택된 상태인지 확인
     const isSelected = localSelectedJobs.includes(job);
-
     if (isSelected) {
-      // 직무가 선택된 상태라면 제거
       setLocalSelectedJobs((prev) => prev.filter((selectedJob) => selectedJob !== job));
     } else {
-      // 직무가 선택되지 않은 상태라면 추가
       if (localSelectedJobs.length < 3) {
-        // 최대 3개 선택 가능
         setLocalSelectedJobs((prev) => [...prev, job]);
         setError("");
       } else {
@@ -30,94 +22,65 @@ const JobPopup = ({ jobCategories, onSelect, onClose, selectedJobs }) => {
     }
   };
 
-  // 확인 버튼 클릭 핸들러
   const handleSubmit = () => {
-    onSelect(localSelectedJobs); // 선택된 직무를 부모 컴포넌트에 전달
-    onClose(); // 팝업 닫기
+    onSelect(localSelectedJobs);
+    onClose();
   };
 
-  // 팝업 닫기 핸들러
   const handleClose = (e) => {
     e.stopPropagation();
-    onClose(); // 팝업 닫기
+    onClose();
   };
 
   return (
-    <Box
-      sx={{
-        position: "fixed",
-        inset: 0,
-        bgcolor: "rgba(0, 0, 0, 0.5)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        zIndex: 1300, // MUI의 Dialog가 사용하는 zIndex
-      }}
+    <div
+      className="fixed inset-0 z-[1300] bg-black/50 flex items-center justify-center"
       onClick={handleClose}
     >
       <Draggable>
-        <Box
-          sx={{
-            bgcolor: "background.paper",
-            p: 4,
-            borderRadius: 2,
-            boxShadow: 24,
-            width: 600,
-            maxHeight: "80vh",
-            overflow: "auto",
-            position: "relative",
-          }}
+        <div
+          className="bg-white p-8 rounded-2xl shadow-2xl w-[90vw] max-w-[600px] max-h-[80vh] overflow-auto relative"
           onClick={(e) => e.stopPropagation()}
         >
           {/* X 버튼 */}
-          <IconButton
-            sx={{
-              position: "absolute",
-              top: 16,
-              right: 16,
-            }}
+          <button
+            className="absolute top-4 right-4 p-1 rounded-full hover:bg-gray-100 transition-colors"
             onClick={handleClose}
           >
-            <CloseIcon />
-          </IconButton>
+            <FiX size={20} />
+          </button>
 
-          <Typography variant="h6" gutterBottom>
-            직무 선택 (최대 3개 선택 가능)
-          </Typography>
+          <h6 className="text-lg font-semibold mb-3">직무 선택 (최대 3개 선택 가능)</h6>
 
-          {/* 에러 메시지 */}
           {error && (
-            <Typography color="error" gutterBottom>
-              {error}
-            </Typography>
+            <p className="text-red-500 text-sm mb-2">{error}</p>
           )}
 
-          {/* 직무 리스트 */}
-          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+          <div className="flex flex-wrap gap-2">
             {jobCategories.map((job) => (
               <CustomButton
                 key={job}
                 color="primary"
                 onClick={(e) => {
                   e.stopPropagation();
-                  handleSelect(job); // 직무 문자열을 직접 전달
+                  handleSelect(job);
                 }}
                 sx={{
                   textTransform: "none",
-                  backgroundColor: localSelectedJobs.includes(job) ? "#A67153" : "#DBC7B5", // 배경색 설정
-                  borderColor: "transparent", // 무색 테두리
+                  backgroundColor: localSelectedJobs.includes(job) ? "#A67153" : "#DBC7B5",
+                  borderColor: "transparent",
                   "&:hover": {
-                    backgroundColor: localSelectedJobs.includes(job) ? "#A67153" : "#DBC7B5", // 호버 시 배경색 유지
-                    borderColor: "transparent", // 무색 테두리
+                    backgroundColor: localSelectedJobs.includes(job) ? "#A67153" : "#DBC7B5",
+                    borderColor: "transparent",
                   },
                 }}
               >
                 {job}
               </CustomButton>
             ))}
-          </Box>
+          </div>
 
-          <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2, mt: 2 }}>
+          <div className="flex justify-end gap-4 mt-4">
             <CustomButton2 variant="contained" color="primary" onClick={handleSubmit}>
               확인
             </CustomButton2>
@@ -126,18 +89,16 @@ const JobPopup = ({ jobCategories, onSelect, onClose, selectedJobs }) => {
               color="secondary"
               onClick={handleClose}
               sx={{
-                borderColor: "transparent", // 무색 테두리
-                "&:hover": {
-                  borderColor: "transparent", // 무색 테두리
-                },
+                borderColor: "transparent",
+                "&:hover": { borderColor: "transparent" },
               }}
             >
               닫기
             </CustomButton>
-          </Box>
-        </Box>
+          </div>
+        </div>
       </Draggable>
-    </Box>
+    </div>
   );
 };
 

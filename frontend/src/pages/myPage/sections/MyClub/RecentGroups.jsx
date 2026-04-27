@@ -1,48 +1,73 @@
 import React, { useEffect, useState } from "react";
-import { Box, CircularProgress } from "@mui/material";
 import { useSelector } from "react-redux";
 import axiosInstance from "../../../../utils/axios";
 import ClubCarousel2 from "../../../../components/club/ClubCarousel2";
+import { FiClock } from "react-icons/fi";
 
 const RecentGroups = () => {
   const user = useSelector((state) => state.user?.userData?.user || {});
-  const [clubs, setClubs] = useState([]); // 클럽 데이터를 저장할 상태
-  const [loading, setLoading] = useState(true); // 로딩 상태
+  const [clubs, setClubs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    // 사용자 클럽 데이터를 가져오는 API 요청
     const userRecentClubs = async () => {
       try {
-        // 유저의 클럽 데이터를 가져오기 위한 API 호출
         const response = await axiosInstance.get(`/users/recentvisit/${user.email}`);
-        // 응답 데이터 콘솔에 출력
-        const RecentClubs = response.data.RecentVisitList[0].clubs;
+        const visitList = response.data.RecentVisitList;
 
-        // 클럽 목록을 가져오기 위한 API 호출
-        const clubResponses = await Promise.all(RecentClubs.map((clubId) => axiosInstance.get(`/clubs/read/${clubId}`)));
+        // 방문 기록이 없거나 빈 배열인 경우
+        if (!visitList || visitList.length === 0 || !visitList[0]?.clubs?.length) {
+          setClubs([]);
+          setLoading(false);
+          return;
+        }
+
+        const RecentClubs = visitList[0].clubs;
+        const clubResponses = await Promise.all(
+          RecentClubs.map((clubId) => axiosInstance.get(`/clubs/read/${clubId}`))
+        );
         const clubsData = clubResponses.map((response) => response.data);
 
-        setClubs(clubsData); // 클럽 데이터 상태 업데이트
-        setLoading(false); // 로딩 완료
+        setClubs(clubsData);
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching clubs:", error);
-        setLoading(false); // 에러 발생 시 로딩 종료
+        // 에러여도 빈 상태로 처리 (방문 기록 없음과 동일하게)
+        setClubs([]);
+        setLoading(false);
       }
     };
 
-    userRecentClubs();
-  }, [user.email]); // 의존성 배열에 user.email 추가
+    if (user.email) {
+      userRecentClubs();
+    } else {
+      setLoading(false);
+    }
+  }, [user.email]);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center py-16">
+        <div className="w-8 h-8 border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (clubs.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-16 text-gray-400">
+        <FiClock size={48} className="mb-3 text-gray-200" />
+        <p className="text-sm font-nanum-bold">최근 방문한 모임이 없습니다.</p>
+        <p className="text-xs mt-1 text-gray-300">모임을 둘러보고 방문해 보세요.</p>
+      </div>
+    );
+  }
 
   return (
-    <Box>
-      {loading ? (
-        <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
-          <CircularProgress />
-        </Box>
-      ) : (
-        <ClubCarousel2 clubList={clubs} /> // 클럽 리스트를 ClubCarousel2 컴포넌트에 전달
-      )}
-    </Box>
+    <div>
+      <ClubCarousel2 clubList={clubs} />
+    </div>
   );
 };
 

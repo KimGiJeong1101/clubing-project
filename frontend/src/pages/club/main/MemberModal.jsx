@@ -1,17 +1,19 @@
 import React from "react";
-import { Dialog, DialogActions, DialogContent, DialogTitle, Grid, Typography, Avatar, Button } from "@mui/material";
+import { FiX } from "react-icons/fi";
 import CustomButton from "../../../components/club/CustomButton";
 import axiosInstance from "../../../utils/axios";
 import { useSelector } from "react-redux";
 
 const MemberModal = ({ open, onClose, members, clubNumber, setSnackbarMessage, handleSnackbarClick }) => {
   const user = useSelector((state) => state.user);
+
   const deleteMemberInClub = async (nickName) => {
     await axiosInstance.post(`/clubs/deleteMember/${nickName}/${clubNumber}`);
     setSnackbarMessage("강퇴 완료되었습니다.");
     handleSnackbarClick();
     onClose();
   };
+
   const mandateManager = async (nickName) => {
     const response = await axiosInstance.post(`/clubs/mandateManager/${nickName}/${clubNumber}`);
     if (response.data === "성공") {
@@ -24,102 +26,76 @@ const MemberModal = ({ open, onClose, members, clubNumber, setSnackbarMessage, h
       handleSnackbarClick();
     }
   };
+
+  if (!open) return null;
+
   return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      sx={{
-        "& .MuiDialog-paper": {
-          width: "80vw", // 전체 너비의 80%로 설정
-          maxWidth: "1000px", // 최대 너비를 1000px로 설정
-        },
-      }}
-    >
-      <DialogTitle>회원 정보</DialogTitle>
-      <DialogContent>
-        {members && members.length > 0 ? (
-          members.map((member, index) => (
-            <Grid
-              container
-              spacing={2}
-              sx={{
-                padding: "10px",
-                width: "100%",
-                cursor: "pointer", // 마우스 포인터를 손가락 모양으로 변경
-                transition: "all 0.3s ease", // 부드러운 전환 효과
-                "&:hover": {
-                  transform: "scale(1.03)", // 호버 시 살짝 확대
-                },
-              }}
-              key={index}
-            >
-              <Grid item xs={2}>
-                <Avatar sx={{ width: 50, height: 50 }} src={member?.thumbnailImage || ""} />
-              </Grid>
-              <Grid item xs={4} sx={{ marginTop: "8px" }}>
-                <Typography variant="h6">
-                  {member.name} - <span style={{ color: "#888888" }}>({member.nickName}) </span>
-                </Typography>
-              </Grid>
-              <Grid item xs={6} sx={{ display: "flex", justifyContent: "flex-end" }}>
-                {user.userData.user.nickName === members[0].nickName && index !== 0 && (
-                  <>
+    <div className="fixed inset-0 z-[300] bg-black/50 flex items-center justify-center p-4" onClick={onClose}>
+      <div
+        className="bg-white rounded-2xl shadow-xl w-full max-w-[800px] max-h-[80vh] flex flex-col"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between p-5 border-b border-gray-100">
+          <h3 className="text-lg font-nanum-bold text-gray-800">회원 정보</h3>
+          <button onClick={onClose} className="p-1.5 text-gray-400 hover:text-gray-700 transition-colors">
+            <FiX className="w-5 h-5" />
+          </button>
+        </div>
+
+        <div className="flex-1 overflow-y-auto p-5 space-y-3">
+          {members && members.length > 0 ? (
+            members.map((member, index) => (
+              <div
+                key={index}
+                className="flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 transition-all hover:scale-[1.01] cursor-pointer"
+              >
+                <img
+                  src={member?.thumbnailImage || "https://via.placeholder.com/50"}
+                  alt={member.name}
+                  className="w-12 h-12 rounded-full object-cover flex-shrink-0"
+                />
+                <div className="flex-1 min-w-0">
+                  <p className="text-base font-nanum-bold text-gray-800 truncate">
+                    {member.name}{" "}
+                    <span className="text-gray-400 font-normal">({member.nickName})</span>
+                  </p>
+                </div>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  {user.userData.user.nickName === members[0].nickName && index !== 0 && (
                     <CustomButton
-                      variant="contained"
-                      onClick={() => {
-                        mandateManager(member.nickName);
-                      }}
-                      sx={{
-                        color: "white",
-                        backgroundColor: "#DBC7B5",
-                        borderRadius: "15px",
-                        height: "40px", // 버튼 높이 설정
-                        padding: "0 16px", // 좌우 패딩 설정 (기본 패딩 제거)
-                        display: "flex",
-                        alignItems: "center", // 수직 중앙 정렬
-                        justifyContent: "center", // 수평 중앙 정렬
-                        marginRight: "5px",
-                      }}
+                      className="!rounded-2xl !px-3 !py-1.5 !text-sm"
+                      onClick={() => mandateManager(member.nickName)}
                     >
                       매니저 위임
                     </CustomButton>
-                  </>
-                )}
-                {index !== 0 && (
-                  <>
+                  )}
+                  {index !== 0 && (
                     <CustomButton
-                      variant="contained"
-                      onClick={() => {
-                        deleteMemberInClub(member.nickName);
-                      }}
-                      sx={{
-                        color: "white",
-                        backgroundColor: "#DBC7B5",
-                        borderRadius: "15px",
-                        height: "40px", // 버튼 높이 설정
-                        padding: "0 16px", // 좌우 패딩 설정 (기본 패딩 제거)
-                        display: "flex",
-                        alignItems: "center", // 수직 중앙 정렬
-                        justifyContent: "center", // 수평 중앙 정렬
-                      }}
+                      className="!rounded-2xl !px-3 !py-1.5 !text-sm"
+                      onClick={() => deleteMemberInClub(member.nickName)}
                     >
                       추방
                     </CustomButton>
-                  </>
-                )}
-              </Grid>
-            </Grid>
-          ))
-        ) : (
-          <Typography>멤버 정보가 없습니다.</Typography>
-        )}
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose} color="primary">
-          닫기
-        </Button>
-      </DialogActions>
-    </Dialog>
+                  )}
+                </div>
+              </div>
+            ))
+          ) : (
+            <p className="text-gray-500 text-sm text-center py-8">멤버 정보가 없습니다.</p>
+          )}
+        </div>
+
+        <div className="p-4 border-t border-gray-100 flex justify-end">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 text-sm text-primary-600 hover:text-primary-800 font-medium transition-colors"
+          >
+            닫기
+          </button>
+        </div>
+      </div>
+    </div>
   );
 };
+
 export default MemberModal;

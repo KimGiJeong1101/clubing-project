@@ -1,59 +1,37 @@
-import { Box, Button, Checkbox, Grid, Modal, Snackbar, SnackbarContent, TextField, Typography } from "@mui/material";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
-import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import dayjs from "dayjs";
-import "dayjs/locale/ko"; // 한국어 로케일 import
+import "dayjs/locale/ko";
 import axiosInstance from "./../../../utils/axios";
 import CustomButton from "../../../components/club/CustomButton.jsx";
 import { useNavigate } from "react-router-dom";
 import MeetingImageCropper from "./MeetingImageCropper.jsx";
-import CropIcon from "@mui/icons-material/Crop";
-import { styled } from "@mui/system";
+import { FiCrop } from "react-icons/fi";
 
 dayjs.locale("ko");
 
 const MeetingCreate2 = ({ clubNumber, secondModalClose, secondModal, category, setSnackbarMessageMain, handleSnackbarClickMain }) => {
-  //////////////스낵바
   const [openSnackbar, setOpenSnackbar] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState(""); // Snackbar 메시지 관리
-
-  const StyledSnackbarContent = styled(SnackbarContent)(({ theme }) => ({
-    backgroundColor: "white", // 배경색 설정
-    color: "#A6836F", // 텍스트 색상 설정
-    borderRadius: "20px",
-    width: "250px",
-    height: "50px",
-    textAlign: "center",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    opacity: 1, // 초기 투명도
-    transition: "opacity 0.5s ease-in-out", // 애니메이션 효과
-  }));
+  const [snackbarMessage, setSnackbarMessage] = useState("");
 
   const handleSnackbarClick = () => {
     setOpenSnackbar(true);
+    setTimeout(() => setOpenSnackbar(false), 1000);
   };
 
-  const handleSnackbarClose = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
+  const handleSnackbarClose = () => {
     setOpenSnackbar(false);
   };
-  /////////스낵바 .end
-  //정기모임 글 등록, 두번쨰 모달
+
   const [dateTime, setDateTime] = useState(null);
   const [dateTimeSort, setDateTimeSort] = useState(null);
-  const [checked, setChecked] = useState(false); // 정기모임 전체알림 스테이트
+  const [checked, setChecked] = useState(false);
   const navigate = useNavigate();
+
   const checkedChange = (event) => {
     setChecked(event.target.checked);
   };
+
   const {
     register,
     handleSubmit,
@@ -62,13 +40,11 @@ const MeetingCreate2 = ({ clubNumber, secondModalClose, secondModal, category, s
     setValue,
   } = useForm({ mode: "onChange" });
 
-  ///비교삭제 추가하기
   const onSubmit = async (data) => {
     const blob = await blobUrlToBlob(preview);
     const file = blobToFile(blob, uploadFileName);
 
     const formData = new FormData();
-    // 일반 필드 추가
     console.log(dateTime);
     if (!dateTime) {
       setSnackbarMessage("날짜를 입력해주세요");
@@ -84,9 +60,9 @@ const MeetingCreate2 = ({ clubNumber, secondModalClose, secondModal, category, s
     formData.append("where", data.where);
     formData.append("totalCount", data.totalCount);
     formData.append("cost", data.cost);
-    // 이미지 파일이 있는 경우
+
     if (preview) {
-      formData.append("img", file); // 이미지 파일 추가
+      formData.append("img", file);
     } else {
       setSnackbarMessage("대표사진을 등록해주세요");
       handleSnackbarClick();
@@ -110,11 +86,10 @@ const MeetingCreate2 = ({ clubNumber, secondModalClose, secondModal, category, s
     }
   };
 
-  ////////////////////////////////////////////////////////////////
   const cropButtonClick = () => {
-    setCropModalOpen(true); // 크롭 모달 열기
+    setCropModalOpen(true);
   };
-  //파일이 체인지 되었을 때
+
   const [uploadFileName, setUploadFileName] = useState("");
 
   const handleFileChange = (e) => {
@@ -128,9 +103,7 @@ const MeetingCreate2 = ({ clubNumber, secondModalClose, secondModal, category, s
       reader.readAsDataURL(file);
     }
   };
-  //파일이 체인지 되었을 때.end
 
-  //파일이 드래그앤 드롭 되었을 때
   const handleDrop = (event) => {
     event.preventDefault();
     const file = event.dataTransfer.files[0];
@@ -142,166 +115,176 @@ const MeetingCreate2 = ({ clubNumber, secondModalClose, secondModal, category, s
       reader.readAsDataURL(file);
     }
   };
-  //파일이 드래그앤 드롭 되었을 때.end
+
   const handleCropComplete = (croppedImage) => {
-    setPreview(croppedImage); // 크롭된 이미지 미리보기 설정
-    setValue("img", croppedImage); // react-hook-form에 파일 설정
-    setCropModalOpen(false); // 크롭 모달 닫기
+    setPreview(croppedImage);
+    setValue("img", croppedImage);
+    setCropModalOpen(false);
   };
-  // 사진 파일 관련 코드
+
   const [preview, setPreview] = useState(null);
   const [cropModalOpen, setCropModalOpen] = useState(false);
-  //블롭url을 블롭형태로 변환
+
   async function blobUrlToBlob(blobUrl) {
     const response = await fetch(blobUrl);
     const blob = await response.blob();
     return blob;
   }
 
-  //블롭형태를 파일형태로 변환
   function blobToFile(blob, fileName) {
     const file = new File([blob], fileName, { type: blob.type });
     return file;
   }
 
+  if (!secondModal) return null;
+
   return (
-    <Box>
-      <Modal component="form" onSubmit={handleSubmit(onSubmit)} open={secondModal} onClose={secondModalClose}>
-        <Box
-          sx={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            height: 450,
-            width: 700,
-            bgcolor: "background.paper",
-            border: "2px solid #000",
-            boxShadow: 24,
-            p: 4,
-          }}
-        >
-          <Grid container spacing={2}>
-            <Grid item xs={5}>
-              <input id="img" type="file" accept="image/png, image/gif, image/jpeg" onChange={handleFileChange} style={{ display: "none" }} />
+    <>
+      {/* 배경 오버레이 */}
+      <div className="fixed inset-0 z-40" style={{ backgroundColor: "rgba(0,0,0,0.5)" }} onClick={secondModalClose} />
+
+      {/* 모달 */}
+      <div
+        className="fixed z-50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white border-2 border-black shadow-2xl p-8"
+        style={{ width: 700, height: 450 }}
+      >
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <div className="flex gap-4">
+            {/* 이미지 업로드 영역 */}
+            <div className="w-[280px] flex-shrink-0">
+              <input
+                id="img"
+                type="file"
+                accept="image/png, image/gif, image/jpeg"
+                onChange={handleFileChange}
+                className="hidden"
+              />
               <label htmlFor="img">
-                <Button variant="outlined" component="span" sx={{ width: "100%" }}>
+                <span className="block w-full border border-gray-400 rounded text-center py-1.5 cursor-pointer text-sm hover:bg-gray-50 transition-colors">
                   정모 대표사진 선택하기
-                </Button>
+                </span>
               </label>
+
               {!preview && (
-                <Box
-                  mt={2}
+                <div
+                  className="mt-4 w-[280px] h-[200px] flex items-center justify-center border-2 border-dashed border-gray-400"
                   onDragOver={(e) => e.preventDefault()}
                   onDrop={handleDrop}
-                  sx={{
-                    width: "280px",
-                    height: "200px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    border: "2px dashed gray",
-                  }}
                 >
-                  <Typography variant="h6" color="textSecondary">
+                  <p className="text-base text-gray-500 text-center px-2">
                     이미지 미리보기가 없습니다. 이미지를 업로드하세요.
-                  </Typography>
-                </Box>
+                  </p>
+                </div>
               )}
+
               {preview && (
-                <Box mt={2} sx={{ width: "280px", height: "200px", position: "relative" }}>
-                  <img src={preview} alt="미리보기" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                  <CropIcon
-                    sx={{
-                      position: "absolute",
-                      bottom: 8,
-                      right: 8,
-                      color: "white",
-                      backgroundColor: "rgba(0, 0, 0, 0.5)",
-                      borderRadius: "50%",
-                      padding: "4px",
-                      cursor: "pointer",
-                    }}
+                <div className="mt-4 relative w-[280px] h-[200px]">
+                  <img src={preview} alt="미리보기" className="w-full h-full object-cover" />
+                  <button
+                    type="button"
                     onClick={cropButtonClick}
-                  />
-                </Box>
+                    className="absolute bottom-2 right-2 bg-black/50 text-white rounded-full p-1 cursor-pointer hover:bg-black/70 transition-colors"
+                  >
+                    <FiCrop size={16} />
+                  </button>
+                </div>
               )}
-            </Grid>
-            <Grid item xs={7} container spacing={1}>
-              <Grid item xs={12}>
-                <TextField id="title" label="정모 제목" sx={{ width: "100%" }} {...register("title", { required: " 필수입력 요소." })} />
-              </Grid>
-              <Grid item xs={12} sx={{ marginBottom: "5px" }}>
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DemoContainer components={["DateTimePicker"]}>
-                    <DateTimePicker
-                      id="dateTime"
-                      label="만나는 날짜 및 시간"
-                      onChange={(date) => {
-                        setDateTimeSort(date.toISOString());
-                        setDateTime(date);
-                      }}
-                    />
-                  </DemoContainer>
-                </LocalizationProvider>
-              </Grid>
-              <Grid item xs={12}>
-                <TextField id="cost" label="비용" multiline sx={{ width: "100%" }} {...register("cost", { required: " 필수입력 요소." })} />
-              </Grid>
-            </Grid>
-            <Grid item xs={12}>
-              <TextField id="where" label="위치" multiline placeholder="모임 장소를 입력하세요" sx={{ width: "100%", mb: 2 }} {...register("where", { required: " 필수입력 요소." })} />
-            </Grid>
-            <Grid container spacing={1} sx={{ marginLeft: "6px" }}>
-              <Grid
-                item
-                xs={4}
-                sx={{
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <TextField id="totalCount" label="인원 수" placeholder="숫자만 입력하세요" multiline sx={{ width: "100%", mb: 2 }} {...register("totalCount", { required: " 필수입력 요소." })} />
-              </Grid>
-              <Grid item xs={6}>
-                <Box sx={{ textAlign: "right" }}>
-                  <Typography sx={{ fontSize: "20px", paddingTop: "15px" }}>
-                    정모 공지 <span style={{ color: "gray" }}>(전체 멤버 알림)</span>
-                  </Typography>
-                </Box>
-              </Grid>
-              <Grid item xs={2} sx={{ marginLeft: "0px" }}>
-                <Checkbox sx={{ "& .MuiSvgIcon-root": { fontSize: 40 } }} onChange={checkedChange} />
-              </Grid>
-            </Grid>
-            <Grid
-              item
-              xs={12}
-              sx={{
-                justifyContent: "center",
-                alignItems: "center",
-                textAlign: "center",
-              }}
-            >
-              <CustomButton type="submit" variant="contained" sx={{ backgroundColor: "#DBC7B5", width: "100%" }}>
-                등록하기
-              </CustomButton>
-            </Grid>
-          </Grid>
-        </Box>
-      </Modal>
-      {cropModalOpen && <MeetingImageCropper src={preview} onCropComplete={handleCropComplete} onClose={() => setCropModalOpen(false)} />}
+            </div>
+
+            {/* 입력 필드 영역 */}
+            <div className="flex-grow flex flex-col gap-2">
+              <div>
+                <input
+                  id="title"
+                  type="text"
+                  placeholder="정모 제목"
+                  className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-blue-400"
+                  {...register("title", { required: " 필수입력 요소." })}
+                />
+              </div>
+
+              <div className="mb-1.5">
+                <label className="block text-xs text-gray-500 mb-1">만나는 날짜 및 시간</label>
+                <input
+                  type="datetime-local"
+                  className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-blue-400"
+                  onChange={(e) => {
+                    const d = dayjs(e.target.value);
+                    setDateTime(d);
+                    setDateTimeSort(d.toISOString());
+                  }}
+                />
+              </div>
+
+              <div>
+                <textarea
+                  id="cost"
+                  placeholder="비용"
+                  className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-blue-400 resize-none"
+                  {...register("cost", { required: " 필수입력 요소." })}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* 위치 */}
+          <div className="mt-2 mb-4">
+            <textarea
+              id="where"
+              placeholder="모임 장소를 입력하세요"
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-blue-400 resize-none"
+              {...register("where", { required: " 필수입력 요소." })}
+            />
+          </div>
+
+          {/* 하단: 인원 수 + 공지 체크 + 등록 버튼 */}
+          <div className="flex items-center gap-4">
+            <div className="w-2/5">
+              <textarea
+                id="totalCount"
+                placeholder="숫자만 입력하세요 (인원 수)"
+                className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-blue-400 resize-none"
+                {...register("totalCount", { required: " 필수입력 요소." })}
+              />
+            </div>
+            <div className="flex items-center gap-2 flex-grow justify-end">
+              <span className="text-xl">
+                정모 공지 <span className="text-gray-400">(전체 멤버 알림)</span>
+              </span>
+              <input
+                type="checkbox"
+                onChange={checkedChange}
+                className="w-8 h-8 cursor-pointer accent-blue-600"
+              />
+            </div>
+          </div>
+
+          <div className="mt-4 text-center">
+            <CustomButton type="submit" variant="contained" sx={{ backgroundColor: "#DBC7B5", width: "100%" }}>
+              등록하기
+            </CustomButton>
+          </div>
+        </form>
+      </div>
+
+      {/* 크롭 모달 */}
+      {cropModalOpen && (
+        <MeetingImageCropper
+          src={preview}
+          onCropComplete={handleCropComplete}
+          onClose={() => setCropModalOpen(false)}
+        />
+      )}
+
       {/* 스낵바 */}
-      <Snackbar
-        open={openSnackbar}
-        autoHideDuration={1000} // 사라지는 시간
-        onClose={handleSnackbarClose}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
-      >
-        <StyledSnackbarContent message={snackbarMessage} />
-      </Snackbar>
-      {/* 스낵바.end */}
-    </Box>
+      {openSnackbar && (
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[60]">
+          <div className="bg-white text-primary-600 rounded-2xl px-6 py-3 shadow-lg text-center min-w-[250px] border border-primary-100">
+            {snackbarMessage}
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 

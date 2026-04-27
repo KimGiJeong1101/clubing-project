@@ -69,10 +69,6 @@ import {
 } from "ckeditor5";
 import translations from "ckeditor5/translations/ko.js";
 import "ckeditor5/ckeditor5.css";
-// import "../../assets/styles/ClubBoard.css"; 이거 일단 안지우고 남겨놓겠습니다.
-// 이유는 지금 ClubBoard.css 이 파일에 아무런 내용이 없어서 파일을 지웠는데, 에러가 나서 확인을 해보니
-// 아무리 내용이 없는 파일일지라도 import 받고 있던 파일이 사라진거기 때문에, 파일을 찾을수가 없다는 에러가 나는거다.
-import { TextField, MenuItem, FormControl, InputLabel, Select, Box } from "@mui/material";
 
 const categories = ["자유글", "관심사공유", "모임후기", "가입인사", "공지사항(전체알림)", "투표"]; // 카테고리 옵션
 
@@ -260,18 +256,34 @@ export default function CKEditor5Editor({ onChange, title, setTitle, category, s
   }, [editorInstance, onChange]);
 
   return (
-    <Box mb={2}>
-      <TextField label="Title" variant="outlined" fullWidth margin="normal" value={title} onChange={(e) => setTitle(e.target.value)} />
-      <FormControl fullWidth margin="normal">
-        <InputLabel>Category</InputLabel>
-        <Select value={category} onChange={(e) => setCategory(e.target.value)} label="Category">
+    <div className="mb-4">
+      {/* Title input */}
+      <div className="mb-4">
+        <input
+          type="text"
+          placeholder="Title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#DBC7B5]"
+        />
+      </div>
+
+      {/* Category select */}
+      <div className="mb-4">
+        <select
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+          className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#DBC7B5] bg-white"
+        >
+          <option value="">Category 선택</option>
           {categories.map((cat) => (
-            <MenuItem key={cat} value={cat}>
+            <option key={cat} value={cat}>
               {cat}
-            </MenuItem>
+            </option>
           ))}
-        </Select>
-      </FormControl>
+        </select>
+      </div>
+
       <div className="main-container">
         <div className="editor-container editor-container_document-editor" ref={editorContainerRef}>
           <div className="editor-container__toolbar" ref={editorToolbarRef}></div>
@@ -311,6 +323,6 @@ export default function CKEditor5Editor({ onChange, title, setTitle, category, s
           </div>
         </div>
       </div>
-    </Box>
+    </div>
   );
 }

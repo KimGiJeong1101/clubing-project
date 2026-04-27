@@ -1,25 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-import { Box, TextField, List, ListItem, ListItemText, Container, Button, Dialog, DialogTitle, DialogContent, DialogActions, styled } from "@mui/material";
-import ChatIcon from "@mui/icons-material/Chat";
+import { FiMessageSquare } from "react-icons/fi";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { fetchVote, fetchVoteSummary, voteForOption, removeVote, deleteVote } from "../../../api/ClubBoardApi";
 import Reply from "./Reply"; // 댓글 컴포넌트 추가
-
-const StyledListItem = styled(ListItem)(({ theme }) => ({
-  display: "flex",
-  alignItems: "center",
-  borderRadius: "4px",
-  padding: theme.spacing(1),
-  marginBottom: theme.spacing(1),
-  border: `1px solid ${theme.palette.divider}`,
-  backgroundColor: theme.palette.background.paper,
-  transition: "background-color 0.3s",
-  "&:hover": {
-    backgroundColor: theme.palette.action.hover,
-  },
-  boxSizing: "border-box",
-}));
 
 const ReadVote = ({ voteId, onDelete }) => {
   const [vote, setVote] = useState(null);
@@ -150,147 +134,147 @@ const ReadVote = ({ voteId, onDelete }) => {
   const handleToggleReply = () => setOpenReply((prev) => !prev); // 댓글 컴포넌트 열기/닫기
 
   return (
-    <Container>
+    <div className="max-w-4xl mx-auto px-4">
       {vote && (
         <>
-          <Box sx={{ padding: 2 }}>
-            <TextField label="투표 제목" variant="outlined" fullWidth margin="normal" value={vote.title} readOnly />
+          <div className="p-4">
+            {/* 투표 제목 (읽기 전용) */}
+            <div className="mb-4">
+              <label className="block text-xs text-gray-500 mb-1">투표 제목</label>
+              <input
+                type="text"
+                value={vote.title}
+                readOnly
+                className="w-full border border-gray-300 rounded px-3 py-2 text-sm bg-gray-50 cursor-default"
+              />
+            </div>
+
+            {/* 투표 옵션 목록 (투표 전, 종료 전) */}
             {!hasVoted && !isVoteEnded && (
-              <List>
+              <ul className="space-y-2 mb-4">
                 {vote.options.map((option, index) => {
-                  const count = summary.find((item) => item.option === option)?.count || 0;
                   return (
-                    <StyledListItem key={index} onClick={() => handleOptionClick(option)}>
-                      <ListItemText primary={option} />
-                    </StyledListItem>
+                    <li
+                      key={index}
+                      onClick={() => handleOptionClick(option)}
+                      className={`flex items-center border rounded px-3 py-2 cursor-pointer transition-colors ${
+                        selectedOption === option
+                          ? "border-[#A67153] bg-[#f5ede6]"
+                          : "border-gray-200 bg-white hover:bg-gray-50"
+                      }`}
+                    >
+                      <span className="text-sm">{option}</span>
+                    </li>
                   );
                 })}
-              </List>
+              </ul>
             )}
 
-            <Box my={2}>
+            {/* 버튼 영역 */}
+            <div className="flex flex-wrap gap-2 my-4">
               {!isVoteEnded ? (
                 <>
                   {!hasVoted ? (
-                    <Button
-                      variant="contained"
-                      color="primary"
+                    <button
                       onClick={handleVote}
                       disabled={!selectedOption}
-                      mr={2}
-                      sx={{
-                        backgroundColor: "#DBC7B5",
-                        color: "#000",
-                        "&:hover": {
-                          backgroundColor: "#A67153",
-                        },
-                      }}
+                      className="px-4 py-2 rounded text-sm font-medium bg-primary-100 text-primary-800 hover:bg-primary-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       투표하기
-                    </Button>
+                    </button>
                   ) : (
-                    <Button
-                      variant="contained"
-                      color="primary"
+                    <button
                       onClick={handleSummaryOpen}
-                      mr={2}
-                      sx={{
-                        backgroundColor: "#DBC7B5",
-                        color: "#000",
-                        "&:hover": {
-                          backgroundColor: "#A67153",
-                        },
-                      }}
+                      className="px-4 py-2 rounded text-sm font-medium bg-primary-100 text-primary-800 hover:bg-primary-200 transition-colors"
                     >
                       투표 결과 보기
-                    </Button>
+                    </button>
                   )}
                 </>
               ) : (
-                <Button
-                  variant="contained"
-                  color="primary"
+                <button
                   onClick={handleSummaryOpen}
-                  mr={2}
-                  sx={{
-                    backgroundColor: "#DBC7B5",
-                    color: "#000",
-                    "&:hover": {
-                      backgroundColor: "#A67153",
-                    },
-                  }}
+                  className="px-4 py-2 rounded text-sm font-medium bg-primary-100 text-primary-800 hover:bg-primary-200 transition-colors"
                 >
                   투표 결과 보기
-                </Button>
+                </button>
               )}
               {isAuthor && (
-                <Button
-                  variant="contained"
-                  color="error"
+                <button
                   onClick={handleDelete}
-                  mr={2}
-                  sx={{
-                    backgroundColor: "#6E3C21",
-                    color: "#fff",
-                    "&:hover": {
-                      backgroundColor: "#A67153",
-                    },
-                  }}
+                  className="px-4 py-2 rounded text-sm font-medium bg-red-500 text-white hover:bg-red-600 transition-colors"
                 >
                   투표 삭제
-                </Button>
+                </button>
               )}
-            </Box>
+            </div>
 
-            <TextField label="투표 종료 시간" type="datetime-local" InputLabelProps={{ shrink: true }} fullWidth margin="normal" value={formatToLocalDatetime(vote.endTime)} readOnly />
-          </Box>
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "flex-end",
-              width: "100%",
-            }}
-          >
-            <ChatIcon
-              sx={{
-                color: "#999999",
-                fontSize: "30px",
-                marginRight: "15px",
-                cursor: "pointer",
-              }}
-              onClick={handleToggleReply} // 댓글 컴포넌트 열기/닫기
-            />
-          </Box>
+            {/* 투표 종료 시간 (읽기 전용) */}
+            <div className="mb-4">
+              <label className="block text-xs text-gray-500 mb-1">투표 종료 시간</label>
+              <input
+                type="datetime-local"
+                value={formatToLocalDatetime(vote.endTime)}
+                readOnly
+                className="w-full border border-gray-300 rounded px-3 py-2 text-sm bg-gray-50 cursor-default"
+              />
+            </div>
+          </div>
+
+          {/* 댓글 토글 버튼 */}
+          <div className="flex justify-end w-full pr-4">
+            <button onClick={handleToggleReply} className="text-gray-400 hover:text-gray-600 transition-colors mr-3">
+              <FiMessageSquare size={28} />
+            </button>
+          </div>
 
           {/* 댓글 컴포넌트를 ReadVote 위치에 렌더링 */}
           {openReply && (
-            <Box sx={{ padding: 2 }}>
+            <div className="p-4">
               <Reply postType="Board" postId={voteId} />
-            </Box>
+            </div>
           )}
 
-          <Dialog open={openSummary} onClose={handleSummaryClose} fullWidth maxWidth="lg">
-            <DialogTitle>투표 결과</DialogTitle>
-            <DialogContent>
-              <List>
-                {summary.map((item, index) => (
-                  <ListItem key={index}>
-                    <ListItemText primary={item.option} />
-                    <ListItemText secondary={`선택 수: ${item.count}`} />
-                    {!vote.anonymous && <ListItemText secondary={`투표한 사람: ${item.emails}`} />}
-                  </ListItem>
-                ))}
-              </List>
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={handleSummaryClose} color="primary">
-                닫기
-              </Button>
-            </DialogActions>
-          </Dialog>
+          {/* 투표 결과 모달 */}
+          {openSummary && (
+            <div
+              className="fixed inset-0 z-[300] bg-black/50 flex items-center justify-center p-4"
+              onClick={handleSummaryClose}
+            >
+              <div
+                className="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="px-6 py-4 border-b border-gray-200">
+                  <h2 className="text-lg font-semibold">투표 결과</h2>
+                </div>
+                <div className="p-6">
+                  <ul className="space-y-3">
+                    {summary.map((item, index) => (
+                      <li key={index} className="flex flex-col border-b pb-2 last:border-0">
+                        <span className="font-medium text-sm">{item.option}</span>
+                        <span className="text-xs text-gray-500">선택 수: {item.count}</span>
+                        {!vote.anonymous && (
+                          <span className="text-xs text-gray-400">투표한 사람: {item.emails}</span>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="px-6 py-4 border-t border-gray-200 flex justify-end">
+                  <button
+                    onClick={handleSummaryClose}
+                    className="px-4 py-2 rounded text-sm font-medium text-gray-600 hover:bg-gray-100 transition-colors"
+                  >
+                    닫기
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </>
       )}
-    </Container>
+    </div>
   );
 };
 

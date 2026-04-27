@@ -1,72 +1,55 @@
-import React, { useState } from "react";
-import { Grid, Typography, IconButton } from "@mui/material";
-import PhotoCameraIcon from "@mui/icons-material/PhotoCamera";
-import SearchIcon from "@mui/icons-material/Search";
+import React from "react";
+import { FiSearch, FiCamera } from "react-icons/fi";
 
 const ChatHeader = ({ title, onFileUpload, setShowSearchInput }) => {
   const handleFileChange = (event) => {
     const files = Array.from(event.target.files);
     if (onFileUpload) {
-      onFileUpload(files); // 파일 업로드 핸들러 호출
+      onFileUpload(files);
     }
   };
 
   const toggleSearchInput = () => {
-    setShowSearchInput((prev) => !prev);
+    // 아이콘은 열기 전용, 닫기는 SearchInput 의 X 버튼으로
+    setShowSearchInput(true);
   };
 
-  // 조건에 따라 제목을 잘라내는 함수
-  const truncatedTitle = title.length > 16 ? `${title.slice(0, 16)}...` : title;
+  const truncatedTitle = title.length > 20 ? `${title.slice(0, 20)}...` : title;
 
   return (
-    <Grid
-      container
-      alignItems="center"
-      justifyContent="space-between"
-      sx={{
-        margin: 0,
-        backgroundColor: "#D5D3CB",
-        padding: 2,
-        borderBottom: "1px solid #202020",
-        borderRadius: "10px 10px 0px 0px",
-      }}
-    >
-      {/* 채팅방 이름 (왼쪽) */}
-      <Grid item sx={{ flexGrow: 1 }}>
-        <Typography
-          variant="h3"
-          sx={{
-            textAlign: "left",
-            fontSize: 38,
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            fontFamily: "KCC-Hanbit",
-            color: "#202020",
-          }}
+    <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 bg-white rounded-t-2xl">
+      {/* 채팅방 이름 */}
+      <div className="flex-1 min-w-0 overflow-hidden">
+        <h1 className="text-lg font-nanum-bold text-gray-900 truncate">
+          {truncatedTitle || "채팅방"}
+        </h1>
+      </div>
+
+      <div className="flex items-center gap-1 flex-shrink-0">
+        <button
+          onClick={toggleSearchInput}
+          aria-label="search"
+          className="p-2.5 hover:bg-gray-100 rounded-full transition-colors text-gray-500 hover:text-gray-800"
         >
-          {truncatedTitle ? `${truncatedTitle}` : "채팅방"}
-        </Typography>
-      </Grid>
+          <FiSearch size={20} />
+        </button>
 
-      <Grid item>
-        <IconButton color="primary" aria-label="search" component="span" onClick={toggleSearchInput}>
-          <SearchIcon sx={{ color: "#30231c", fontSize: 40 }} />
-        </IconButton>
-      </Grid>
-
-      {/* 아이콘 간격 추가 */}
-      <Grid item sx={{ marginLeft: 1 }}>
-        {" "}
-        {/* 검색 아이콘과 사진 아이콘 사이 간격 */}
-        <input type="file" multiple onChange={handleFileChange} style={{ display: "none" }} id="file-upload" />
-        <label htmlFor="file-upload">
-          <IconButton color="primary" aria-label="add" component="span">
-            <PhotoCameraIcon sx={{ color: "#30231c", fontSize: 40 }} />
-          </IconButton>
-        </label>
-      </Grid>
-    </Grid>
+        <div>
+          <input
+            type="file"
+            multiple
+            onChange={handleFileChange}
+            className="hidden"
+            id="file-upload"
+          />
+          <label htmlFor="file-upload" className="cursor-pointer">
+            <span className="flex items-center justify-center p-2.5 hover:bg-gray-100 rounded-full transition-colors text-gray-500 hover:text-gray-800">
+              <FiCamera size={20} />
+            </span>
+          </label>
+        </div>
+      </div>
+    </div>
   );
 };
 

@@ -1,59 +1,6 @@
-import { Button } from "@mui/material";
-import { width } from "@mui/system";
 import React, { useState } from "react";
 import ReactCrop from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
-
-// 스타일 객체 정의
-const modalStyles = {
-  position: "fixed",
-  top: 0,
-  left: 0,
-  width: "100%",
-  height: "100%",
-  background: "rgba(0, 0, 0, 0.5)", // 반투명 배경
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center", // 수직 중앙 정렬
-  zIndex: 11000, // 다른 요소 위에 표시되도록
-};
-
-const modalContentStyles = {
-  background: "white",
-  padding: "20px",
-  borderRadius: "8px",
-  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
-  width: "1200px", // 고정 너비
-  height: "600px", // 고정 높이
-  overflow: "hidden", // 넘치는 내용 숨기기
-  position: "relative", // 버튼의 절대 위치 설정을 위한 상대 위치
-};
-
-const closeButtonStyles = {
-  position: "absolute",
-  top: "10px",
-  right: "10px",
-  background: "white",
-  color: "black",
-  border: "black solid 1px",
-  borderRadius: "10px",
-  cursor: "pointer",
-  width: "20px",
-  height: "30px",
-  zIndex: 11001, // 버튼이 다른 요소 위에 표시되도록
-};
-
-const cropButtonStyles = {
-  position: "absolute",
-  bottom: "10px",
-  right: "10px",
-  background: "white",
-  color: "black",
-  border: "black solid 1px",
-  borderRadius: "10px",
-  cursor: "pointer",
-  zIndex: 11001, // 버튼이 다른 요소 위에 표시되도록
-};
 
 // 이미지 크롭퍼 컴포넌트
 const MeetingImageCropper = ({ src, onCropComplete, onClose }) => {
@@ -82,10 +29,20 @@ const MeetingImageCropper = ({ src, onCropComplete, onClose }) => {
       canvas.width = crop.width;
       canvas.height = crop.height;
       const ctx = canvas.getContext("2d");
-      ctx.drawImage(image, crop.x * scaleX, crop.y * scaleY, crop.width * scaleX, crop.height * scaleY, 0, 0, crop.width, crop.height);
+      ctx.drawImage(
+        image,
+        crop.x * scaleX,
+        crop.y * scaleY,
+        crop.width * scaleX,
+        crop.height * scaleY,
+        0,
+        0,
+        crop.width,
+        crop.height,
+      );
       canvas.toBlob((blob) => {
         const croppedImageUrl = URL.createObjectURL(blob);
-        onCropComplete(croppedImageUrl); // prop으로 전달된 onCropComplete 함수 호출
+        onCropComplete(croppedImageUrl);
       }, "image/jpeg");
     } else {
       console.error("이미지 또는 크롭 상태가 유효하지 않음");
@@ -93,15 +50,26 @@ const MeetingImageCropper = ({ src, onCropComplete, onClose }) => {
   };
 
   return (
-    <div style={modalStyles}>
-      <div style={modalContentStyles}>
-        <Button onClick={onClose} variant="outlined" style={closeButtonStyles}>
+    /* 배경 오버레이 */
+    <div className="fixed inset-0 z-[11000] flex justify-center items-center bg-black/50">
+      {/* 모달 콘텐츠 */}
+      <div
+        className="relative bg-white p-5 rounded-lg shadow-xl overflow-hidden"
+        style={{ width: 1200, height: 600 }}
+      >
+        {/* 닫기 버튼 */}
+        <button
+          onClick={onClose}
+          className="absolute top-2.5 right-2.5 z-[11001] bg-white text-black border border-black rounded-lg w-5 h-[30px] flex items-center justify-center cursor-pointer hover:bg-gray-100 transition-colors"
+        >
           X
-        </Button>
+        </button>
+
+        {/* 크롭 영역 */}
         <ReactCrop
           crop={crop}
           onChange={handleCropChange}
-          onComplete={handleCropChange} // 크롭 완료 시 콜백
+          onComplete={handleCropChange}
           style={{ width: "100%", height: "100%" }}
           locked
         >
@@ -109,19 +77,17 @@ const MeetingImageCropper = ({ src, onCropComplete, onClose }) => {
             src={src}
             alt="Source"
             onLoad={onLoad}
-            style={{
-              width: "100%",
-              height: "100%",
-              overflow: "hidden", // 넘치는 내용 숨기기
-              objectFit: "contain",
-              maxWidth: "100%",
-              maxHeight: "100%",
-            }}
+            className="w-full h-full object-contain max-w-full max-h-full overflow-hidden"
           />
         </ReactCrop>
-        <Button onClick={handleCropComplete} style={cropButtonStyles}>
+
+        {/* 완료 버튼 */}
+        <button
+          onClick={handleCropComplete}
+          className="absolute bottom-2.5 right-2.5 z-[11001] bg-white text-black border border-black rounded-lg px-3 py-1 cursor-pointer hover:bg-gray-100 transition-colors"
+        >
           완료
-        </Button>
+        </button>
       </div>
     </div>
   );

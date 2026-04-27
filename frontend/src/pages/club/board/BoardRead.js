@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Container, Button, Box, Snackbar, Alert, Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useSelector } from "react-redux";
+import { FiMessageSquare, FiUser, FiCalendar, FiTag } from "react-icons/fi";
 import CKEditor5Editor from "../../../components/club/ClubBoardRead";
 import UpdatePost from "../../../components/club/ClubBoardUpdateEditor";
-import ChatIcon from "@mui/icons-material/Chat";
 import { fetchPost, deletePost, updatePost } from "../../../api/ClubBoardApi";
 import Reply from "./Reply"; // 댓글 컴포넌트 추가
 
@@ -119,66 +118,142 @@ const Read = ({ postId, onClose }) => {
   const handleSnackbarClose = () => setSnackbarOpen(false); // 스낵바 닫기
 
   // 로딩 상태 처리
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>게시물 가져오기 오류: {error.message}</div>;
-  if (!post) return <div>게시물을 찾을 수 없습니다</div>;
+  if (isLoading) return (
+    <div className="flex justify-center items-center py-16">
+      <div className="w-8 h-8 border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin" />
+    </div>
+  );
+  if (error) return <p className="text-center py-8 text-red-500">게시물 가져오기 오류: {error.message}</p>;
+  if (!post) return <p className="text-center py-8 text-gray-400">게시물을 찾을 수 없습니다.</p>;
 
   const postType = "Board"; // 포스트 타입
 
   return (
-    <Container>
+    <div className="max-w-4xl mx-auto">
       {post && (
         <>
+          {/* 게시글 메타 정보 */}
+          <div className="flex flex-wrap items-center gap-3 mb-4 pb-4 border-b border-gray-100">
+            {post.category && (
+              <span className="inline-flex items-center gap-1 bg-primary-50 text-primary-700 text-xs font-medium px-2.5 py-1 rounded-full">
+                <FiTag size={11} />
+                {post.category}
+              </span>
+            )}
+            <div className="flex items-center gap-1 text-xs text-gray-400">
+              <FiUser size={12} />
+              <span>{post.author || "작성자 없음"}</span>
+            </div>
+            {post.create_at && (
+              <div className="flex items-center gap-1 text-xs text-gray-400">
+                <FiCalendar size={12} />
+                <span>{new Date(post.create_at).toLocaleDateString("ko-KR")}</span>
+              </div>
+            )}
+          </div>
+
+          {/* 본문 */}
           <div className="fetched-content">
             <CKEditor5Editor content={post.content} readOnly={true} />
           </div>
+
+          {/* 작성자 전용 버튼 */}
           {isAuthor && (
-            <Box mt={2} sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
-              <ChatIcon
-                sx={{ color: "#999999", fontSize: "40px", flexShrink: 0 }}
-                onClick={handleToggleReply} // 댓글 컴포넌트 열기/닫기
-              />
-              <Box sx={{ display: "flex", gap: 1 }}>
-                <Button variant="contained" sx={{ backgroundColor: "#DBC7B5", color: "#000", "&:hover": { backgroundColor: "#A67153" } }} onClick={handleOpenEditModal}>
-                  수정
-                </Button>
-                <Button variant="contained" sx={{ backgroundColor: "#6E3C21", color: "#fff", "&:hover": { backgroundColor: "#A67153" } }} onClick={handleDelete}>
-                  삭제
-                </Button>
-              </Box>
-            </Box>
+            <div className="mt-5 flex justify-end gap-2 pt-4 border-t border-gray-100">
+              <button
+                onClick={handleOpenEditModal}
+                className="px-4 py-2 rounded-lg text-sm font-medium bg-primary-50 text-primary-700 hover:bg-primary-100 transition-colors"
+              >
+                수정
+              </button>
+              <button
+                onClick={handleDelete}
+                className="px-4 py-2 rounded-lg text-sm font-medium bg-red-50 text-red-600 hover:bg-red-100 transition-colors"
+              >
+                삭제
+              </button>
+            </div>
           )}
 
-          {/* 댓글 컴포넌트를 Read 위치에 렌더링 */}
+          {/* 댓글 토글 버튼 */}
+          <div className="mt-5 pt-4 border-t border-gray-100">
+            <button
+              onClick={handleToggleReply}
+              className="flex items-center gap-2 text-sm text-gray-500 hover:text-primary-600 transition-colors font-medium"
+            >
+              <FiMessageSquare size={16} />
+              {openReply ? "댓글 닫기" : "댓글 보기"}
+            </button>
+          </div>
+
+          {/* 댓글 컴포넌트 */}
           {openReply && (
-            <Box sx={{ padding: 2 }}>
+            <div className="mt-3">
               <Reply postType={postType} postId={postId} />
-            </Box>
+            </div>
           )}
 
-          <Dialog open={openEditModal} onClose={handleCloseEditModal} fullWidth maxWidth="lg">
-            <DialogTitle>게시물 수정</DialogTitle>
-            <DialogContent>
-              <UpdatePost post={{ title, category, content, image }} onChange={(data) => setContent(data)} title={title} setTitle={setTitle} category={category} setCategory={setCategory} content={content} setImage={setImage} />
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={handleCloseEditModal} color="primary">
-                닫기
-              </Button>
-              <Button onClick={handleSave} color="primary">
-                저장
-              </Button>
-            </DialogActions>
-          </Dialog>
+          {/* 수정 모달 */}
+          {openEditModal && (
+            <div
+              className="fixed inset-0 z-[300] bg-black/50 flex items-center justify-center p-4"
+              onClick={handleCloseEditModal}
+            >
+              <div
+                className="bg-white rounded-2xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="px-6 py-4 border-b border-gray-200">
+                  <h2 className="text-lg font-semibold">게시물 수정</h2>
+                </div>
+                <div className="p-6">
+                  <UpdatePost
+                    post={{ title, category, content, image }}
+                    onChange={(data) => setContent(data)}
+                    title={title}
+                    setTitle={setTitle}
+                    category={category}
+                    setCategory={setCategory}
+                    content={content}
+                    setImage={setImage}
+                  />
+                </div>
+                <div className="px-6 py-4 border-t border-gray-200 flex justify-end gap-2">
+                  <button
+                    onClick={handleCloseEditModal}
+                    className="px-4 py-2 rounded text-sm font-medium text-gray-600 hover:bg-gray-100 transition-colors"
+                  >
+                    닫기
+                  </button>
+                  <button
+                    onClick={handleSave}
+                    className="px-4 py-2 rounded text-sm font-medium bg-primary-100 text-primary-800 hover:bg-primary-200 transition-colors"
+                  >
+                    저장
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
 
-          <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleSnackbarClose} anchorOrigin={{ vertical: "top", horizontal: "center" }}>
-            <Alert onClose={handleSnackbarClose} severity={snackbarSeverity}>
-              {snackbarMessage}
-            </Alert>
-          </Snackbar>
+          {/* 스낵바 */}
+          {snackbarOpen && (
+            <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[400]">
+              <div
+                className={`flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg text-sm font-medium text-white ${
+                  snackbarSeverity === "error" ? "bg-red-500" : "bg-green-500"
+                }`}
+              >
+                <span>{snackbarMessage}</span>
+                <button onClick={handleSnackbarClose} className="ml-2 hover:opacity-80">
+                  ✕
+                </button>
+              </div>
+            </div>
+          )}
         </>
       )}
-    </Container>
+    </div>
   );
 };
 
